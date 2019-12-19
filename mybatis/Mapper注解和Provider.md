@@ -1,6 +1,4 @@
-1. 现在用的是SpringBoot整合Mybatis,配置文件还没有去看
 
-2. 要注意Mapper层需要@Mapper注解
 
 3. Mapping层用Provider这种方式
 
@@ -15,3 +13,28 @@
 
 
 ![img](../img/clipboard.png)
+
+![img](../img/clipboard-1576724582049.png)
+
+
+
+**4.动态SQL** 
+
+　  **1.对应关系如下**
+
+@Insert ：@InsertProvider
+
+@Select ：@SelectProvider
+
+@Update ：@UpdateProvider
+
+@Delete ：@DeleteProvider
+
+**2.四个provider注解标识 使用了动态SQL, 使用语法格式 ：** 
+
+```java
+@UpdateProvider(type = UserProvider.class, method = "updateSQL")
+```
+
+
+
