@@ -7,7 +7,7 @@
 # **2.List转成string,去掉两边的中括号**
 
 ```java
-partnerApplyService.updateAreas(StringUtils.strip(partnerApplyDetail1.getList().toString().toString(),"[]"));
+StringUtils.strip(partnerApplyDetail1.getList().toString().toString(),"[]");
 ```
 
 <img src="img/clipboard-1576741829859.png" alt="img" style="zoom:150%;" />
