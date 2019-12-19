@@ -559,3 +559,45 @@ public class Demo {
 }
 ```
 
+
+
+# Redis-Java操作
+
+1.
+```java
+public static void deleteRedisStoreInformationByToken(String token,RedisTemplate<String,String> redisTemplate) {
+        String userid = token.split("_")[0];
+        Set<String> keys = redisTemplate.opsForValue().getOperations().keys(RedisKeyConstant.STOREINFOMATION + userid+"*");
+        for (String string : keys) {
+            redisTemplate.opsForValue().getOperations().delete(string);// 删除缓存中的token
+    }
+}
+```
+
+
+```java
+//模糊模糊查询redis的keys
+Set<String> keys=redisTemplate.keys(RedisKeyPrefix.GAME_SERVICE_GAME_STATUS +tbGameSiteVo.getSiteId()+":"+"*");
+//获取redis的value值
+List<String>value=redisTemplate.opsForValue().multiGet(keys);
+//获取游戏的在线人数
+int number=0;
+//获取游戏的在线人数
+try {
+   Long onLineSum = value.stream()
+       .map(l -> JSON.parseObject(l, UserGameInputVo.class))
+       .filter(vo -> vo.getOnlineStatus() == 1)
+       .filter(vo -> vo.getGameStatus() ==Integer.valueOf(tbGameSiteVo.getGameId()))
+       .count();//统计各游戏的在线人数
+   if(onLineSum==null){
+      onLineSum=0L;
+   }
+   if(onLineSum!=null) {
+      number = onLineSum.intValue();
+   }
+}catch (Exception e){
+
+   log.error("在线人数为空"+e.getMessage());
+}
+```
+

@@ -1,3 +1,5 @@
+[toc]
+
 # Mysql基本命令
 
 插入数据:
@@ -66,7 +68,7 @@ InnoDB行锁是通过给索引上的索引项加锁来实现的，InnoDB这种�
 
 
 
-Centos7Yum安装Mysql5.7
+# Centos7Yum安装Mysql5.7
 
 **下载 mysql 源安装包**
 
@@ -262,4 +264,16 @@ rpm -qa | grep -i mysql | xargs rpm -e --nodeps
 find / -name mysql | xargs rm -rf
 find / -name my.cnf | xargs rm -rf
 ```
+
+
+
+# 使用Mysql的注意事项
+
+1.起mysql字段名字,避开类似关键字的名字,说不定可能就会报错了
+
+2.Mysql中DataTime 和 timestamp的区别
+
+* 前者8字节,后者4字节
+* 都是显示的是年月日时分秒
+* 前者就是年月日时分秒,后者在转成Date对象,会存在时区,所以要看业务选择
 
