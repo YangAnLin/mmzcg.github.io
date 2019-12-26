@@ -10,9 +10,9 @@
 
 # 2.如果需要更新的是两个字段,如果两个字段分别是Integer 和 String 就不要写parametype 因为在mapper接口里已经写好了
 
-<img src="../img/untitle.png" alt="img" style="zoom:150%;" />
+<img src="https://hexosrc.oss-cn-shenzhen.aliyuncs.com/blog/2019/12/untitle.png" alt="img" style="zoom:150%;" />
 
-![img](../img/untitle-1576724757098.png)
+![img](https://hexosrc.oss-cn-shenzhen.aliyuncs.com/blog/2019/12/untitle-1576724757098.png)
 
 
 
@@ -28,9 +28,9 @@
 
 ​	4.Provider里返回的是String
 
-![img](../img/clipboard12.png)
+![img](https://hexosrc.oss-cn-shenzhen.aliyuncs.com/blog/2019/12/clipboard12.png)
 
-![img](../img/clipboard-1576724902698.png)
+![img](https://hexosrc.oss-cn-shenzhen.aliyuncs.com/blog/2019/12/clipboard-1576724902698.png)
 
 
 
@@ -92,11 +92,11 @@ SELECT * FROM test WHERE 1 = 1 AND start_date  &lt;= CURRENT_DATE AND end_date &
 
 # 7.注解 一对多查询(多个参数)
 
-![img](../img/clipboard-1576739154939.png)
+![img](https://hexosrc.oss-cn-shenzhen.aliyuncs.com/blog/2019/12/clipboard-1576739154939.png)
 
-![img](../img/clipboard-1576739172794.png)
+![img](https://hexosrc.oss-cn-shenzhen.aliyuncs.com/blog/2019/12/clipboard-1576739172794.png)
 
-<img src="../img/clipboard-1576742171165.png" alt="img" style="zoom:150%;" />
+<img src="https://hexosrc.oss-cn-shenzhen.aliyuncs.com/blog/2019/12/clipboard-1576742171165.png" alt="img" style="zoom:150%;" />
 
 # 8.注解 一对多查询(多个参数)
 
@@ -192,9 +192,9 @@ public class QueryFloors implements Serializable {
 
 # 9. **注解 一对多查询(一个参数)**
 
-![img](../img/clipboard-1576742034826.png)
+![img](https://hexosrc.oss-cn-shenzhen.aliyuncs.com/blog/2019/12/clipboard-1576742034826.png)
 
-![img](../img/clipboard-1576742047981.png)
+![img](https://hexosrc.oss-cn-shenzhen.aliyuncs.com/blog/2019/12/clipboard-1576742047981.png)
 
 
 
@@ -234,15 +234,15 @@ public class QueryFloors implements Serializable {
 
 ## 2.insert的插入，需要用到对象
 
-![img](../img/clipboard1.png)
+![img](https://hexosrc.oss-cn-shenzhen.aliyuncs.com/blog/2019/12/clipboard1.png)
 
 ## 3.keyProperty的使用
 
-![img](../img/clipboard-1576739018121.png)
+![img](https://hexosrc.oss-cn-shenzhen.aliyuncs.com/blog/2019/12/clipboard-1576739018121.png)
 
 keyProperty="id" 这样就会报错
 
-![1](../img/134324324.png)
+![1](https://hexosrc.oss-cn-shenzhen.aliyuncs.com/blog/2019/12/134324324.png)
 
 keyProperty="agentAreaId"  这样才是对的
 
@@ -252,4 +252,4 @@ void saveAreas(对象 对象名);
 
 ## 4.in的问题,#号不起作用
 
-![img](../img/clipboard-1576742110364.png)
+![img](https://hexosrc.oss-cn-shenzhen.aliyuncs.com/blog/2019/12/clipboard-1576742110364.png)

@@ -12,9 +12,9 @@
 
 
 
-![img](../img/clipboard.png)
+![img](https://hexosrc.oss-cn-shenzhen.aliyuncs.com/blog/2019/12/clipboard.png)
 
-![img](../img/clipboard-1576724582049.png)
+![img](https://hexosrc.oss-cn-shenzhen.aliyuncs.com/blog/2019/12/clipboard-1576724582049.png)
 
 
 
