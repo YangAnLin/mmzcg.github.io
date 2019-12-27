@@ -22,11 +22,106 @@ Map map = userMapper.getUA();
 sqlSession.close();
 ```
 
-### 2.SqlSessionFactory
+2.第2行代码读取Resource,本来可以直接用
+
+```java
+InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(resource);
+```
+但是在源码里被封装起来了,下面的代码都是公共类
+```java
+public static Reader getResourceAsReader(String resource) throws IOException {
+    Reader reader;
+    if (charset == null) {
+        reader = new InputStreamReader(getResourceAsStream(resource));
+    } else {
+        reader = new InputStreamReader(getResourceAsStream(resource), charset);
+    }
+    return reader;
+}
+```
+
+```java
+public static InputStream getResourceAsStream(String resource) throws IOException {
+    // 通过Classloader加载资源文件
+    return getResourceAsStream(null, resource);
+}
+```
+
+ClassLoaderWrapper 类的初始化
+```java
+public class ClassLoaderWrapper {
+
+  ClassLoader defaultClassLoader;
+  ClassLoader systemClassLoader;
+
+  ClassLoaderWrapper() {
+    try {
+      systemClassLoader = ClassLoader.getSystemClassLoader();
+    } catch (SecurityException ignored) {
+      // AccessControlException on Google App Engine   
+    }
+  }
+}
+```
+```java
+private static ClassLoaderWrapper classLoaderWrapper = new ClassLoaderWrapper();
+
+public static InputStream getResourceAsStream(ClassLoader loader, String resource) throws IOException {
+    // 通过ClassLoader来加载资源,此时的resource为null
+    InputStream in = classLoaderWrapper.getResourceAsStream(resource, loader);
+    if (in == null) {
+        throw new IOException("Could not find resource " + resource);
+    }
+    return in;
+}
+```
+
+```java
+public InputStream getResourceAsStream(String resource, ClassLoader classLoader) {
+    return getResourceAsStream(resource, getClassLoaders(classLoader));
+}
+```
+
+```java
+ClassLoader[] getClassLoaders(ClassLoader classLoader) {
+    return new ClassLoader[]{
+        classLoader,
+        defaultClassLoader,
+        Thread.currentThread().getContextClassLoader(),
+        getClass().getClassLoader(),
+        systemClassLoader};
+}
+```
+
+找到一个可以用的Classloader
+```java
+InputStream getResourceAsStream(String resource, ClassLoader[] classLoader) {
+    for (ClassLoader cl : classLoader) {
+        if (null != cl) {
+
+            // try to find the resource as passed
+            InputStream returnValue = cl.getResourceAsStream(resource);
+
+            // now, some class loaders want this leading "/", so we'll add it and try again if we didn't find the resource
+            if (null == returnValue) {
+                returnValue = cl.getResourceAsStream("/" + resource);
+            }
+
+            if (null != returnValue) {
+                return returnValue;
+            }
+        }
+    }
+    return null;
+}
+```
+
+### 2.现在回到第3行代码
+
 ```java
 public class SqlSessionFactoryBuilder {
 
-  // 1.参数是文件的输入流
+  // 1.参数是文件的输入流,这里用到了建造者模式
   public SqlSessionFactory build(InputStream inputStream) {
     return build(inputStream, null, null);
   }
@@ -56,7 +151,163 @@ public class SqlSessionFactoryBuilder {
 }
 ```
 
+```java
+public XMLConfigBuilder(Reader reader, String environment, Properties props) {
+    this(new XPathParser(reader, true, props, new XMLMapperEntityResolver()), environment, props);
+}
+```
+
+```java
+public XPathParser(Reader reader, boolean validation, Properties variables, EntityResolver entityResolver) {
+    commonConstructor(validation, variables, entityResolver);
+    this.document = createDocument(new InputSource(reader));
+}
+```
+
+```java
+private void commonConstructor(boolean validation, Properties variables, EntityResolver entityResolver) {
+    this.validation = validation;
+    this.entityResolver = entityResolver;
+    this.variables = variables;
+    XPathFactory factory = XPathFactory.newInstance();
+    this.xpath = factory.newXPath();
+}
+```
+
+```java
+private XMLConfigBuilder(XPathParser parser, String environment, Properties props) {
+    //  创建Configuration对象，并通过TypeAliasRegistry注册一些Mybatis内部相关类的别名
+    super(new Configuration());
+    ErrorContext.instance().resource("SQL Mapper Configuration");
+    this.configuration.setVariables(props);
+    this.parsed = false;
+    this.environment = environment;
+    this.parser = parser;
+}
+```
+
+回到build方法`build(parser.parse());
+
+```java
+/**
+   * 解析XML配置文件
+   * @return
+   */
+public Configuration parse() {
+    if (parsed) {
+        throw new BuilderException("Each XMLConfigBuilder can only be used once.");
+    }
+    parsed = true;
+    // parser.evalNode("/configuration")：通过XPATH解析器，解析configuration根节点
+    // 从configuration根节点开始解析，最终将解析出的内容封装到Configuration对象中
+    parseConfiguration(parser.evalNode("/configuration"));
+    return configuration;
+}
+```
+
+```java
+private void parseConfiguration(XNode root) {
+    try {
+      //issue #117 read properties first
+      // 解析</properties>标签
+      propertiesElement(root.evalNode("properties"));
+      // 解析</settings>标签
+      Properties settings = settingsAsProperties(root.evalNode("settings"));
+      loadCustomVfs(settings);
+      loadCustomLogImpl(settings);
+      // 解析</typeAliases>标签
+      typeAliasesElement(root.evalNode("typeAliases"));
+      // 解析</plugins>标签
+      pluginElement(root.evalNode("plugins"));
+      // 解析</objectFactory>标签
+      objectFactoryElement(root.evalNode("objectFactory"));
+      // 解析</objectWrapperFactory>标签
+      objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
+      // 解析</reflectorFactory>标签
+      reflectorFactoryElement(root.evalNode("reflectorFactory"));
+      settingsElement(settings);
+      
+      // read it after objectFactory and objectWrapperFactory issue #631
+      // 解析</environments>标签
+      environmentsElement(root.evalNode("environments"));
+      // 解析</databaseIdProvider>标签
+      databaseIdProviderElement(root.evalNode("databaseIdProvider"));
+      // 解析</typeHandlers>标签
+      typeHandlerElement(root.evalNode("typeHandlers"));
+      // 解析</mappers>标签
+      mapperElement(root.evalNode("mappers"));
+    } catch (Exception e) {
+      throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
+    }
+  }
+```
+
+```java
+/**
+   * 解析<mappers>标签
+   * @param parent  mappers标签对应的XNode对象
+   * @throws Exception
+   */
+  private void mapperElement(XNode parent) throws Exception {
+    if (parent != null) {
+      // 获取<mappers>标签的子标签
+      for (XNode child : parent.getChildren()) {
+    	// <package>子标签
+        if ("package".equals(child.getName())) {
+          // 获取mapper接口和mapper映射文件对应的package包名
+          String mapperPackage = child.getStringAttribute("name");
+          // 将包下所有的mapper接口以及它的代理对象存储到一个Map集合中，key为mapper接口类型，value为代理对象工厂
+          configuration.addMappers(mapperPackage);
+        } else {// <mapper>子标签
+          // 获取<mapper>子标签的resource属性
+          String resource = child.getStringAttribute("resource");
+          // 获取<mapper>子标签的url属性
+          String url = child.getStringAttribute("url");
+          // 获取<mapper>子标签的class属性
+          String mapperClass = child.getStringAttribute("class");
+          // 它们是互斥的
+          if (resource != null && url == null && mapperClass == null) {
+            ErrorContext.instance().resource(resource);
+            InputStream inputStream = Resources.getResourceAsStream(resource);
+            // 专门用来解析mapper映射文件
+            XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
+            // 通过XMLMapperBuilder解析mapper映射文件
+            mapperParser.parse();
+          } else if (resource == null && url != null && mapperClass == null) {
+            ErrorContext.instance().resource(url);
+            InputStream inputStream = Resources.getUrlAsStream(url);
+            XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, url, configuration.getSqlFragments());
+            // 通过XMLMapperBuilder解析mapper映射文件
+            mapperParser.parse();
+          } else if (resource == null && url == null && mapperClass != null) {
+            Class<?> mapperInterface = Resources.classForName(mapperClass);
+            // 将指定mapper接口以及它的代理对象存储到一个Map集合中，key为mapper接口类型，value为代理对象工厂
+            configuration.addMapper(mapperInterface);
+          } else {
+            throw new BuilderException("A mapper element may only specify a url, resource or class, but not more than one.");
+          }
+        }
+      }
+    }
+  }
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### 3.事务管理器
+
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE configuration
   PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
