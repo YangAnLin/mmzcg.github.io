@@ -367,6 +367,122 @@ private void configurationElement(XNode context) {
   }
 ```
 
+看15行,到下面这里,`sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);`这里的代码就已经看完了
+
+```java
+public void parseStatementNode() {
+	// 获取statement的id属性（特别关键的值）
+    String id = context.getStringAttribute("id");
+    String databaseId = context.getStringAttribute("databaseId");
+
+    if (!databaseIdMatchesCurrent(id, databaseId, this.requiredDatabaseId)) {
+      return;
+    }
+
+    Integer fetchSize = context.getIntAttribute("fetchSize");
+    Integer timeout = context.getIntAttribute("timeout");
+    String parameterMap = context.getStringAttribute("parameterMap");
+    // 获取入参类型
+    String parameterType = context.getStringAttribute("parameterType");
+    // 别名处理，获取入参对应的Java类型
+    Class<?> parameterTypeClass = resolveClass(parameterType);
+    // 获取ResultMap
+    String resultMap = context.getStringAttribute("resultMap");
+    // 获取结果映射类型
+    String resultType = context.getStringAttribute("resultType");
+    String lang = context.getStringAttribute("lang");
+    LanguageDriver langDriver = getLanguageDriver(lang);
+    
+    // 别名处理，获取返回值对应的Java类型
+    Class<?> resultTypeClass = resolveClass(resultType);
+    String resultSetType = context.getStringAttribute("resultSetType");
+    
+    // 设置默认StatementType为Prepared，该参数指定了后面的JDBC处理时，采用哪种Statement
+    StatementType statementType = StatementType.valueOf(context.getStringAttribute("statementType", StatementType.PREPARED.toString()));
+    ResultSetType resultSetTypeEnum = resolveResultSetType(resultSetType);
+
+    String nodeName = context.getNode().getNodeName();
+    // 解析SQL命令类型是什么？确定操作是CRUD中的哪一种
+    SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
+    //是否查询语句
+    boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
+    boolean flushCache = context.getBooleanAttribute("flushCache", !isSelect);
+    boolean useCache = context.getBooleanAttribute("useCache", isSelect);
+    boolean resultOrdered = context.getBooleanAttribute("resultOrdered", false);
+
+    // Include Fragments before parsing
+    // <include>标签解析
+    XMLIncludeTransformer includeParser = new XMLIncludeTransformer(configuration, builderAssistant);
+    includeParser.applyIncludes(context.getNode());
+
+    // Parse selectKey after includes and remove them.
+    // 解析<selectKey>标签
+    processSelectKeyNodes(id, parameterTypeClass, langDriver);
+    
+    // Parse the SQL (pre: <selectKey> and <include> were parsed and removed)
+    // 创建SqlSource，解析SQL，封装SQL语句（未参数绑定）和入参信息
+    SqlSource sqlSource = langDriver.createSqlSource(configuration, context, parameterTypeClass);
+   
+    String resultSets = context.getStringAttribute("resultSets");
+    String keyProperty = context.getStringAttribute("keyProperty");
+    String keyColumn = context.getStringAttribute("keyColumn");
+    KeyGenerator keyGenerator;
+    String keyStatementId = id + SelectKeyGenerator.SELECT_KEY_SUFFIX;
+    keyStatementId = builderAssistant.applyCurrentNamespace(keyStatementId, true);
+    if (configuration.hasKeyGenerator(keyStatementId)) {
+      keyGenerator = configuration.getKeyGenerator(keyStatementId);
+    } else {
+      keyGenerator = context.getBooleanAttribute("useGeneratedKeys",
+          configuration.isUseGeneratedKeys() && SqlCommandType.INSERT.equals(sqlCommandType))
+          ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;
+    }
+
+    // 通过构建者助手，创建MappedStatement对象
+    builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType,
+        fetchSize, timeout, parameterMap, parameterTypeClass, resultMap, resultTypeClass,
+        resultSetTypeEnum, flushCache, useCache, resultOrdered, 
+        keyGenerator, keyProperty, keyColumn, databaseId, langDriver, resultSets);
+  }
+```
+
+看`session = sqlSessionFactory.openSession();`
+
+```java
+  @Override
+  public SqlSession openSession() {
+    return openSessionFromDataSource(configuration.getDefaultExecutorType(), null, false);
+  }
+```
+
+```java
+private SqlSession openSessionFromDataSource(ExecutorType execType, TransactionIsolationLevel level, boolean autoCommit) {
+    Transaction tx = null;
+    try {
+      // 获取数据源环境信息
+      final Environment environment = configuration.getEnvironment();
+      // 获取事务工厂
+      final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
+      // 获取JdbcTransaction或者ManagedTransaction
+      tx = transactionFactory.newTransaction(environment.getDataSource(), level, autoCommit);
+      // 创建Executor执行器
+      final Executor executor = configuration.newExecutor(tx, execType);
+      // 创建DefaultSqlSession
+      return new DefaultSqlSession(configuration, executor, autoCommit);
+    } catch (Exception e) {
+      closeTransaction(tx); // may have fetched a connection so lets call close()
+      throw ExceptionFactory.wrapException("Error opening session.  Cause: " + e, e);
+    } finally {
+      ErrorContext.instance().reset();
+    }
+  }
+```
+
+看13行
+
+```java
+
+```
+
 
 
 
