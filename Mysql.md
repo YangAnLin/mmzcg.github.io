@@ -68,6 +68,79 @@ InnoDB行锁是通过给索引上的索引项加锁来实现的，InnoDB这种�
 
 
 
+# mysql学习
+
+1.可以使用`;`,`\g`,(水平展示)`\G`(垂直展示)
+
+2.库命令
+
+切换成指定库名
+
+`use company(库名)`
+
+查看现在正在连接的库名
+
+`select  database();`
+
+查看所有的,我有权访问的的库名
+
+`show databases;`
+
+数据库被创建成数据目录中的一个目录
+
+* 通过仓库默认安装的,数据目录是/var/lib/mysql
+* 通过二进制文件安装的,数据目录是/usr/local/mysql/data
+* `show variables like 'datadir';`可以查看数据目录
+
+3.创建json字段,Json类型还包含一些函数用法
+
+```sql
+create table emp_details(
+    emp_no int primary key,
+    details json
+);
+
+insert into emp_details(emp_no,details)
+values ('1','{"location":"IN","phone":"+1180000000","email":"abc@ex.com","address":{"linel":"abc","line2":"xyz","city":"guangzhou","pin":"56103"}}
+');
+
+mysql> select emp_no ,details->'$.address.pin' from emp_details;
++--------+--------------------------+
+| emp_no | details->'$.address.pin' |
++--------+--------------------------+
+|      1 | "56103"                  |
++--------+--------------------------+
+1 row in set (0.02 sec)
+
+mysql> select emp_no ,details->>'$.address.pin' from emp_details;
++--------+---------------------------+
+| emp_no | details->>'$.address.pin' |
++--------+---------------------------+
+|      1 | 56103                     |
++--------+---------------------------+
+1 row in set (0.02 sec)
+
+```
+
+4.事务回滚,设立保存点,比方说我想给两个用户转账,第一个用户转成功了,第二个失败了,但是又不是全部回滚,就可以在一个用户转账成功之后设置保存点,
+
+```sql
+mysql> begin;
+mysql> savepoint transfer_to_b;
+mysql> rollback to transfer_to_b;
+mysql> commit;
+```
+
+
+
+
+
+
+
+
+
+
+
 # Centos7Yum安装Mysql5.7
 
 **下载 mysql 源安装包**
