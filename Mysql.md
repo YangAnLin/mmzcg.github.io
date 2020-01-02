@@ -131,11 +131,44 @@ mysql> rollback to transfer_to_b;
 mysql> commit;
 ```
 
+4.mysql锁
+
+共享锁:当一个表被锁定为Read时,多个会话可以从表中读取数据而不需要获取锁,因此,多个会话在同一个表上获得锁,所以被称为共享锁,当READ锁被保持时,没有会话可以将数据写入表中,包括持有该锁的会话,如果有任何写入操作,该操作将处于等待装袋,知道READ锁被释放
+
+排他锁:当一个表被锁定为WRITE时,除了持有该锁的会话之外,其他任何会话都不能读取或向表中写入数据,除非现有锁被释放,否则其他任何会话都不能获得任何锁,这就是称为排他锁,如果有任何读取/写入尝试,改操作将处于等待状态,知道WRITE锁被释放
+
+InnoDB行级锁只是通过索引条件检索数据,才能使用行级锁,否则使用的是表锁
+
+5.隔离级别
 
 
 
+幻读:重点在于新增或者删除,(条数发生了变化),如果是新增的时候,查询条数查询不到,但是可以修改,然后又能查询出出来
+
+| 事务A                                               | 事务B                                                        |
+| --------------------------------------------------- | ------------------------------------------------------------ |
+| SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;    | SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;             |
+| BEGIN;                                              | BEGIN;                                                       |
+|                                                     | SELECT * FROM students WHERE id = 99;(没有查到数据)          |
+| INSERT INTO students (id, name) VALUES (99, 'Bob'); |                                                              |
+| COMMIT;                                             |                                                              |
+|                                                     | SELECT * FROM students WHERE id = 99;(没有查到数据)          |
+|                                                     | UPDATE students SET name = 'Alice' WHERE id = 99;(影响行数:1) |
+|                                                     | SELECT * FROM students WHERE id = 99;(可以查出数据)          |
+|                                                     | COMMIT;                                                      |
 
 
+
+6.设置隔离级别(8.0版本)
+
+```sql
+// 设置隔离级别,当前session
+mysql> set session transaction isolation level read uncommitted;
+// 设置隔离级别,全局
+mysql> SET global  transaction isolation level read uncommitted;
+// 查询隔离级别
+mysql> select @@global.transaction_isolation,@@transaction_isolation;
+```
 
 
 

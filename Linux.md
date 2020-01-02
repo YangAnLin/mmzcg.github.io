@@ -107,11 +107,13 @@ C:\Users\Owner\Desktop
 λ vi  C:\\Users\\Owner/.ssh/known_hosts
 ```
 
-### Centos 7 firewalld
-查看命令打印出来的前几行
+### 查看命令打印出来的前几行
+
 ```shell
 别的命令 | head -n 1000
 ```
+
+### Centos 7 firewalld
 
 ```shell
 启动：systemctl start firewalld
