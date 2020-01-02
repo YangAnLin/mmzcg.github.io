@@ -383,3 +383,138 @@ find / -name my.cnf | xargs rm -rf
 * 都是显示的是年月日时分秒
 * 前者就是年月日时分秒,后者在转成Date对象,会存在时区,所以要看业务选择
 
+
+
+# 存储引擎
+
+## 简化执行流程图
+
+![image-20200102140051735](img/image-20200102140051735.png)
+
+## 物理结构
+
+![image-20200102140254301](img/image-20200102140254301.png)
+
+![image-20200102140306099](img/image-20200102140306099.png)
+
+访问控制模块  判断有没有增删改查的权限
+
+用户模块,判断有没有访问表的权限
+
+### 日志文件(顺序IO)
+
+![image-20200102141258769](img/image-202001021421258769.png)
+
+因为日志文件是新增的,不会存在浪费空间
+
+随机IO,不会浪费空间,所以适合做增删改查
+
+
+
+### 错误日志
+
+
+
+### 二进制日志（bin log）
+```sql
+mysql> show variables like 'log_%';
++----------------------------------------+---------------------+
+| Variable_name                          | Value               |
++----------------------------------------+---------------------+
+| log_bin                                | OFF                 | (错误日志关闭了,默认是关闭)
+| log_bin_basename                       |                     |
+| log_bin_index                          |                     |
+| log_bin_trust_function_creators        | OFF                 |
+| log_bin_use_v1_row_events              | OFF                 |
+| log_error                              | /var/log/mysqld.log |
+| log_output                             | FILE                |
+| log_queries_not_using_indexes          | OFF                 |
+| log_slave_updates                      | OFF                 |
+| log_slow_admin_statements              | OFF                 |
+| log_slow_slave_statements              | OFF                 |
+| log_throttle_queries_not_using_indexes | 0                   |
+| log_warnings                           | 1                   |
++----------------------------------------+---------------------+
+13 rows in set (0.01 sec)
+```
+
+需要配置my.cnf开启
+```properties
+log-bin=mysql-bin
+```
+
+```sql
+mysql> show variables like 'log_%';
++----------------------------------------+--------------------------------+
+| Variable_name                          | Value                          |
++----------------------------------------+--------------------------------+
+| log_bin                                | ON                             |
+| log_bin_basename                       | /var/lib/mysql/mysql-bin       |
+| log_bin_index                          | /var/lib/mysql/mysql-bin.index |
+| log_bin_trust_function_creators        | OFF                            |
+| log_bin_use_v1_row_events              | OFF                            |
+| log_error                              | /var/log/mysqld.log            |
+| log_output                             | FILE                           |
+| log_queries_not_using_indexes          | OFF                            |
+| log_slave_updates                      | OFF                            |
+| log_slow_admin_statements              | OFF                            |
+| log_slow_slave_statements              | OFF                            |
+| log_throttle_queries_not_using_indexes | 0                              |
+| log_warnings                           | 1                              |
++----------------------------------------+--------------------------------+
+13 rows in set (0.00 sec)
+```
+
+其中mysql-bin是binlog日志文件的basename，binlog日志文件的完整名称： mysql-bin-000001.log
+
+binlog记录了数据库所有的ddl语句和dml语句，但不包括select语句内容，语句以事件的形式保存，描述了数据的
+变更顺序，binlog还包括了每个更新语句的执行时间信息。如果是DDL语句，则直接记录到binlog日志，而DML语
+句，必须通过事务提交才能记录到binlog日志中。
+
+binlog主要用于实现mysql主从复制、数据备份、数据恢复。
+
+### 通用查询日志（general query log）
+
+默认情况下通用查询日志是关闭的。
+
+由于通用查询日志会记录用户的所有操作，其中还包含增删查改等信息，在并发操作大的环境下会产生大量的信息从
+而导致不必要的磁盘IO，会影响mysql的性能的。**如若不是为了调试数据库的目的建议生产环境不要开启查询日志**。
+
+```sql
+mysql> show global variables like 'general_log';
+```
+
+开启方式：
+
+```properties
+#启动开关
+general_log={ON|OFF}
+#日志文件变量，而general_log_file如果没有指定，默认名是host_name.log
+general_log_file=/PATH/TO/file 
+#记录类型
+log_output={TABLE|FILE|NONE}
+注： 文件位置在mysql下，否则没有权限创建文件
+```
+
+
+
+
+
+慢查询日志（slow query log）
+默认是关闭的。
+需要通过以下设置进行开启：
+记录执行时间超过long_query_time秒的所有查询，便于收集查询时间比较长的SQL语句
+
+
+### 数据IO(随机IO)
+
+
+
+
+
+
+
+
+
+
+
