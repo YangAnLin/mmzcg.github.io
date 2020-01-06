@@ -1,6 +1,12 @@
 [toc]
 
-# Mysql基本命令
+# 1.mysql基本命令
+
+展示
+
+```sql
+可以使用`;`,`\g`,(水平展示)`\G`(垂直展示)
+```
 
 插入数据:
 
@@ -38,6 +44,220 @@ select count(a),c from test group by c
 select * from test1 a left join test2 b on a.id=b.id
 ```
 
+切换成指定库名
+
+```sql
+use company(库名);
+```
+
+查看现在正在连接的库名
+
+```sql
+select  database();
+```
+
+查看所有的,我有权访问的的库名
+
+```sql
+show databases;
+```
+
+设置隔离级别(8.0版本)
+
+```sql
+// 设置隔离级别,当前session
+mysql> set session transaction isolation level read uncommitted;
+// 设置隔离级别,全局
+mysql> SET global  transaction isolation level read uncommitted;
+// 查询隔离级别
+mysql> select @@global.transaction_isolation,@@transaction_isolation;
+```
+
+
+
+# 2.索引
+
+# 3.锁
+
+# 4.事务
+
+# 5.日志
+
+# 6.mysql安装
+## 1. 下载 mysql 源安装包
+
+```shell
+$ curl -LO http://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
+```
+
+## 2. 安装 mysql 源
+
+```shell
+$ sudo yum localinstall mysql57-community-release-el7-11.noarch.rpm
+```
+
+## 3. 检查 yum 源是否安装成功
+
+```shell
+$ sudo yum repolist enabled | grep "mysql.*-community.*"
+mysql-connectors-community           MySQL Connectors Community              21
+mysql-tools-community                MySQL Tools Community                   38
+mysql57-community                    MySQL 5.7 Community Server             130
+```
+
+## 4. 安装
+
+```shell
+$ sudo yum install mysql-community-server
+```
+
+## 5. 启动安装服务
+
+```shell
+$ sudo systemctl enable mysqld
+```
+
+##  6. 启动服务
+
+```shell
+$ sudo systemctl start mysqld
+```
+
+##  7. 查看服务状态
+
+```shell
+$ sudo systemctl status mysqld
+```
+
+## 8. 修改 root 默认密码
+
+MySQL 5.7 启动后，在 /var/log/mysqld.log 文件中给 root 生成了一个默认密码。通过下面的方式找到 root 默认密码，然后登录 mysql 进行修改：
+```shell
+$ grep 'temporary password' /var/log/mysqld.log
+[Note] A temporary password is generated for root@localhost: **********
+```
+
+## 8. 登录 MySQL 并修改密码
+
+```shell
+$ mysql -u root -p
+Enter password: 
+mysql> ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNewPass4!';
+```
+
+注意：MySQL 5.7 默认安装了密码安全检查插件（validate_password），默认密码检查策略要求密码必须包含：大小写字母、数字和特殊符号，并且长度不能少于 8 位。
+
+通过 MySQL 环境变量可以查看密码策略的相关信息：
+
+```shell
+mysql> SHOW VARIABLES LIKE 'validate_password%';
++--------------------------------------+--------+
+| Variable_name                        | Value  |
++--------------------------------------+--------+
+| validate_password_check_user_name    | OFF    |
+| validate_password_dictionary_file    |        |
+| validate_password_length             | 8      |
+| validate_password_mixed_case_count   | 1      |
+| validate_password_number_count       | 1      |
+| validate_password_policy             | MEDIUM |
+| validate_password_special_char_count | 1      |
++--------------------------------------+--------+
+7 rows in set (0.01 sec)
+```
+
+## 9. 指定密码校验策略
+
+```shell
+$ sudo vi /etc/my.cnf
+
+[mysqld]
+# 添加如下键值对, 0=LOW, 1=MEDIUM, 2=STRONG
+validate_password_policy=0
+```
+
+## 10. 禁用密码策略
+
+```shell
+$ sudo vi /etc/my.cnf
+	
+[mysqld]
+# 禁用密码校验策略
+validate_password = off
+```
+
+## 11. 重启 MySQL 服务，使配置生效
+
+```shell
+$ sudo systemctl restart mysqld
+```
+
+## 12. 添加远程登录用户
+
+MySQL 默认只允许 root 帐户在本地登录，如果要在其它机器上连接 MySQL，必须修改 root 允许远程连接，或者添加一个允许远程连接的帐户，为了安全起见，本例添加一个新的帐户：
+
+```shell
+mysql> GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' IDENTIFIED BY 'secret' WITH GRANT OPTION;
+```
+
+## 13. 配置默认编码为 utf8
+
+MySQL 默认为 latin1, 一般修改为 UTF-8
+
+```shell
+$ vi /etc/my.cnf
+[mysqld]
+# 在myslqd下添加如下键值对
+character_set_server=utf8
+init_connect='SET NAMES utf8'
+```
+
+## 14. 重启 MySQL 服务，使配置生效
+
+```shell
+$ sudo systemctl restart mysqld
+
+// 查看字符集
+mysql> SHOW VARIABLES LIKE 'character%';
++--------------------------+----------------------------+
+| Variable_name            | Value                      |
++--------------------------+----------------------------+
+| character_set_client     | utf8                       |
+| character_set_connection | utf8                       |
+| character_set_database   | utf8                       |
+| character_set_filesystem | binary                     |
+| character_set_results    | utf8                       |
+| character_set_server     | utf8                       |
+| character_set_system     | utf8                       |
+| character_sets_dir       | /usr/share/mysql/charsets/ |
++--------------------------+----------------------------+
+8 rows in set (0.00 sec
+```
+
+## 15. 开启防火区3306端口
+
+```shell
+$ sudo firewall-cmd --zone=public --add-port=3306/tcp --permanent
+$ sudo firewall-cmd --reload
+```
+
+## 16. 卸载旧版本
+
+```sh
+1.停掉服务 service mysqld stop
+2.确保所有msyql的服务进程杀死
+ps -ef | grep -i mysql 查出mysql的相关进程
+然后一个一个地 kill -9 进程号
+3.删除mysql的rpm包
+rpm -qa | grep -i mysql | xargs rpm -e --nodeps
+4.删除mysql遗留的文件
+find / -name mysql | xargs rm -rf
+find / -name my.cnf | xargs rm -rf
+```
+
+
+
+
+
 主键
 
 索引分单列索引和组合索引。
@@ -65,26 +285,6 @@ select * from test1 a left join test2 b on a.id=b.id
 锁表
 
 InnoDB行锁是通过给索引上的索引项加锁来实现的，InnoDB这种行锁实现特点意味着：只有通过索引条件检索数据，InnoDB才使用行级锁，否则，InnoDB将使用表锁！
-
-
-
-# mysql学习
-
-1.可以使用`;`,`\g`,(水平展示)`\G`(垂直展示)
-
-2.库命令
-
-切换成指定库名
-
-`use company(库名)`
-
-查看现在正在连接的库名
-
-`select  database();`
-
-查看所有的,我有权访问的的库名
-
-`show databases;`
 
 数据库被创建成数据目录中的一个目录
 
@@ -159,221 +359,23 @@ InnoDB行级锁只是通过索引条件检索数据,才能使用行级锁,否则
 
 
 
-6.设置隔离级别(8.0版本)
+6.
 
 ```sql
-// 设置隔离级别,当前session
-mysql> set session transaction isolation level read uncommitted;
-// 设置隔离级别,全局
-mysql> SET global  transaction isolation level read uncommitted;
-// 查询隔离级别
-mysql> select @@global.transaction_isolation,@@transaction_isolation;
+
 ```
 
 
 
 
 
-# Centos7Yum安装Mysql5.7
+# 7.centos7安装mysql5.7
 
-**下载 mysql 源安装包**
 
-```shell
-$ curl -LO http://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
-```
 
-**安装 mysql 源**
 
-```shell
-$ sudo yum localinstall mysql57-community-release-el7-11.noarch.rpm
-```
 
-**检查 yum 源是否安装成功**
-
-```shell
-$ sudo yum repolist enabled | grep "mysql.*-community.*"
-mysql-connectors-community           MySQL Connectors Community              21
-mysql-tools-community                MySQL Tools Community                   38
-mysql57-community                    MySQL 5.7 Community Server             130
-```
-
-**安装**
-
-```shell
-$ sudo yum install mysql-community-server
-```
-
-
-
-**启动安装服务**
-
-```shell
-$ sudo systemctl enable mysqld
-```
-
-
-
-**启动服务**
-
-```shell
-$ sudo systemctl start mysqld
-```
-
-
-
-**查看服务状态**
-
-```shell
-$ sudo systemctl status mysqld
-```
-
-
-
-**修改 root 默认密码**
-
-MySQL 5.7 启动后，在 /var/log/mysqld.log 文件中给 root 生成了一个默认密码。通过下面的方式找到 root 默认密码，然后登录 mysql 进行修改：
-
-```shell
-$ grep 'temporary password' /var/log/mysqld.log
-[Note] A temporary password is generated for root@localhost: **********
-```
-
-登录 MySQL 并修改密码
-
-```shell
-$ mysql -u root -p
-Enter password: 
-mysql> ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNewPass4!';
-```
-
-注意：MySQL 5.7 默认安装了密码安全检查插件（validate_password），默认密码检查策略要求密码必须包含：大小写字母、数字和特殊符号，并且长度不能少于 8 位。
-
-通过 MySQL 环境变量可以查看密码策略的相关信息：
-
-```shell
-mysql> SHOW VARIABLES LIKE 'validate_password%';
-+--------------------------------------+--------+
-| Variable_name                        | Value  |
-+--------------------------------------+--------+
-| validate_password_check_user_name    | OFF    |
-| validate_password_dictionary_file    |        |
-| validate_password_length             | 8      |
-| validate_password_mixed_case_count   | 1      |
-| validate_password_number_count       | 1      |
-| validate_password_policy             | MEDIUM |
-| validate_password_special_char_count | 1      |
-+--------------------------------------+--------+
-7 rows in set (0.01 sec)
-```
-
-
-
-**指定密码校验策略**
-
-```shell
-$ sudo vi /etc/my.cnf
-
-[mysqld]
-# 添加如下键值对, 0=LOW, 1=MEDIUM, 2=STRONG
-validate_password_policy=0
-```
-
-
-
-**禁用密码策略**
-
-```shell
-$ sudo vi /etc/my.cnf
-	
-[mysqld]
-# 禁用密码校验策略
-validate_password = off
-```
-
-
-
-**重启 MySQL 服务，使配置生效**
-
-```shell
-$ sudo systemctl restart mysqld
-```
-
-
-
-**添加远程登录用户**
-
-MySQL 默认只允许 root 帐户在本地登录，如果要在其它机器上连接 MySQL，必须修改 root 允许远程连接，或者添加一个允许远程连接的帐户，为了安全起见，本例添加一个新的帐户：
-
-```shell
-mysql> GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' IDENTIFIED BY 'secret' WITH GRANT OPTION;
-```
-
-
-
-**配置默认编码为 utf8**
-
-MySQL 默认为 latin1, 一般修改为 UTF-8
-
-```shell
-$ vi /etc/my.cnf
-[mysqld]
-# 在myslqd下添加如下键值对
-character_set_server=utf8
-init_connect='SET NAMES utf8'
-```
-
-
-
-**重启 MySQL 服务，使配置生效**
-
-```shell
-$ sudo systemctl restart mysqld
-
-// 查看字符集
-mysql> SHOW VARIABLES LIKE 'character%';
-+--------------------------+----------------------------+
-| Variable_name            | Value                      |
-+--------------------------+----------------------------+
-| character_set_client     | utf8                       |
-| character_set_connection | utf8                       |
-| character_set_database   | utf8                       |
-| character_set_filesystem | binary                     |
-| character_set_results    | utf8                       |
-| character_set_server     | utf8                       |
-| character_set_system     | utf8                       |
-| character_sets_dir       | /usr/share/mysql/charsets/ |
-+--------------------------+----------------------------+
-8 rows in set (0.00 sec
-```
-
-
-
-**开启端口**
-
-```shell
-$ sudo firewall-cmd --zone=public --add-port=3306/tcp --permanent
-$ sudo firewall-cmd --reload
-```
-
-
-
-**卸载旧版本**
-
-```sh
-1.停掉服务 service mysqld stop
-2.确保所有msyql的服务进程杀死
-ps -ef | grep -i mysql 查出mysql的相关进程
-然后一个一个地 kill -9 进程号
-3.删除mysql的rpm包
-rpm -qa | grep -i mysql | xargs rpm -e --nodeps
-4.删除mysql遗留的文件
-find / -name mysql | xargs rm -rf
-find / -name my.cnf | xargs rm -rf
-```
-
-
-
-# 使用Mysql的注意事项
+# 8.使用mysql的注意事项
 
 1.起mysql字段名字,避开类似关键字的名字,说不定可能就会报错了
 
