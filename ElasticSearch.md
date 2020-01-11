@@ -165,6 +165,25 @@ GET /_all/_settings
 PUT /lib2
 ```
 
+添加索引lib3,请别指定字段类型
+
+```json
+PUT /lib3
+{
+  "mappings": {
+    "user":{
+      "properties":{
+        "name":{"type":"text"},
+        "address":{"type":"text"},
+        "age":{"type":"text"},
+        "interests":{"type":"text"},
+        "birthday":{"type":"text"}
+      }
+    }
+  }
+}
+```
+
 添加数据
 
 ```json
@@ -193,6 +212,12 @@ POST /lib/user/
 
 ```shell
 GET /lib/user/1
+```
+
+查询索引下的所有文档
+
+```json
+GET /tt/ttt/_search
 ```
 
 查看文档中的指定字段
@@ -235,7 +260,79 @@ DELETE /lib/user/1
 DELETE /lib
 ```
 
+MuliGet批量查询
 
+```json
+GET /_mget
+{
+  "docs":[{
+      "_index":"lib",
+      "_type":"user",
+      "_id":1,
+    },
+    {
+      "_index":"lib",
+      "_type":"user",
+      "_id":2
+    },
+    {
+      "_index":"lib",
+      "_type":"user",
+      "_id":3
+    }
+    ]
+}
+```
+
+MuliGet批量查询,筛选字段
+
+```json
+GET /_mget
+{
+  "docs":[{
+      "_index":"lib",
+      "_type":"user",
+      "_id":1,
+      "_source":"interests"
+    },
+    {
+      "_index":"lib",
+      "_type":"user",
+      "_id":2,
+      "_source":["interests","age"]
+    }]
+}
+
+```
+
+MuliGet批量查询的是同一个文档时候,可以jianxie
+
+```json
+GET /lib/user/_mget
+{
+  "docs":[
+    {"_id":1},
+    {"_type":"user","_id":2}
+    ]
+}
+```
+
+Bulk批量插入
+
+```json
+POST /lib2/books/_bulk
+{"index":{"_id":1}}
+{"title":"java","price":55}
+{"index":{"_id":2}}
+{"title":"html5","price":55}
+{"index":{"_id":3}}
+{"title":"php","price":35}
+{"index":{"_id":4}}
+{"title":"python","price":50}
+```
+
+* index 创建新文档或者替换已有文档
+* create 文档不存在的时候创建
 
 # 6.先记着
 
