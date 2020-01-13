@@ -334,6 +334,68 @@ POST /lib2/books/_bulk
 * index 创建新文档或者替换已有文档
 * create 文档不存在的时候创建
 
+term和terms查询
+
+term 查询会去倒排索引中寻找确切的tem,它并不知道分词器的存在,这种查询使用keyword,numeric,date
+
+```json
+GET /lib3/user/_search/
+{
+  "query":{
+    "terms": {
+      "name": [
+        "zhou"
+      ]
+    }
+  }
+}
+
+GET /lib3/user/_search/
+{
+  "query":{
+    "term": {
+      "name": "zhaoming"
+    }
+  }
+}
+```
+
+form和size分页
+
+form是从0开始的,size是取多少个
+
+```json
+GET /lib3/user/_search/
+{
+  "version": true,  # 查询的时候如果需要返回version的话
+  "from": 0, 
+  "size": 1, 
+  "query":{
+    "terms": {
+      "name": [
+        "zhou",
+        "lisi"
+      ]
+    }
+  }
+}
+```
+
+match是知道分词器的存在的
+
+```json
+GET /lib3/user/_search
+{
+  "query":{
+    "match": {
+      "name": "lisi zhaoming"
+    }
+  }
+}
+```
+
+
+
 # 6.先记着
 
 用logstash去同步mysql的的增量,,需要两个字段,第一个是 id,主键,第二个是update_date,  用第二个字段去查询,默认用id去去重
