@@ -394,6 +394,307 @@ GET /lib3/user/_search
 }
 ```
 
+短语匹配(要完全匹配)
+
+```json
+GET /lib3/user/_search
+{
+  "query":{
+    "match_phrase": {
+      "interests": "lvyou, duanlian "
+    }
+  }
+}
+```
+
+前缀匹配
+
+```json
+GET /lib3/user/_search
+{
+  "query":{
+    "match_phrase_prefix": {
+      "name": "zhao"
+    }
+  }
+}
+```
+
+排序
+
+```json
+GET /lib3/user/_search
+{
+  "query":{
+    "match_all": {}
+  },
+  "sort": [
+    {
+      "age": {
+        "order": "desc"
+      }
+    }
+  ]
+}
+```
+
+范围,这里应该是相等的
+
+```json
+GET /lib3/user/_search
+{
+  "query": {
+    "range": {
+      "birthday": {
+        "gte": "1999-10-12",
+        "lte": "2290-01-01"
+      }
+    }
+  }
+}
+```
+
+```json
+GET /lib3/user/_search
+{
+  "query":{
+    "range": {
+      "age": {
+        "gte": 20,
+        "lte": 38,
+        "include_lower":false,   # true包含,false不包含,下限
+        "include_upper":true     # 上限
+      }
+    }
+  },
+  "sort": [
+    {
+      "age": {
+        "order": "asc"
+      }
+    }
+  ]
+}
+```
+
+通配符查询
+
+```json
+GET /lib3/user/_search
+{
+  "query": {
+    "wildcard": {
+      "name": {
+        "value": "li?i"
+      }
+    }
+  }
+}
+```
+
+模糊查询(zhaoming写反了,也可以查出来)
+
+```json
+GET /lib3/user/_search
+{
+  "query": {
+    "fuzzy": {
+      "name": {
+        "value": "zhaoimng"
+      }
+    }
+  }
+}
+```
+
+高亮搜索
+
+```json
+GET /lib3/user/_search
+{
+  "query": {
+    "fuzzy": {
+      "name": {
+        "value": "zhaoimng"
+      }
+    }
+  },
+  "highlight": {
+    "fields": {
+      "name":{}
+    }
+  }
+}
+```
+
+### Filter查询,是不计算相关性的,同事可以缓存,因此,filter速度要快于query
+
+### bool查询,是可以嵌套的
+
+```json
+GET /lib4/items/_search
+{
+  "query": {
+    "bool": {
+      "filter": {
+        "term":{"price": "40"} # 过滤价格是40的
+      }
+    }
+  }
+}
+
+GET /lib4/items/_search
+{
+  "query": {
+    "bool": {
+      "filter": {
+        "terms":{"price": [250,40]}
+      }
+    }
+  }
+}
+
+# 翻译过来:要是是价格是250,或者是itemID是:id100123,并且price不能是30
+GET /lib4/items/_search
+{
+  "query": {
+    "bool": {
+      "should": [
+        {"term":{"price":250}},
+        {"term":{"itemID":"id100123"}}
+      ],
+      "must_not": [
+        {"term":{"price":30}}
+      ]
+    }
+  }
+}
+```
+
+过滤,要想明白跟普通查询的过滤有什么不一样
+
+```json
+GET /lib4/items/_search
+{
+  "query": {
+    "bool": {
+      "filter": {
+        "range": {
+          "price": {
+            "gte": 40,
+            "lte": 250
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+获取非空的文档
+
+```json
+GET /lib4/items/_search
+{
+  "query": {
+   "bool": {
+     "filter": {
+       "exists": {
+         "field": "price"
+       }
+     }
+   }
+  }
+}
+```
+
+### 聚合查询,比方求最大值,最小值
+
+```json
+GET /lib4/items/_search
+{
+  "size":0, # 只显示总和
+  "aggs":{
+    "price_of_sum":{
+      "sum":{
+        "field":"price"
+      }
+    }
+  }
+}
+
+# 最大值
+GET /lib4/items/_search
+{
+  "aggs":{
+    "price_of_sum":{
+      "max":{
+        "field":"price"
+      }
+    }
+  }
+}
+
+# 最小值
+GET /lib4/items/_search
+{
+  "aggs":{
+    "price_of_sum":{  # price_of_sum这个名字随便起的
+      "min":{
+        "field":"price"
+      }
+    }
+  }
+}
+
+# 求基数
+GET /lib4/items/_search
+{
+  "aggs":{
+    "price_of_sum":{
+      "avg":{
+        "field":"price"
+      }
+    }
+  }
+}
+
+# 价格有不相同的数
+GET /lib4/items/_search
+{
+  "aggs":{
+    "price_of_sum":{
+      "cardinality":{
+        "field":"price"
+      }
+    }
+  }
+}
+
+# 分组
+GET /lib4/items/_search
+{
+  "size": 0, 
+  "aggs":{
+    "price_of_sum":{
+      "terms":{
+        "field":"price"
+      }
+    }
+  }
+}
+```
+
+
+
+
+
+### 复合查询
+
+
+
+
+
 
 
 # 6.先记着
