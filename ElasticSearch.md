@@ -381,6 +381,19 @@ GET /lib3/user/_search/
 }
 ```
 
+查询数量
+
+```json
+GET article/_count
+{
+  "query": {
+    "match": {
+      "title": "金融"
+    }
+  }
+}
+```
+
 match是知道分词器的存在的
 
 ```json
@@ -700,3 +713,96 @@ GET /lib4/items/_search
 # 6.先记着
 
 用logstash去同步mysql的的增量,,需要两个字段,第一个是 id,主键,第二个是update_date,  用第二个字段去查询,默认用id去去重
+
+
+
+group by 的时候报错了
+
+es进行聚合操作时提示Fielddata is disabled on text fields by default
+
+https://blog.csdn.net/u011403655/article/details/71107415/
+
+```json
+# 充值笔数
+GET /shouye/rukuan/_search
+{
+  "aggs": {
+    "my_cre": {
+      "terms": {
+        "field": "orderId"
+      }
+    }
+  }
+}
+
+GET /shouye/rukuan/_count
+
+GET /shouye/_mapping
+
+PUT shouye/_mapping/rukuan/
+{
+  "properties": {
+    "orderId": { 
+      "type":     "text",
+      "fielddata": true
+    }
+  }
+}
+```
+
+
+
+
+
+# 7.springboot整合Elasticsearch
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.lzkj</groupId>
+        <artifactId>item2</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <groupId>com.es</groupId>
+    <artifactId>es-server</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>es-server</name>
+    <description>Demo project for Spring Boot</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
+
+```
+
+```shell
+spring.elasticsearch.rest.uris=http://192.168.111.132:9200
+```
+
