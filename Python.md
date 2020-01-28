@@ -167,10 +167,270 @@ Out[15]: 3
 |:-------------:|:-------------:|
 | %c | 格式化字符(输出数值对应的ASCII码) |
 | **%s** |格式化字符串 |
-| **%d** | 格式化整数 |
+| **%d** | 格式化整数(%06d,不足的补0) |
 | %x | 格式化十六进制数（小写） |
 | %X | 格式化十六进制数（大写） |
 | %o | 格式化八进制数 |
-| **%f** | 格式化浮点数字，可以指定小数点精度 |
+| **%f** | 格式化浮点数字，可以指定小数点精度(%.2f) |
 | **%%** |输出%号|
+
+```python
+"""'
+我的名字是:anthony,请多多关照
+我的学号是:000001,请多多关照
+单价是:1.00,购买了2.00斤,总价是:2.000
+数据的比例是:20%
+"""
+print("我的名字是:%s,请多多关照" % "anthony")
+print("我的学号是:%06d,请多多关照" % 1)
+print("单价是:%.2f,购买了%.2f斤,总价是:%.3f" % (1,2,2))
+print("数据的比例是:%02d%%" % 20)
+```
+
+### 3.7.变量的命名
+
+1. 字母,和下划线和数字组成
+
+2. 不能以数字开始
+
+3. 不能与关键字重名
+
+4. 其余的符号都不行
+5. 区分大小写
+6. `=`左右都要添加空格
+7. 两个单词之间用`_`
+
+## 4.条件控制
+
+### 4.1.if
+
+```python
+age = 15
+if age >= 18:
+    print("成年了")
+
+    print("在一个缩进的,是一个代码块")
+elif age<=18:
+    print("没有成年")
+else:
+    print("输入错误")
+print("结束了")
+```
+
+### 4.2.逻辑运算符
+
+```python
+print(True and False)
+print(True or False)
+print(not True)
+```
+
+### 4.3.随机数
+
+```python
+In [17]: import random
+
+In [18]: random.randint(12,20)
+Out[18]: 12
+```
+
+### 4.3.while
+
+```python
+i = 0
+while i < 5:
+    print("....")
+    i += 1
+```
+
+### 4.4.continue 和 break 
+
+如果是嵌套循环,用这个两个关键字,也只是结束当前的循环,不会影响外层的循环
+
+## 5.函数
+
+### 5.1.函数注释
+
+```python
+# 这个也是可以注释的
+def test():
+    """这个也是可以注释的"""
+    print("打印乘法表")
+```
+
+### 5.2.函数调用
+
+index.py
+
+```python
+def chengfabiao():
+    print("打印乘法表")
+```
+
+test.py
+
+```python
+import index
+index.chengfabiao()
+```
+
+### 5.3.局部方法修改全局变量
+
+```python
+num =10
+
+def mo():
+    # 声明num是全部变量
+    global num
+    num=100
+    print(num)
+
+mo()
+print(num)
+```
+
+
+
+## 6.容器
+
+### 6.1.列表(Java的数据)
+
+虽然列表可以存储不同类型的数据,但是在开发中,存储的都是相同类型数据,因为要迭代
+
+### 6.2.元祖
+
+元祖用的是括号
+
+与列表比较,元祖元素不能修改
+
+```python
+In [34]: info_tuple = ("zhangsan",18,1.75)
+
+In [35]: type(info_tuple)
+Out[35]: tuple
+
+In [36]: info_tuple[0]
+Out[36]: 'zhangsan'
+```
+
+```python
+# 只有一个元素的时候,就不是tuple类型
+In [39]: int_tuple = (5)
+In [41]: type(int_tuple)
+Out[41]: int
+
+# 只想声明一个元素的元祖,可以加个逗号
+In [42]: ints_tuple = (5,)
+In [43]: type(ints_tuple)
+Out[43]: tuple
+```
+
+```python
+In [45]: names_tumple = ("a","b","c")
+
+In [46]: type(names_tumple)
+Out[46]: tuple
+
+In [47]: names_tumple[0]
+Out[47]: 'a'
+
+# a在元祖里有多少个
+In [50]: names_tumple.count("a")
+Out[50]: 1
+
+# 查看c的索引
+In [52]: names_tumple.index("c")
+Out[52]: 2
+```
+
+元祖和列表相互转换
+
+```python
+# 声明元祖
+In [54]: num_list = (1,2,3,4)
+
+In [55]: type(num_list)
+Out[55]: tuple
+
+# 元祖转成列表
+In [56]: my_list = list(num_list)
+
+# 修改值
+In [57]: my_list[0]=5
+
+# 再转成元祖
+In [58]: print(tuple(my_list))
+(5, 2, 3, 4)
+```
+
+### 6.2.字典(java的map)
+
+列表是有序的
+
+字典是无序的
+
+```python
+names={"name":"xiaoming",
+       "age":"23"}
+
+# 取值
+print(names["name"])
+
+# 新增和修改(key存在,就是新增,不存在就是修改)
+names["address"] ="feilvb"
+names["name"] ="anthony123"
+print(names)
+
+# 删除
+names.pop("name")
+print(names)
+
+# 统计键值对的数量
+print(len(names))
+
+# 合并键值对,如果合并的时候有相同的key,那个value就是更新值
+temp = {"a":"b"}
+names.update(temp)
+print(names)
+
+# 遍历字典
+for k in names:
+    print("遍历",k,names[k])
+
+# 清空字典
+names.clear()
+```
+
+### 6.3.字符串
+
+```python
+str ="hello hello"
+print("字符串长度",len(str))
+print("字符串出现次数",str.count("llo"))
+print("取索引",str.index("llo"))
+print("取值",str[1])
+# 换行符,都是空白字符
+print("判断空白字符",str.isspace())
+print("是否以指定字符串开始",str.startswith("hello"))
+print("是否以指定字符串结束",str.endswith("LLO"))
+print("查找指定字符串",str.find("llo"))
+print("替换字符串",str.replace("hello","HELLO"))
+print(str[0:9:2])
+```
+
+## 7.公共方法
+
+1. 内置函数:
+
+* len
+* max 只能比较字典的key
+* min 只能比较字典的key
+
+2.字符串,列表,元祖都可以切片
+
+3.查看地址值
+
+```python
+id(str)
+```
 
