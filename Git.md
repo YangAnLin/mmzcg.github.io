@@ -172,7 +172,27 @@ git clone git@github.com:jjz/pod-project.git --recursive
 git submodule add module1.git
 ```
 
-#### 要注意的
+### Rebase
+```shell
+# 进入编辑模式
+git rebase -i N
+```
+这些 commit 自旧到新由上而下排列
+
+在合并 commit 这个需求里，我们可以选择 pick(p) 最旧的 commit1，然后在后续的 commit_id 前添加 squash(s) 命令，将这些 commits 都合并到最旧的 commit1 上。
+
+保存 rebase 结果后，再编辑 commit 信息，使这次 rebase 失效，git 会将之前的这些 commit 都删除，并将其更改合并为一个新的 commit5
+
+提交的过程中,可能需要加 `-f` 强制推送
+
+操作过程中,遇到出错,使用
+```shell
+git rebase --abort/--continue/--edit-todo
+```
+
+
+### 要注意的
+
 * 进入到子项目的目录中,默认的分支并不是master,需要手动切换到master
 * 删除子模块的,没有这样的功能,需要手动修改`.gitmodules`文件
 * 添加了新的子模块之后,`.gitmodules`就会被创建或者是修改,这个文件需要推送到远程仓库
