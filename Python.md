@@ -289,6 +289,43 @@ mo()
 print(num)
 ```
 
+### 5.4.多个返回值
+
+```python
+def measure():
+    return (1,2)
+
+a,b = measure()
+print(a)
+print(b)
+```
+
+### 5.5.缺省函数
+
+```python
+def measure(age,gender=1):
+    print(age)
+    print(gender)
+
+def measure2(age,gender=1,name="anthony"):
+    print(age)
+    print(gender)
+    print(name)
+
+measure(1)
+measure(1,2)
+
+# 有多个缺省的时候,需要指定参数名称
+measure2(1,name="anthonyyang",gender=2)
+
+# 拆包
+measure(1,*(2,3,4),**{"name":"anthony"})
+```
+
+### 5.6.多值参数
+
+习惯存元祖的使用用`*args`,存字典的时候用`**args`
+
 
 
 ## 6.容器
