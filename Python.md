@@ -1,4 +1,4 @@
-# 基础
+# 1.基础
 
 ## 1.注释
 
@@ -470,4 +470,28 @@ print(str[0:9:2])
 ```python
 id(str)
 ```
+
+# 2.面向对象
+
+类名需要大驼峰命名法
+
+## 1.基本语法
+
+### 1.1.创建对象
+
+```python
+class Cat:
+
+    def eat(self):
+        print("小猫爱吃鱼")
+
+    def drink(self):
+        print("小猫爱喝水")
+
+tom = Cat()
+tom.eat()
+tom.drink()
+```
+
+### 1.2.初始化方法
 
