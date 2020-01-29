@@ -471,6 +471,10 @@ print(str[0:9:2])
 id(str)
 ```
 
+## 8.文件操作
+
+
+
 # 2.面向对象
 
 类名需要大驼峰命名法
@@ -729,6 +733,184 @@ Dog.static_method()
 ```
 
 ## 2.异常
+
+### 2.1.异常的完整语法
+
+```python
+try:
+    num = int(input("输入一个整数:"))
+    10 / num
+except ZeroDivisionError:
+    print("请不要输入数字0")
+except Exception as result:
+    print("未知错误 %s" % result)
+else:
+    print("没有异常才会执行的代码")
+finally:
+    print("无论是否有异常,都会异常的代码")
+```
+
+### 2.2.主动抛异常
+
+```python
+def check(name):
+    if(name == "anthony"):
+        return "是安东尼"
+    else:
+        # 主动抛异常
+        raise Exception("不是安东尼")
+
+# 捕获异常
+try:
+    print(check("anthony2"))
+except Exception as result:
+    print(result)
+```
+
+## 3.模块
+
+### 3.1.导入模块
+
+不推荐使用`,`
+
+```python
+import pkg1
+import pkg2
+```
+
+### 3.2.简单的使用
+
+my_module.py
+
+```python
+title = "模块2"
+
+def say_hello():
+    print("i am module : %s " % title)
+
+class Cat:
+    pass
+```
+
+index.py
+
+```python
+import my_module
+
+# use module method
+my_module.say_hello()
+
+dog = my_module.Cat()
+print(dog)
+```
+
+### 3.3.导入的时候也可以起别名
+
+别名要使用大驼峰命名
+
+```python
+import my_module as MyModule
+```
+
+### 3.4.from...import
+
+导入一部分工具
+
+使用的时候,就不需要写那个模块名了,直接使用
+
+```python
+from my_module import say_hello
+from my_module import Cat
+say_hello()
+cat = Cat()
+```
+
+### 3.5.作为模块的正常写法
+
+```python
+def main():
+    pass
+
+# 有了这个之后,被别的模块调用的时候
+if __name__ = "__main__"
+	main
+```
+
+### 3.6.包
+
+包 包含多个模块
+
+创建一个新的文件夹,在文件夹里面创建`__init__.py`
+
+```python
+# . 是相对路径名
+from . import send_message
+from . import receive_message
+```
+
+在文件夹里面创建两个模块
+
+receive_message.py
+
+```python
+def receive():
+    print("接受信息")
+```
+
+send_message.py
+
+```python
+def send(text):
+    print("发送 %s" % text)
+```
+
+调用模块
+
+```python
+import hm_message
+
+hm_message.send_message.send('hello')
+hm_message.receive_message.receive()
+```
+
+### 3.7.发布模块
+
+1.创建setup.py
+
+```python
+from distutils.core import setup
+
+setup(name="hm_message",
+      version="1.0",
+      description="push",
+      py_modules=["hm_message.send_message",
+                  "hm_message.receive_message"])
+```
+
+2.命令
+
+```python
+python setup.py build
+python setup.py sdist
+```
+
+### 3.8.安装模块
+
+```python
+tar xxx.tar.gz
+python setup.py install
+```
+
+### 3.9.卸载模块
+
+
+
+
+
+
+
+
+
 
 
 
