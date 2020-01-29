@@ -917,6 +917,39 @@ python -m pygame.example.aliens
 
 
 
+# 4.Mysql
+
+安装包
+
+```python
+pip3 install pymysql
+```
+
+```python
+from pymysql import connect
+
+con = connect(host="43.240.30.52",
+        port=3306,
+        user="yanganli_github",
+        password="yanganli_github",
+        database="yanganli_github",
+        charset="utf8")
+
+cursor = con.cursor()
+
+# 查询出条数
+print(cursor.execute("select * from post"))
+
+for one in cursor.fetchall():
+    print(one)
+
+cursor.close()
+con.close()
+
+```
+
+# 5.Request库
+
 
 
 
