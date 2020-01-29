@@ -905,6 +905,16 @@ python setup.py install
 
 
 
+# 3.打飞机实战
+## 2.1.安装pygame
+```python
+# 安装
+pip3 install pygame
+
+# 验证安装,有图面出来,就安装成功了
+python -m pygame.example.aliens
+```
+
 
 
 
