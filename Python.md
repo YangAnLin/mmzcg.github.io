@@ -493,5 +493,244 @@ tom.eat()
 tom.drink()
 ```
 
-### 1.2.初始化方法
+### 1.2.对象内置方法
+
+```python
+class Cat:
+
+    def __init__(self,name):
+        print("初始化方法")
+        self.name=name
+
+    def eat(self):
+        print(self.name+"爱吃鱼")
+
+    def drink(self):
+        print(self.name+"爱喝水")
+
+    def __del__(self):
+        print("销毁方法")
+
+    def __str__(self):
+        return "重写tostring"
+
+tom = Cat("Tom")
+tom.eat()
+tom.drink()
+print(tom)
+```
+
+### 1.3.私有属性和方法
+
+```python
+class Cat:
+
+    def __init__(self,name):
+        print("初始化方法")
+        self.name=name
+        self.__age =18
+
+    def eat(self):
+        print(self.name+"爱吃鱼")
+
+    def drink(self):
+        print(self.name+"爱喝水")
+
+    def say_age(self):
+        print("年纪是:"+str(self.__age))
+        # 调用私有方法
+        self.__private_method()
+
+    def __private_method(self):
+        print("私有方法")
+
+    def __del__(self):
+        print("销毁方法")
+
+    def __str__(self):
+        return "重写tostring"
+
+tom = Cat("Tom")
+tom.eat()
+tom.drink()
+tom.say_age()
+print(tom)
+# 这种访问方式,也是可以访问到私有的属性和方法的
+print(tom._Cat__age)
+```
+
+### 1.4.继承和重写
+
+```python
+class Animal:
+
+    def __init__(self):
+        self.name1 =100
+        self.__num2 = 200
+
+    def eat(self):
+        print("动物吃")
+
+    def run(self):
+        print("动物跑")
+
+    # 子类不允许调用私有方法
+    def __test(self):
+        print("父类可以访问到私有属性和私有方法")
+
+
+class Dog(Animal):
+
+    def run(self):
+        print("子类打印,开始调用父类方法")
+        super().run()
+        print("调用完父类方法")
+
+
+# animal = Animal()
+# animal.eat()
+# animal.run()
+
+dog = Dog()
+dog.eat()
+dog.run()
+
+```
+
+### 1.5.多继承
+
+尽量避免使用多继承,如果继承了两个累,两个类有相同的方法和属性,容易混淆
+
+```python
+class Animal:
+
+    def __init__(self):
+        self.name1 = 100
+        self.__num2 = 200
+
+    def eat(self):
+        print("动物吃")
+
+    def run(self):
+        print("动物跑")
+
+    # 子类不允许调用私有方法
+    def __test(self):
+        print("父类可以访问到私有属性和私有方法")
+
+
+class Zoo:
+
+    def eat(self):
+        print("动物园吃饭")
+
+
+class Dog(Animal, Zoo):
+
+    def run(self):
+        print("子类打印,开始调用父类方法")
+        super().run()
+        print("调用完父类方法")
+
+dog = Dog()
+dog.eat()
+```
+
+### 1.6.多态
+
+```python
+class Dog(object):
+
+    def __init__(self,name):
+        self.name = name
+
+    def game(self):
+        print("蹦蹦跳跳",self.name)
+
+
+class Xiaotianquan(Dog):
+
+    def game(self):
+        print("哮天犬",self.name)
+
+class Person(object):
+
+    def __init__(self,name):
+        self.name = name
+
+    def game_with_dog(self,dog):
+        print("人和狗玩耍",self.name,dog.name)
+
+        dog.game()
+
+# dog = Dog("旺财")
+dog = Xiaotianquan("旺财")
+
+xiaoming = Person("xiaoming")
+xiaoming.game_with_dog(dog)
+```
+
+
+
+### 1.7.类属性和类方法和静态方法
+
+类属性 相当于静态变量
+
+```python
+class Dog(object):
+    # 类属性
+    age = 12
+
+    def __init__(self,name):
+        self.name = name
+```
+
+类方法
+
+```python
+class Dog(object):
+
+    # 类属性
+    age = 12
+
+    # 类方法
+    @classmethod
+    def show_age(cls):
+        print("静态方法",cls.age)
+
+dog = Dog()
+Dog.show_age()
+```
+
+静态方法,在不用方法类属性和静态属性的时候,可以定义成静态方法
+
+```python
+class Dog(object):
+
+    # 类属性
+    age = 12
+
+    # 类方法
+    @classmethod
+    def show_age(cls):
+        print("类方法",cls.age)
+
+    @staticmethod
+    def static_method():
+        print("静态方法")
+
+
+dog = Dog()
+
+# 调用类方法
+Dog.show_age()
+# 调用静态方法
+Dog.static_method()
+```
+
+## 2.异常
+
+
+
+
 
