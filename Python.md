@@ -1,48 +1,941 @@
-# 1.项目实战(飞机大战)
+# 1.基础
 
-* `pygame` 就是一个 Python 模块，专为电子游戏设计
-* 官方网站：https://www.pygame.org/
+## 1.注释
 
-安装 pygame
-```bash
-$ sudo pip3 install pygame
+### 1.1.单行注释
+
+注释后面需要一个空格
+
+单行注释和代码之间至少要有两个空格
+
+```python
+# 这是注释
+print("hello")
+
+print("hello")  # 这是单行注释
 ```
-验证安装
+
+### 1.2.多行注释
+
+需要用一对三个引号(单引号,双引号都可以)
+
+```python
+"""
+这是多行注释
+"""
+---------------------
+'''
+这也是多行注释
+'''
+```
+
+## 2.算数运算符
+
+```python
+print("取整数:4",9//2)
+print("取余数:1",9%2)
+print("幂次方:81",9**2)
+```
+
+乘法的使用,用`*`可以拼接字符串
+```python
+In [1]: "A" * 30
+Out[1]: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+
+In [2]: 1 * 30
+Out[2]: 30
+```
+
+优先级
+
+`幂` >` *` > ` /`  > `%` > `//` >`+` > `-`
+
+## 3.变量
+
+### 3.1.变量的类型
+
+数字型
+
+* 整数 int(python2.x 分 `int` 和 `long`,Python3 只有`int`)
+* 浮点 float
+* 布尔
+* 复数(用于科学技术的)
+
+非数字型
+
+- String（字符串）
+- List（列表）
+- Tuple（元组）
+- Dictionary（字典）
+
+### 3.2.type函数
+
+```python
+In [6]: name = "lihao"
+
+In [7]: type(name)
+Out[7]: str
+```
+
+### 3.3.不同类型的变量之间的计算
+
+```python
+In [10]: age =13
+
+In [11]: sex =True
+
+In [12]: height = 180.1
+
+In [13]: age + sex
+Out[13]: 14
+
+In [14]: age + height
+Out[14]: 193.1
+
+In [15]: age + height
+Out[15]: 193.1
+
+# 字符串的拼接
+In [17]: first_name ="东尼"
+In [18]: last_name="安"
+In [19]: last_name+first_name
+Out[19]: '安东尼'
+
+# 字符串不能和数字相加
+In [20]: last_name + 10
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-20-45feb354f2d0> in <module>
+----> 1 last_name + 10
+
+TypeError: can only concatenate str (not "int") to str
+```
+
+### 3.4.变量的输入
+
+```python
+# 可以不需要参数
+In [24]: input()
+123
+
+# 加参数,做提示
+In [27]: pwd = input("输入数字")
+输入数字123
+
+In [28]: pwd + "456"
+Out[28]: '123456'
+```
+
+### 3.5.类型转换
+
+|         |            |
+| ------- | ---------- |
+| int()   | 转成int    |
+| str()   | 转成字符串 |
+| float() | 转成浮点   |
+
+```python
+# 数字和字符串相互转
+In [3]: age = 23
+
+In [4]: type(age)
+Out[4]: int
+
+In [5]: age_str = str(age)
+
+In [6]: type(age_str)
+Out[6]: str
+
+In [7]: type(int(age_str))
+Out[7]: int
+    
+# 浮点转数值,缺失精度
+In [9]: pi = "3.14"
+In [10]: pi
+Out[10]: '3.14'
+    
+In [13]: type(float(pi))
+Out[13]: float
+    
+In [15]: int(float(pi))
+Out[15]: 3
+```
+
+### 3.6.变量的格式化输出
+
+| 符号 |  描述 |
+|:-------------:|:-------------:|
+| %c | 格式化字符(输出数值对应的ASCII码) |
+| **%s** |格式化字符串 |
+| **%d** | 格式化整数(%06d,不足的补0) |
+| %x | 格式化十六进制数（小写） |
+| %X | 格式化十六进制数（大写） |
+| %o | 格式化八进制数 |
+| **%f** | 格式化浮点数字，可以指定小数点精度(%.2f) |
+| **%%** |输出%号|
+
+```python
+"""'
+我的名字是:anthony,请多多关照
+我的学号是:000001,请多多关照
+单价是:1.00,购买了2.00斤,总价是:2.000
+数据的比例是:20%
+"""
+print("我的名字是:%s,请多多关照" % "anthony")
+print("我的学号是:%06d,请多多关照" % 1)
+print("单价是:%.2f,购买了%.2f斤,总价是:%.3f" % (1,2,2))
+print("数据的比例是:%02d%%" % 20)
+```
+
+### 3.7.变量的命名
+
+1. 字母,和下划线和数字组成
+
+2. 不能以数字开始
+
+3. 不能与关键字重名
+
+4. 其余的符号都不行
+5. 区分大小写
+6. `=`左右都要添加空格
+7. 两个单词之间用`_`
+
+## 4.条件控制
+
+### 4.1.if
+
+```python
+age = 15
+if age >= 18:
+    print("成年了")
+
+    print("在一个缩进的,是一个代码块")
+elif age<=18:
+    print("没有成年")
+else:
+    print("输入错误")
+print("结束了")
+```
+
+### 4.2.逻辑运算符
+
+```python
+print(True and False)
+print(True or False)
+print(not True)
+```
+
+### 4.3.随机数
+
+```python
+In [17]: import random
+
+In [18]: random.randint(12,20)
+Out[18]: 12
+```
+
+### 4.3.while
+
+```python
+i = 0
+while i < 5:
+    print("....")
+    i += 1
+```
+
+### 4.4.continue 和 break 
+
+如果是嵌套循环,用这个两个关键字,也只是结束当前的循环,不会影响外层的循环
+
+## 5.函数
+
+### 5.1.函数注释
+
+```python
+# 这个也是可以注释的
+def test():
+    """这个也是可以注释的"""
+    print("打印乘法表")
+```
+
+### 5.2.函数调用
+
+index.py
+
+```python
+def chengfabiao():
+    print("打印乘法表")
+```
+
+test.py
+
+```python
+import index
+index.chengfabiao()
+```
+
+### 5.3.局部方法修改全局变量
+
+```python
+num =10
+
+def mo():
+    # 声明num是全部变量
+    global num
+    num=100
+    print(num)
+
+mo()
+print(num)
+```
+
+### 5.4.多个返回值
+
+```python
+def measure():
+    return (1,2)
+
+a,b = measure()
+print(a)
+print(b)
+```
+
+### 5.5.缺省函数
+
+```python
+def measure(age,gender=1):
+    print(age)
+    print(gender)
+
+def measure2(age,gender=1,name="anthony"):
+    print(age)
+    print(gender)
+    print(name)
+
+measure(1)
+measure(1,2)
+
+# 有多个缺省的时候,需要指定参数名称
+measure2(1,name="anthonyyang",gender=2)
+
+# 拆包
+measure(1,*(2,3,4),**{"name":"anthony"})
+```
+
+### 5.6.多值参数
+
+习惯存元祖的使用用`*args`,存字典的时候用`**args`
+
+
+
+## 6.容器
+
+### 6.1.列表(Java的数据)
+
+虽然列表可以存储不同类型的数据,但是在开发中,存储的都是相同类型数据,因为要迭代
+
+### 6.2.元祖
+
+元祖用的是括号
+
+与列表比较,元祖元素不能修改
+
+```python
+In [34]: info_tuple = ("zhangsan",18,1.75)
+
+In [35]: type(info_tuple)
+Out[35]: tuple
+
+In [36]: info_tuple[0]
+Out[36]: 'zhangsan'
+```
+
+```python
+# 只有一个元素的时候,就不是tuple类型
+In [39]: int_tuple = (5)
+In [41]: type(int_tuple)
+Out[41]: int
+
+# 只想声明一个元素的元祖,可以加个逗号
+In [42]: ints_tuple = (5,)
+In [43]: type(ints_tuple)
+Out[43]: tuple
+```
+
+```python
+In [45]: names_tumple = ("a","b","c")
+
+In [46]: type(names_tumple)
+Out[46]: tuple
+
+In [47]: names_tumple[0]
+Out[47]: 'a'
+
+# a在元祖里有多少个
+In [50]: names_tumple.count("a")
+Out[50]: 1
+
+# 查看c的索引
+In [52]: names_tumple.index("c")
+Out[52]: 2
+```
+
+元祖和列表相互转换
+
+```python
+# 声明元祖
+In [54]: num_list = (1,2,3,4)
+
+In [55]: type(num_list)
+Out[55]: tuple
+
+# 元祖转成列表
+In [56]: my_list = list(num_list)
+
+# 修改值
+In [57]: my_list[0]=5
+
+# 再转成元祖
+In [58]: print(tuple(my_list))
+(5, 2, 3, 4)
+```
+
+### 6.2.字典(java的map)
+
+列表是有序的
+
+字典是无序的
+
+```python
+names={"name":"xiaoming",
+       "age":"23"}
+
+# 取值
+print(names["name"])
+
+# 新增和修改(key存在,就是新增,不存在就是修改)
+names["address"] ="feilvb"
+names["name"] ="anthony123"
+print(names)
+
+# 删除
+names.pop("name")
+print(names)
+
+# 统计键值对的数量
+print(len(names))
+
+# 合并键值对,如果合并的时候有相同的key,那个value就是更新值
+temp = {"a":"b"}
+names.update(temp)
+print(names)
+
+# 遍历字典
+for k in names:
+    print("遍历",k,names[k])
+
+# 清空字典
+names.clear()
+```
+
+### 6.3.字符串
+
+```python
+str ="hello hello"
+print("字符串长度",len(str))
+print("字符串出现次数",str.count("llo"))
+print("取索引",str.index("llo"))
+print("取值",str[1])
+# 换行符,都是空白字符
+print("判断空白字符",str.isspace())
+print("是否以指定字符串开始",str.startswith("hello"))
+print("是否以指定字符串结束",str.endswith("LLO"))
+print("查找指定字符串",str.find("llo"))
+print("替换字符串",str.replace("hello","HELLO"))
+print(str[0:9:2])
+```
+
+## 7.公共方法
+
+1. 内置函数:
+
+* len
+* max 只能比较字典的key
+* min 只能比较字典的key
+
+2.字符串,列表,元祖都可以切片
+
+3.查看地址值
+
+```python
+id(str)
+```
+
+## 8.文件操作
+
+
+
+# 2.面向对象
+
+类名需要大驼峰命名法
+
+## 1.基本语法
+
+### 1.1.创建对象
+
+```python
+class Cat:
+
+    def eat(self):
+        print("小猫爱吃鱼")
+
+    def drink(self):
+        print("小猫爱喝水")
+
+tom = Cat()
+tom.eat()
+tom.drink()
+```
+
+### 1.2.对象内置方法
+
+```python
+class Cat:
+
+    def __init__(self,name):
+        print("初始化方法")
+        self.name=name
+
+    def eat(self):
+        print(self.name+"爱吃鱼")
+
+    def drink(self):
+        print(self.name+"爱喝水")
+
+    def __del__(self):
+        print("销毁方法")
+
+    def __str__(self):
+        return "重写tostring"
+
+tom = Cat("Tom")
+tom.eat()
+tom.drink()
+print(tom)
+```
+
+### 1.3.私有属性和方法
+
+```python
+class Cat:
+
+    def __init__(self,name):
+        print("初始化方法")
+        self.name=name
+        self.__age =18
+
+    def eat(self):
+        print(self.name+"爱吃鱼")
+
+    def drink(self):
+        print(self.name+"爱喝水")
+
+    def say_age(self):
+        print("年纪是:"+str(self.__age))
+        # 调用私有方法
+        self.__private_method()
+
+    def __private_method(self):
+        print("私有方法")
+
+    def __del__(self):
+        print("销毁方法")
+
+    def __str__(self):
+        return "重写tostring"
+
+tom = Cat("Tom")
+tom.eat()
+tom.drink()
+tom.say_age()
+print(tom)
+# 这种访问方式,也是可以访问到私有的属性和方法的
+print(tom._Cat__age)
+```
+
+### 1.4.继承和重写
+
+```python
+class Animal:
+
+    def __init__(self):
+        self.name1 =100
+        self.__num2 = 200
+
+    def eat(self):
+        print("动物吃")
+
+    def run(self):
+        print("动物跑")
+
+    # 子类不允许调用私有方法
+    def __test(self):
+        print("父类可以访问到私有属性和私有方法")
+
+
+class Dog(Animal):
+
+    def run(self):
+        print("子类打印,开始调用父类方法")
+        super().run()
+        print("调用完父类方法")
+
+
+# animal = Animal()
+# animal.eat()
+# animal.run()
+
+dog = Dog()
+dog.eat()
+dog.run()
+
+```
+
+### 1.5.多继承
+
+尽量避免使用多继承,如果继承了两个累,两个类有相同的方法和属性,容易混淆
+
+```python
+class Animal:
+
+    def __init__(self):
+        self.name1 = 100
+        self.__num2 = 200
+
+    def eat(self):
+        print("动物吃")
+
+    def run(self):
+        print("动物跑")
+
+    # 子类不允许调用私有方法
+    def __test(self):
+        print("父类可以访问到私有属性和私有方法")
+
+
+class Zoo:
+
+    def eat(self):
+        print("动物园吃饭")
+
+
+class Dog(Animal, Zoo):
+
+    def run(self):
+        print("子类打印,开始调用父类方法")
+        super().run()
+        print("调用完父类方法")
+
+dog = Dog()
+dog.eat()
+```
+
+### 1.6.多态
+
+```python
+class Dog(object):
+
+    def __init__(self,name):
+        self.name = name
+
+    def game(self):
+        print("蹦蹦跳跳",self.name)
+
+
+class Xiaotianquan(Dog):
+
+    def game(self):
+        print("哮天犬",self.name)
+
+class Person(object):
+
+    def __init__(self,name):
+        self.name = name
+
+    def game_with_dog(self,dog):
+        print("人和狗玩耍",self.name,dog.name)
+
+        dog.game()
+
+# dog = Dog("旺财")
+dog = Xiaotianquan("旺财")
+
+xiaoming = Person("xiaoming")
+xiaoming.game_with_dog(dog)
+```
+
+
+
+### 1.7.类属性和类方法和静态方法
+
+类属性 相当于静态变量
+
+```python
+class Dog(object):
+    # 类属性
+    age = 12
+
+    def __init__(self,name):
+        self.name = name
+```
+
+类方法
+
+```python
+class Dog(object):
+
+    # 类属性
+    age = 12
+
+    # 类方法
+    @classmethod
+    def show_age(cls):
+        print("静态方法",cls.age)
+
+dog = Dog()
+Dog.show_age()
+```
+
+静态方法,在不用方法类属性和静态属性的时候,可以定义成静态方法
+
+```python
+class Dog(object):
+
+    # 类属性
+    age = 12
+
+    # 类方法
+    @classmethod
+    def show_age(cls):
+        print("类方法",cls.age)
+
+    @staticmethod
+    def static_method():
+        print("静态方法")
+
+
+dog = Dog()
+
+# 调用类方法
+Dog.show_age()
+# 调用静态方法
+Dog.static_method()
+```
+
+## 2.异常
+
+### 2.1.异常的完整语法
+
+```python
+try:
+    num = int(input("输入一个整数:"))
+    10 / num
+except ZeroDivisionError:
+    print("请不要输入数字0")
+except Exception as result:
+    print("未知错误 %s" % result)
+else:
+    print("没有异常才会执行的代码")
+finally:
+    print("无论是否有异常,都会异常的代码")
+```
+
+### 2.2.主动抛异常
+
+```python
+def check(name):
+    if(name == "anthony"):
+        return "是安东尼"
+    else:
+        # 主动抛异常
+        raise Exception("不是安东尼")
+
+# 捕获异常
+try:
+    print(check("anthony2"))
+except Exception as result:
+    print(result)
+```
+
+## 3.模块
+
+### 3.1.导入模块
+
+不推荐使用`,`
+
+```python
+import pkg1
+import pkg2
+```
+
+### 3.2.简单的使用
+
+my_module.py
+
+```python
+title = "模块2"
+
+def say_hello():
+    print("i am module : %s " % title)
+
+class Cat:
+    pass
+```
+
+index.py
+
+```python
+import my_module
+
+# use module method
+my_module.say_hello()
+
+dog = my_module.Cat()
+print(dog)
+```
+
+### 3.3.导入的时候也可以起别名
+
+别名要使用大驼峰命名
+
+```python
+import my_module as MyModule
+```
+
+### 3.4.from...import
+
+导入一部分工具
+
+使用的时候,就不需要写那个模块名了,直接使用
+
+```python
+from my_module import say_hello
+from my_module import Cat
+say_hello()
+cat = Cat()
+```
+
+### 3.5.作为模块的正常写法
+
+```python
+def main():
+    pass
+
+# 有了这个之后,被别的模块调用的时候
+if __name__ = "__main__"
+	main
+```
+
+### 3.6.包
+
+包 包含多个模块
+
+创建一个新的文件夹,在文件夹里面创建`__init__.py`
+
+```python
+# . 是相对路径名
+from . import send_message
+from . import receive_message
+```
+
+在文件夹里面创建两个模块
+
+receive_message.py
+
+```python
+def receive():
+    print("接受信息")
+```
+
+send_message.py
+
+```python
+def send(text):
+    print("发送 %s" % text)
+```
+
+调用模块
+
+```python
+import hm_message
+
+hm_message.send_message.send('hello')
+hm_message.receive_message.receive()
+```
+
+### 3.7.发布模块
+
+1.创建setup.py
+
+```python
+from distutils.core import setup
+
+setup(name="hm_message",
+      version="1.0",
+      description="push",
+      py_modules=["hm_message.send_message",
+                  "hm_message.receive_message"])
+```
+
+2.命令
+
+```python
+python setup.py build
+python setup.py sdist
+```
+
+### 3.8.安装模块
+
+```python
+tar xxx.tar.gz
+python setup.py install
+```
+
+### 3.9.卸载模块
+
+
+
+# 3.打飞机实战
 ```bash
+# 安装pygame
+$ sudo pip3 install pygame
+
+# 验证安装
 $ python3 -m pygame.examples.aliens
 ```
 
-# 2.pygame 快速入门
-
-### 1.1 游戏的初始化和退出
-
-* 要使用 `pygame` 提供的所有功能之前，需要调用 `init` 方法
-* 在游戏结束前需要调用一下 `quit` 方法 
-
-| 方法            | 说明                                                         |
-| --------------- | ------------------------------------------------------------ |
-| `pygame.init()` | 导入并初始化所有 `pygame` 模块，使用其他模块之前，必须先调用 `init` 方法 |
-| `pygame.quit()` | 卸载所有 `pygame` 模块，在游戏结束之前调用！                 |
+## 1.pygame 快速入门
 
 ```python
 import pygame
 
+# 导入并初始化所有 `pygame` 模块，使用其他模块之前，必须先调用 `init` 方法
 pygame.init()
 
 # 游戏代码...
 
+# 卸载所有 `pygame` 模块，在游戏结束之前调用！
 pygame.quit()
-
 ```
 
-### 1.2 理解游戏中的坐标系
+### 1.理解游戏中的坐标系
 
 * **坐标系**
     * **原点** 在 **左上角** `(0, 0)`
     * **x 轴** 水平方向向 **右**，逐渐增加
     * **y 轴** 垂直方向向 **下**，逐渐增加
 
-![002_游戏窗口和坐标系-w300](media/15025046487919/002_%E6%B8%B8%E6%88%8F%E7%AA%97%E5%8F%A3%E5%92%8C%E5%9D%90%E6%A0%87%E7%B3%BB.png)
+![002_游戏窗口和坐标系-w300](img/15025046487919/002_%E6%B8%B8%E6%88%8F%E7%AA%97%E5%8F%A3%E5%92%8C%E5%9D%90%E6%A0%87%E7%B3%BB.png)
 
 * 在游戏中，**所有可见的元素** 都是以 **矩形区域** 来描述位置的
     * 要描述一个矩形区域有四个要素：`(x, y) (width, height)`
@@ -55,8 +948,6 @@ Rect(x, y, width, height) -> Rect
 
 * `pygame.Rect` 是一个比较特殊的类，内部只是封装了一些数字计算
 * 不执行 `pygame.init()` 方法同样能够直接使用
-
-#### 案例演练
 
 **需求**
 
@@ -73,7 +964,7 @@ print("英雄大小 %d %d" % (hero_rect.width, hero_rect.height))
 print("英雄大小 %d %d" % hero_rect.size)
 ```
 
-### 1.3 创建游戏主窗口
+### 2.创建游戏主窗口
 
 * `pygame` 专门提供了一个 **模块** `pygame.display` 用于创建、管理 **游戏窗口**
 
@@ -105,7 +996,7 @@ screen = pygame.display.set_mode((480, 700))
 
 
 
-## 02. 理解 **图像** 并实现图像绘制
+### 3.理解 **图像** 并实现图像绘制
 
 * 在游戏中，能够看到的 **游戏元素** 大多都是 **图像**
     * **图像文件** 初始是保存在磁盘上的，如果需要使用，**第一步** 就需要 **被加载到内存**
@@ -114,17 +1005,7 @@ screen = pygame.display.set_mode((480, 700))
     2. 使用 **游戏屏幕** 对象，调用 `blit` 方法 将图像绘制到指定位置
     3. 调用 `pygame.display.update()` 方法更新整个屏幕的显示
 
-![004_加载和显示图像-w841](media/15025046487919/004_%E5%8A%A0%E8%BD%BD%E5%92%8C%E6%98%BE%E7%A4%BA%E5%9B%BE%E5%83%8F.png)
-
 > 提示：要想在屏幕上看到绘制的结果，就一定要调用 `pygame.display.update()` 方法
-
-### 代码演练 I —— 绘制背景图像
-
-**需求**
-
-1. 加载 `background.png` 创建背景
-2. 将 **背景** 绘制在屏幕的 `(0, 0)` 位置
-3. 调用屏幕更新显示背景图像
 
 ```python
 # 绘制背景图像
@@ -138,16 +1019,8 @@ screen.blit(bg, (0, 0))
 pygame.display.update()
 ```
 
-### 代码演练 II —— 绘制英雄图像
-
-**需求**
-
-1. 加载 `me1.png` 创建英雄飞机
-2. 将 **英雄飞机** 绘制在屏幕的 `(200, 500)` 位置
-3. 调用屏幕更新显示飞机图像
-
 ```python
-# 1> 加载图像
+# 1> 加载英雄图像
 hero = pygame.image.load("./images/me1.png")
 
 # 2> 绘制在屏幕
@@ -157,24 +1030,7 @@ screen.blit(hero, (200, 500))
 pygame.display.update()
 ```
 
-**透明图像** 
-
-* `png` 格式的图像是支持 **透明** 的
-* 在绘制图像时，**透明区域** 不会显示任何内容
-* 但是如果**下方已经有内容**，会 **透过** **透明区域** 显示出来
-
-### 理解 `update()` 方法的作用
-
-> 可以在 `screen` 对象完成 **所有** `blit` 方法之后，**统一调用一次** `display.update` 方法，同样可以在屏幕上 **看到最终的绘制结果**
-
-* 使用 `display.set_mode()` 创建的 `screen` **对象** 是一个 **内存中的屏幕数据对象**
-    * 可以理解成是 **油画** 的 **画布**
-* `screen.blit` 方法可以在 **画布** 上绘制很多 **图像**
-    * 例如：**英雄**、**敌机**、**子弹**...
-    * **这些图像** 有可能 会彼此 **重叠或者覆盖**
-* `display.update()` 会将 **画布** 的 **最终结果** 绘制在屏幕上，这样可以 **提高屏幕绘制效率**，**增加游戏的流畅度**
-
-**案例调整**
+### 4.理解 `update()` 方法的作用
 
 ```python
 # 绘制背景图像
@@ -195,29 +1051,15 @@ screen.blit(hero, (200, 500))
 pygame.display.update()
 ```
 
-## 03. 理解 **游戏循环** 和 **游戏时钟**
+## 2. 理解 **游戏循环** 和 **游戏时钟**
 
-> 现在 **英雄飞机** 已经被绘制到屏幕上了，**怎么能够让飞机移动呢** ？
+### 1. **游戏循环**
 
-### 3.1 游戏中的动画实现原理
+#### 1.游戏的两个组成部分
 
-* 跟 **电影** 的原理类似，游戏中的动画效果，本质上是 **快速** 的在屏幕上绘制 **图像**
-    * 电影是将多张 **静止的电影胶片** **连续、快速**的播放，产生连贯的视觉效果！
-* 一般在电脑上 **每秒绘制 60 次**，就能够达到非常 **连续** **高品质** 的动画效果
-    * 每次绘制的结果被称为 **帧 Frame**
+![005_游戏主模块-w600](img/15025046487919/005_%E6%B8%B8%E6%88%8F%E4%B8%BB%E6%A8%A1%E5%9D%97.png)
 
-![手翻书动画](media/15025046487919/%E6%89%8B%E7%BF%BB%E4%B9%A6%E5%8A%A8%E7%94%BB.gif)
-![猫惊讶](media/15025046487919/%E7%8C%AB%E6%83%8A%E8%AE%B6.gif)
-
-### 3.2 **游戏循环**
-
-#### 游戏的两个组成部分
-
-> **游戏循环的开始** 就意味着 **游戏的正式开始**
-
-![005_游戏主模块-w600](media/15025046487919/005_%E6%B8%B8%E6%88%8F%E4%B8%BB%E6%A8%A1%E5%9D%97.png)
-
-#### 游戏循环的作用
+#### 2.游戏循环的作用
 
 1. 保证游戏 **不会直接退出**
 2. **变化图像位置** —— 动画效果
@@ -225,12 +1067,9 @@ pygame.display.update()
     * 调用 `pygame.display.update()` 更新屏幕显示
 3. **检测用户交互** —— 按键、鼠标等...
 
-### 3.3 游戏时钟
+### 2. 游戏时钟
 
 * `pygame` 专门提供了一个类 `pygame.time.Clock` 可以非常方便的设置屏幕绘制速度 —— **刷新帧率**
-* 要使用 **时钟对象** 需要两步：
-    * 1）在 **游戏初始化** 创建一个 **时钟对象**
-    * 2）在 **游戏循环** 中让时钟对象调用 `tick(帧率)` 方法 
 * `tick` 方法会根据 **上次被调用的时间**，自动设置 **游戏循环** 中的延时
 
 ```python
@@ -248,18 +1087,7 @@ while True:
     i += 1
 ```
 
-### 3.4 英雄的简单动画实现
-
-**需求**
-
-1. 在 **游戏初始化** 定义一个 `pygame.Rect` 的变量记录英雄的初始位置
-2. 在 **游戏循环** 中每次让 **英雄** 的 `y - 1` —— 向上移动 
-3. `y <= 0` 将英雄移动到屏幕的底部
-
-> 提示：
->
-> * 每一次调用 `update()` 方法之前，需要把 **所有的游戏图像都重新绘制一遍**
-> * 而且应该 **最先** 重新绘制 **背景图像**
+### 3.英雄的简单动画实现
 
 ```python
 # 4. 定义英雄的初始位置
@@ -305,18 +1133,7 @@ if hero_rect.bottom <= 0:
     hero_rect.y = 700
 ```
 
-### 3.5 在游戏循环中 监听 事件 
-
-#### 事件 `event`
-
-* 就是游戏启动后，**用户针对游戏所做的操作**
-* 例如：**点击关闭按钮**，**点击鼠标**，**按下键盘**...
-
-#### 监听
-
-* 在 **游戏循环** 中，判断用户 **具体的操作**
-
-> 只有 **捕获** 到用户具体的操作，才能有针对性的做出响应
+### 4. 在游戏循环中 监听 事件 
 
 #### 代码实现
 
@@ -344,16 +1161,16 @@ while True:
             exit()
 ```
 
-## 04. 理解 **精灵** 和 **精灵组**
+## 3. 理解 **精灵** 和 **精灵组**
 
-### 4.1 精灵 和 精灵组
+### 1 精灵 和 精灵组
 
 * 在刚刚完成的案例中，**图像加载**、**位置变化**、**绘制图像** 都需要程序员编写代码分别处理
 * 为了简化开发步骤，`pygame` 提供了两个类
     * `pygame.sprite.Sprite` —— 存储 **图像数据 image** 和 **位置 rect** 的 **对象**
     * `pygame.sprite.Group`
 
-![006_pygame.Sprite](media/15025046487919/006_pygame.Sprite.png)
+![006_pygame.Sprite](img/15025046487919/006_pygame.Sprite.png)
 
 #### 精灵
 
@@ -393,7 +1210,7 @@ Group(*sprites) -> Group
 * 在重写 **初始化方法** 时，**一定要** 先 `super()` 一下父类的 `__init__` 方法
 * **保证父类中实现的 `__init__` 代码能够被正常执行**
 
-![007_GameSprite-w398](media/15025046487919/007_GameSprite.png)
+![007_GameSprite-w398](img/15025046487919/007_GameSprite.png)
 
 **属性**
 
@@ -491,7 +1308,7 @@ pygame.display.update()
 
 
 
-# 3.游戏框架搭建
+## 3.游戏框架搭建
 
 **目标** —— 使用 **面相对象** 设计 **飞机大战游戏类**
 
@@ -508,7 +1325,7 @@ pygame.display.update()
     * 游戏循环
 * 根据明确的职责，设计 `PlaneGame` 类如下：
 
-![009_游戏主程序-w600](media/15025159832322/009_%E6%B8%B8%E6%88%8F%E4%B8%BB%E7%A8%8B%E5%BA%8F.png)
+![009_游戏主程序-w600](img/15025159832322/009_%E6%B8%B8%E6%88%8F%E4%B8%BB%E7%A8%8B%E5%BA%8F.png)
 
 > **提示** 根据 **职责** 封装私有方法，可以避免某一个方法的代码写得太过冗长
 >
@@ -533,7 +1350,7 @@ pygame.display.update()
 
 ### 2.1 明确文件职责
 
-![011_程序文件职责-w479](media/15025159832322/011_%E7%A8%8B%E5%BA%8F%E6%96%87%E4%BB%B6%E8%81%8C%E8%B4%A3.png)
+![011_程序文件职责-w479](img/15025159832322/011_%E7%A8%8B%E5%BA%8F%E6%96%87%E4%BB%B6%E8%81%8C%E8%B4%A3.png)
 
 * `plane_main` 
     1. 封装 **主游戏类**
@@ -687,7 +1504,7 @@ def __game_over():
 
 ### 3.1 确定精灵组
 
-![010_精灵组确定-w600](media/15025159832322/010_%E7%B2%BE%E7%81%B5%E7%BB%84%E7%A1%AE%E5%AE%9A.png)
+![010_精灵组确定-w600](img/15025159832322/010_%E7%B2%BE%E7%81%B5%E7%BB%84%E7%A1%AE%E5%AE%9A.png)
 
 ### 3.2 代码实现
 
@@ -720,7 +1537,7 @@ def __update_sprites(self):
 
 
 
-# 4.游戏背景
+## 4.游戏背景
 
 ## 目标
 
@@ -738,7 +1555,7 @@ def __update_sprites(self):
 
 ### 1.1 实现思路分析
 
- ![013_背景图片交替滚动-w640](media/15025262948537/013_%E8%83%8C%E6%99%AF%E5%9B%BE%E7%89%87%E4%BA%A4%E6%9B%BF%E6%BB%9A%E5%8A%A8.png)
+ ![013_背景图片交替滚动-w640](img/15025262948537/013_%E8%83%8C%E6%99%AF%E5%9B%BE%E7%89%87%E4%BA%A4%E6%9B%BF%E6%BB%9A%E5%8A%A8.png)
 
 **解决办法**
 
@@ -753,7 +1570,7 @@ def __update_sprites(self):
 
 ### 1.2 设计背景类
 
-![012_派生Background子类-w398](media/15025262948537/012_%E6%B4%BE%E7%94%9FBackground%E5%AD%90%E7%B1%BB.png)
+![012_派生Background子类-w398](img/15025262948537/012_%E6%B4%BE%E7%94%9FBackground%E5%AD%90%E7%B1%BB.png)
 
 * **初始化方法**
     * 直接指定 **背景图片**
@@ -830,7 +1647,7 @@ def __update_sprites(self):
 * 根据面向对象设计原则，应该将对象的职责，封装到类的代码内部
 * 尽量简化程序调用一方的代码调用
 
-![012_派生Background子类-w398](media/15025262948537/012_%E6%B4%BE%E7%94%9FBackground%E5%AD%90%E7%B1%BB.png)
+![012_派生Background子类-w398](img/15025262948537/012_%E6%B4%BE%E7%94%9FBackground%E5%AD%90%E7%B1%BB.png)
 
 * **初始化方法**
     * 直接指定 **背景图片**
@@ -863,7 +1680,7 @@ self.back_group = pygame.sprite.Group(bg1, bg2)
 
 
 
-# 5.敌机出场
+## 5.敌机出场
 
 ## 目标
 
@@ -946,7 +1763,7 @@ def __event_handler(self):
 3. 每架敌机出现的 **水平位置** 也不尽相同
 4. 当敌机 **从屏幕下方飞出**，不会再飞回到屏幕中
 
-![014_派生Enemy子类-w657](media/15025309517247/014_%E6%B4%BE%E7%94%9FEnemy%E5%AD%90%E7%B1%BB.png)
+![014_派生Enemy子类-w657](img/15025309517247/014_%E6%B4%BE%E7%94%9FEnemy%E5%AD%90%E7%B1%BB.png)
 
 * **初始化方法**
     * 指定 **敌机图片**
@@ -994,7 +1811,7 @@ class Enemy(GameSprite):
     * 调用 **精灵组** 的 `add` 方法可以 **向精灵组添加精灵**
 3. 在 `__update_sprites`，让 **敌机精灵组** 调用 `update` 和 `draw` 方法
 
-![006_pygame.SpriteII](media/15025309517247/006_pygame.SpriteII.png)
+![006_pygame.SpriteII](img/15025309517247/006_pygame.SpriteII.png)
 
 **演练代码**
 
@@ -1039,7 +1856,7 @@ import random
 
 #### 2) 随机位置
 
-![015_飞机初始位置-w360](media/15025309517247/015_%E9%A3%9E%E6%9C%BA%E5%88%9D%E5%A7%8B%E4%BD%8D%E7%BD%AE.png)
+![015_飞机初始位置-w360](img/15025309517247/015_%E9%A3%9E%E6%9C%BA%E5%88%9D%E5%A7%8B%E4%BD%8D%E7%BD%AE.png)
 
 使用 `pygame.Rect` 提供的 `bottom` 属性，在指定敌机初始位置时，会比较方便
 
@@ -1082,7 +1899,7 @@ def __del__(self):
 
 #### 代码实现
 
-![006_pygame.SpriteII](media/15025309517247/006_pygame.SpriteII.png)
+![006_pygame.SpriteII](img/15025309517247/006_pygame.SpriteII.png)
 
 * 判断敌机是否飞出屏幕，如果是，调用 `kill()` 方法从所有组中删除
 
@@ -1098,7 +1915,7 @@ def update(self):
 
 
 
-# 6.英雄登场
+## 6.英雄登场
 
 ## 目标
 
@@ -1114,14 +1931,14 @@ def update(self):
 2. **英雄** 每隔 `0.5` 秒发射一次子弹，每次 **连发三枚子弹**
 3. **英雄** 默认不会移动，需要通过 **左/右** 方向键，控制 **英雄** 在水平方向移动
 
-![017_英雄位置-w480](media/15025349250200/017_%E8%8B%B1%E9%9B%84%E4%BD%8D%E7%BD%AE.png)
+![017_英雄位置-w480](img/15025349250200/017_%E8%8B%B1%E9%9B%84%E4%BD%8D%E7%BD%AE.png)
 
 ### 子弹需求
 
 1. **子弹** 从 **英雄** 的正上方发射 **沿直线** 向 **上方** 飞行
 2. **飞出屏幕后**，需要从 **精灵组** 中删除
 
-![016_派生英雄和子弹子类](media/15025349250200/016_%E6%B4%BE%E7%94%9F%E8%8B%B1%E9%9B%84%E5%92%8C%E5%AD%90%E5%BC%B9%E5%AD%90%E7%B1%BB.png)
+![016_派生英雄和子弹子类](img/15025349250200/016_%E6%B4%BE%E7%94%9F%E8%8B%B1%E9%9B%84%E5%92%8C%E5%AD%90%E5%BC%B9%E5%AD%90%E7%B1%BB.png)
 
 ### Hero —— 英雄
 
@@ -1151,13 +1968,13 @@ def update(self):
 * 重写 **初始化方法**，直接指定 **图片名称**，并且将初始速度设置为 `0`
 * 设置 **英雄的初始位置**
 
-![003_pygame.Rect-w382](media/15025349250200/003_pygame.Rect.png)
+![003_pygame.Rect-w382](img/15025349250200/003_pygame.Rect.png)
 
 * `centerx = x + 0.5 * width`
 * `centery = y + 0.5 * height`
 * `bottom = y + height`
 
-![017_英雄位置-w480](media/15025349250200/017_%E8%8B%B1%E9%9B%84%E4%BD%8D%E7%BD%AE.png)
+![017_英雄位置-w480](img/15025349250200/017_%E8%8B%B1%E9%9B%84%E4%BD%8D%E7%BD%AE.png)
 
 ```python
 class Hero(GameSprite):
@@ -1270,11 +2087,11 @@ else:
 
 * 在 `Hero` 类的 `update()` 方法判断 **英雄** 是否超出 **屏幕边界**
 
-![003_pygame.Rect-w382](media/15025349250200/003_pygame.Rect.png)
+![003_pygame.Rect-w382](img/15025349250200/003_pygame.Rect.png)
 
 * `right = x + width` 利用 `right` 属性可以非常容易的针对右侧设置精灵位置
 
-![017_英雄位置II-w408](media/15025349250200/017_%E8%8B%B1%E9%9B%84%E4%BD%8D%E7%BD%AEII.png)
+![017_英雄位置II-w408](img/15025349250200/017_%E8%8B%B1%E9%9B%84%E4%BD%8D%E7%BD%AEII.png)
 
 ```python
 def update(self):
@@ -1411,7 +2228,7 @@ def fire(self):
 
 #### 一次发射三枚子弹
 
-![017_英雄位置III-w559](media/15025349250200/017_%E8%8B%B1%E9%9B%84%E4%BD%8D%E7%BD%AEIII.png)
+![017_英雄位置III-w559](img/15025349250200/017_%E8%8B%B1%E9%9B%84%E4%BD%8D%E7%BD%AEIII.png)
 
 * 修改 `fire()` 方法，一次发射三枚子弹
 
@@ -1430,7 +2247,7 @@ def fire(self):
         self.bullets.add(bullet)
 ```
 
-# 7.碰撞检测
+## 7.碰撞检测
 
 ## 目标
 
@@ -1486,3 +2303,48 @@ def __check_collide(self):
         # 结束游戏
         PlaneGame.__game_over()
 ```
+
+
+
+# 4.Mysql
+
+安装包
+
+```python
+pip3 install pymysql
+```
+
+```python
+from pymysql import connect
+
+con = connect(host="43.240.30.52",
+        port=3306,
+        user="yanganli_github",
+        password="yanganli_github",
+        database="yanganli_github",
+        charset="utf8")
+
+cursor = con.cursor()
+
+# 查询出条数
+print(cursor.execute("select * from post"))
+
+for one in cursor.fetchall():
+    print(one)
+
+cursor.close()
+con.close()
+
+```
+
+# 5.Request库
+
+
+
+
+
+
+
+
+
+
