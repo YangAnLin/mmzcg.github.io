@@ -159,6 +159,12 @@ GET /lib/_settings
 GET /_all/_settings
 ```
 
+查询映射
+
+```shell
+GET /lib2/_mapping
+```
+
 添加索引`lib2`
 
 ```shell
