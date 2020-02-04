@@ -146,32 +146,32 @@ output {
 
 # 5.API使用
 
-查询`lib`索引的两种用法
+## 1.查询`lib`索引的两种用法
 
 ```shell
 GET lib
 GET /lib/_settings
 ```
 
-查询所有索引
+## 2.查询所有索引
 
 ```shell
 GET /_all/_settings
 ```
 
-查询映射
+## 3.查询映射
 
 ```shell
 GET /lib2/_mapping
 ```
 
-添加索引`lib2`
+## 4.添加索引`lib2`
 
 ```shell
 PUT /lib2
 ```
 
-添加索引lib3,请别指定字段类型
+## 5.添加索引lib3,请别指定字段类型
 
 ```json
 PUT /lib3
@@ -190,7 +190,7 @@ PUT /lib3
 }
 ```
 
-添加数据
+## 6.添加数据
 
 ```json
 # 指定ID用PUT
@@ -214,25 +214,25 @@ POST /lib/user/
 }
 ```
 
-查询文档
+## 7.查询文档
 
 ```shell
 GET /lib/user/1
 ```
 
-查询索引下的所有文档
+## 8.查询索引下的所有文档
 
 ```json
 GET /tt/ttt/_search
 ```
 
-查看文档中的指定字段
+## 9.查看文档中的指定字段
 
 ```shell
 GET /lib/user/1?_source=age,about
 ```
 
-覆盖方式更新文档
+## 10.覆盖方式更新文档
 
 ```json
 PUT /lib/user/1
@@ -245,7 +245,7 @@ PUT /lib/user/1
 }
 ```
 
-只是更新文档
+## 11.只是更新文档
 
 ```json
 POST /lib/user/1/_update
@@ -256,7 +256,7 @@ POST /lib/user/1/_update
 }
 ```
 
-删除
+## 12.删除
 
 ```json
 # 删除文档
@@ -266,7 +266,7 @@ DELETE /lib/user/1
 DELETE /lib
 ```
 
-MuliGet批量查询
+## 13.MuliGet批量查询
 
 ```json
 GET /_mget
@@ -290,7 +290,7 @@ GET /_mget
 }
 ```
 
-MuliGet批量查询,筛选字段
+## 14.MuliGet批量查询,筛选字段
 
 ```json
 GET /_mget
@@ -311,7 +311,7 @@ GET /_mget
 
 ```
 
-MuliGet批量查询的是同一个文档时候,可以jianxie
+## 15.MuliGet批量查询的是同一个文档时候,可以jianxie
 
 ```json
 GET /lib/user/_mget
@@ -323,7 +323,7 @@ GET /lib/user/_mget
 }
 ```
 
-Bulk批量插入
+## 16.Bulk批量插入
 
 ```json
 POST /lib2/books/_bulk
