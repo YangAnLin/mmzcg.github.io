@@ -2193,7 +2193,68 @@ def __check_collide(self):
 
 
 
-# 4.Mysql
+# 4.网络编程
+
+## 1.udp
+
+发送端
+
+```python
+import socket
+
+def main():
+    # 创建一个udp套接字
+    udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    while True:
+
+        send_data = str = input("输入要发送的数据")
+
+        if send_data == "exit":
+            break
+
+        # udp_socket.sendto(b"这是消息",("192.169.0.1",8000))
+        udp_socket.sendto(send_data.encode("utf-8"),("127.0.0.1",7788))
+
+    # 关闭套接字
+    udp_socket.close()
+
+if __name__ == '__main__':
+    main()
+```
+
+接受者
+
+```python
+import socket
+
+def main():
+    # 创建一个udp套接字
+    udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    # 绑定本地相关信息
+    local_addr = ("",7788)
+    udp_socket.bind(local_addr)
+
+    while True:
+        # 等待接收对方发送的数据
+        recv_data = udp_socket.recvfrom(1024)
+        print(recv_data[0].decode("gbk"))
+
+    # 关闭套接字
+    udp_socket.close()
+
+if __name__ == '__main__':
+    main()
+```
+
+
+
+## 2.tcp
+
+
+
+# 5.Mysql
 
 安装包
 
@@ -2223,7 +2284,23 @@ cursor.close()
 con.close()
 ```
 
-# 5.Request库
+# 6.Request库
+
+
+
+# 7.Django
+
+生成数据库 迁移文件
+
+```python
+python manage.py makemigrations
+```
+
+执行迁移生成表
+
+```python
+python manage.py migrate
+```
 
 
 
