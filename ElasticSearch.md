@@ -945,15 +945,9 @@ mapper-murmur3
 
 
 
-## 第三节 ElasticSearch原理
+# 7.ElasticSearch原理
 
-### 3.1 解析es的分布式架构
-
-#### 3.1.1 分布式架构的透明隐藏特性
-
-   ElasticSearch是一个分布式系统，隐藏了复杂的处理机制
-
-分片机制：我们不用关心数据是按照什么机制分片的、最后放入到哪个分片中
+### 7.1 解析es的分布式架构
 
 分片的副本：
 
@@ -961,60 +955,66 @@ mapper-murmur3
 
 shard负载均衡：比如现在有10shard，集群中有3个节点，es会进行均衡的进行分配，以保持每个节点均衡的负载请求
 
-请求路由
+请求路由 
 
-#### 3.1.2 扩容机制
+#### 7.1.2 扩容机制
 
 垂直扩容：购置新的机器，替换已有的机器
 
+例子:一台有6台机器,每台1T,一共6T,现在替换掉其中的两台,1T升级到2T,这样一共就有8T
+
 水平扩容：直接增加机器
 
-#### 3.1.3 rebalance
+#### 7.1.3 rebalance
 
 增加或减少节点时会自动均衡
 
-#### 3.1.4 master节点
+![image-20200211203614772](img/image-20200211203614772.png)
 
-主节点的主要职责是和集群操作相关的内容，如创建或删除索引，跟踪哪些节点是群集的一部分，并决定哪些分片分配给相关的节点。稳定的主节点对集群的健康是非常重要的。
+#### 7.1.4 master节点
 
-#### 3.1.5 节点对等
+主节点的主要职责是和集群操作相关的内容，如创建或删除索引，跟踪哪些节点是群集的一部分，并决定哪些分片分配给相关的节点。稳定的主节点对集群的健康是非常重要的。一个集群,至少有一个master.并不是所有的请求都请求master
+
+#### 7.1.5 节点对等
 
 每个节点都能接收请求
 每个节点接收到请求后都能把该请求路由到有相关数据的其它节点上
 接收原始请求的节点负责采集数据并返回给客户端
 
-### 3.2 分片和副本机制
+### 7.2 分片和副本机制
 
-1.index包含多个shard
+1. index包含多个shard
 
-2.每个shard都是一个最小工作单元，承载部分数据；每个shard都是一个lucene实例，有完整的建立索引和处理请求的能力
+2. 每个shard都是一个最小工作单元，承载部分数据；每个shard都是一个lucene实例，有完整的建立索引和处理请求的能力
 
-3.增减节点时，shard会自动在nodes中负载均衡
+3. 增减节点时，shard会自动在nodes中负载均衡
 
-4.primary shard和replica shard，每个document肯定只存在于某一个primary shard以及其对应的replica shard中，不可能存在于多个primary shard
+4. primary shard和replica shard，每个document肯定只存在于某一个primary shard以及其对应的replica shard中，不可能存在于多个primary shard
 
-5.replica shard是primary shard的副本，负责容错，以及承担读请求负载
+5. replica shard是primary shard的副本，负责容错，以及承担读请求负载
 
-6.primary shard的数量在创建索引的时候就固定了，replica shard的数量可以随时修改
+6. primary shard的数量在创建索引的时候就固定了，replica shard的数量可以随时修改
 
-7.primary shard的默认数量是5，replica默认是1，默认有10个shard，5个primary shard，5个replica shard
+7. primary shard的默认数量是5，replica默认是1，默认有10个shard，5个primary shard，5个replica shard
 
-8.primary shard不能和自己的replica shard放在同一个节点上（否则节点宕机，primary shard和副本都丢失，起不到容错的作用），但是可以和其他primary shard的replica shard放在同一个节点上
+8. primary shard不能和自己的replica shard放在同一个节点上（否则节点宕机，primary shard和副本都丢失，起不到容错的作用），但是可以和其他primary shard的replica shard放在同一个节点上
 
 
-### 3.3 单节点环境下创建索引分析
+### 7.3 单节点环境下创建索引分析
 
+```shell
 PUT /myindex
 {
    "settings" : {
-      "number_of_shards" : 3,
-      "number_of_replicas" : 1
+      "number_of_shards" : 3,  # 3个朱分片
+      "number_of_replicas" : 1  # 1个负分片
    }
 }
+```
 
 这个时候，只会将3个primary shard分配到仅有的一个node上去，另外3个replica shard是无法分配的（一个shard的副本replica，他们两个是不能在同一个节点的）。集群可以正常工作，但是一旦出现节点宕机，数据全部丢失，而且集群不可用，无法接收任何请求。
 
-### 3.4 两个节点环境下创建索引分析
+### 7.4 两个节点环境下创建索引分析
 
 将3个primary shard分配到一个node上去，另外3个replica shard分配到另一个节点上
 
@@ -1023,16 +1023,16 @@ primary shard 和replica shard 保持同步
 primary shard 和replica shard 都可以处理客户端的读请求
 
 
-### 3.5 水平扩容的过程
+### 7.5 水平扩容的过程
 
-1.扩容后primary shard和replica shard会自动的负载均衡
+1. 扩容后primary shard和replica shard会自动的负载均衡
 
-2.扩容后每个节点上的shard会减少，那么分配给每个shard的CPU，内存，IO资源会更多，性能提高
+2. 扩容后每个节点上的shard会减少，那么分配给每个shard的CPU，内存，IO资源会更多，性能提高
 
-3.扩容的极限，如果有6个shard，扩容的极限就是6个节点，每个节点上一个shard，如果想超出扩容的极限，比如说扩容到9个节点，那么可以增加replica shard的个数
+3. 扩容的极限，如果有6个shard，扩容的极限就是6个节点，每个节点上一个shard，如果想超出扩容的极限，比如说扩容到9个节点，那么可以增加replica shard的个数
 
-4.6个shard，3个节点，最多能承受几个节点所在的服务器宕机？(容错性)
-任何一台服务器宕机都会丢失部分数据
+4. 6个shard，3个节点，最多能承受几个节点所在的服务器宕机？(容错性)
+	任何一台服务器宕机都会丢失部分数据
 
 为了提高容错性，增加shard的个数：
 9个shard，(3个primary shard，6个replicashard)，这样就能容忍最多两台服务器宕机了
@@ -1040,7 +1040,7 @@ primary shard 和replica shard 都可以处理客户端的读请求
 总结：扩容是为了提高系统的吞吐量，同时也要考虑容错性，也就是让尽可能多的服务器宕机还能保证数据不丢失
 
 
-### 3.6ElasticSearch的容错机制
+### 7.6ElasticSearch的容错机制
 
 以9个shard，3个节点为例：
 
@@ -1051,9 +1051,9 @@ primary shard 和replica shard 都可以处理客户端的读请求
 
 容错处理的第三步：重启故障机，新master会把所有的副本都复制一份到该节点上，（同步一下宕机后发生的修改），此时集群的状态为green，因为所有的primary shard和replica shard都是Active status
 
-### 3.7文档的核心元数据
+### 7.7文档的核心元数据
 
-1._index:
+1. `_index`:
 
 说明了一个文档存储在哪个索引中
 
@@ -1061,7 +1061,7 @@ primary shard 和replica shard 都可以处理客户端的读请求
 
 索引名必须是小写的，不能以下划线开头，不能包括逗号
 
-2._type:
+2. `_type`:
 
 表示文档属于索引中的哪个类型
 
@@ -1069,28 +1069,32 @@ primary shard 和replica shard 都可以处理客户端的读请求
 
 类型名可以是大写也可以是小写的，不能以下划线开头，不能包括逗号
 
-3._id:
+3. `_id`:
 
 文档的唯一标识，和索引，类型组合在一起唯一标识了一个文档
 
 可以手动指定值，也可以由es来生成这个值
 
-### 3.8 文档id生成方式
+### 7.8 文档id生成方式
 
 1.手动指定
 
-  put /index/type/66
+```shell
+put /index/type/66
+```
 
   通常是把其它系统的已有数据导入到es时
 
 2.由es生成id值
 
-  post /index/type
+```shell
+post /index/type
+```
 
  es生成的id长度为20个字符，使用的是base64编码，URL安全，使用的是GUID算法，分布式下并发生成id值时不会冲突
 
 
-### 3.9 _source元数据分析
+### 7.9 _source元数据分析
 
 其实就是我们在添加文档时request body中的内容
 
@@ -1099,58 +1103,58 @@ primary shard 和replica shard 都可以处理客户端的读请求
 get /index/type/1?_source=name
 
 
-### 3.10 改变文档内容原理解析
+### 7.10 改变文档内容原理解析
 
-替换方式：
+替换方式(全部替换)：
 
+```shell
 PUT /lib/user/4
-{ "first_name" : "Jane",
-
-"last_name" :   "Lucy",
-
-"age" :         24,
-
-"about" :       "I like to collect rock albums",
-
-"interests":  [ "music" ]
+{ 
+    "first_name" : "Jane",
+    "last_name" :   "Lucy",
+    "age" :         24,
+    "about" :       "I like to collect rock albums",
+    "interests":  [ "music" ]
 }
+```
 
-修改方式(partial update)：
+修改方式(部分修改)：
 
+```shell
 POST /lib/user/2/_update
 {
     "doc":{
        "age":26
      }
 }
+```
 
-删除文档：标记为deleted，随着数据量的增加，es会选择合适的时间删除掉
+删除文档:
 
+```shell
+delete /lib
+```
 
+以上3个操作文档的方式,都是把已有的document标记为deleted，随着数据量的增加，es会选择合适的时间删除掉
 
-
-
-### 3.11 基于groovy脚本执行partial update
+### 7.11 基于groovy脚本执行partial update
 
 es有内置的脚本支持，可以基于groovy脚本实现复杂的操作
 
+```shell
 1.修改年龄
-
 POST /lib/user/4/_update
 {
   "script": "ctx._source.age+=1"
 }
 
 2.修改名字
-
 POST /lib/user/4/_update
 {
   "script": "ctx._source.last_name+='hehe'"
 }
 
-
 3.添加爱好
-
 POST /lib/user/4/_update
 {
   "script": {
@@ -1160,8 +1164,8 @@ POST /lib/user/4/_update
     }
   }
 }
-4.删除爱好
 
+4.删除爱好
 POST /lib/user/4/_update
 {
   "script": {
@@ -1173,7 +1177,6 @@ POST /lib/user/4/_update
 }
 
 5.删除文档
-
 POST /lib/user/4/_update
 {
   "script": {
@@ -1185,7 +1188,6 @@ POST /lib/user/4/_update
 }
 
 6.upsert
-
 POST /lib/user/4/_update
 {
   "script": "ctx._source.age += 1",
@@ -1198,20 +1200,22 @@ POST /lib/user/4/_update
      "interests":  [ "music" ]
   }
 }
+```
 
-### 3.12 partial update 处理并发冲突
+### 7.12 partial update 处理并发冲突
 
 使用的是乐观锁:_version
 
 retry_on_conflict:
 
-
+```shell
 POST /lib/user/4/_update?retry_on_conflict=3
+```
 
 重新获取文档数据和版本信息进行更新，不断的操作，最多操作的次数就是retry_on_conflict的值
 
 
-### 3.13 文档数据路由原理解析
+### 7.13 文档数据路由原理解析
 
 1.文档路由到分片上：
 
@@ -2173,7 +2177,7 @@ language 分词器：特定语言的分词器，不支持中文
 
 
 
-# 7.先记着
+# 8.先记着
 
 用logstash去同步mysql的的增量,,需要两个字段,第一个是 id,主键,第二个是update_date,  用第二个字段去查询,默认用id去去重
 
@@ -2217,7 +2221,7 @@ PUT shouye/_mapping/rukuan/
 
 
 
-# 7.springboot整合Elasticsearch
+# 9.springboot整合Elasticsearch
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
