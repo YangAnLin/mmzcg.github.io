@@ -1,6 +1,6 @@
 [toc]
 
-# 1.手动安装单机ElasticSearch
+# 手动安装单机ElasticSearch
 
 1. 下载tar包,(6.6.2)
 ```shell
@@ -54,7 +54,7 @@ GET /medcl/_analyze
     }
 ```
 
-# 2.手动安装集群ElasticSearch
+# 手动安装集群ElasticSearch
 
 1.修改一台elasticsearch的elasticsearch.yml
 
@@ -90,7 +90,7 @@ http://localhost:9200/_cat/health?v
 
 
 
-# 3.手动单机Kibana安装
+# 手动单机Kibana安装
 
 1. 下载解压
 ```shell
@@ -109,7 +109,7 @@ elasticsearch.url: "http://localhost:9200"
 ```
 
 
-# 4.手动单机Logstash安装
+# 手动单机Logstash安装
 
 `mysql-connector-java-5.1.48.jar`是放在`logstash-6.6.2/logstash-core/lib/jars`,这样就不需要写相对路径了
 
@@ -144,9 +144,9 @@ output {
 ./logstash -f ../config/logstash-sample.conf
 ```
 
-# 5.API简单使用
+# API简单使用
 
-## 1.查询索引和映射
+## 查询索引和映射
 
 ```shell
 # 这两个都是查看索引,只是第三行比第三行多几个字段
@@ -160,7 +160,7 @@ GET /_all/_settings
 GET /lib2/_mapping
 ```
 
-## 2.添加索引
+## 添加索引
 
 ```shell
 # 方式一,使用的是默认的配置
@@ -194,7 +194,7 @@ PUT /lib3
 }
 ```
 
-## 3.添加文档
+## 添加文档
 
 ```shell
 # 指定id的时候用PUT
@@ -218,7 +218,7 @@ POST /lib/user/
 }
 ```
 
-## 4.查询文档
+## 查询文档
 
 ```shell
 # 指定ID
@@ -231,7 +231,7 @@ GET /lib/user/1?_source=age,about
 GET /tt/ttt/_search
 ```
 
-## 5.更新文档
+## 更新文档
 
 ```shell
 # 以覆盖的方式,如果有这个id,就覆盖更新,如果没有id,就创建
@@ -253,7 +253,7 @@ POST /lib/user/1/_update
 }
 ```
 
-## 6.删除文档和索引
+## 删除文档和索引
 
 ```shell
 # 删除文档
@@ -263,7 +263,7 @@ DELETE /lib/user/1
 DELETE /lib
 ```
 
-## 7.MuliGet
+## MuliGet
 MuliGet 需要ID,才能实现
 ```shell
 # 批量查询,这是查出全部数据
@@ -327,7 +327,7 @@ GET /lib/user/_mget
 }
 ```
 
-## 8.Bulk批量插入
+## Bulk批量插入
 bulk的格式：
 
 ```shell
@@ -386,9 +386,9 @@ POST /lib2/books/_bulk
 
 
 
-## 9.基本查询(Query查询)
+## 基本查询(Query查询)
 
-### 1.term和terms查询
+### term和terms查询
 
 * term 查询会去倒排索引中寻找确切的tem,它并不知道分词器的存在,这种查询使用keyword,numeric,date,在没有使用分词器的时候使用
 
@@ -416,7 +416,7 @@ GET /lib3/user/_search/
 }
 ```
 
-### 2.form和size分页
+### form和size分页
 
 form是从0开始的,size是取多少个
 
@@ -447,7 +447,7 @@ GET article/_count
 }
 ```
 
-### 3.match查询
+### match查询
 
 match query知道分词器的存在，会对filed进行分词操作，然后再查询
 
@@ -502,7 +502,7 @@ GET /lib3/user/_search
 }
 ```
 
-### 4._source控制返回字段
+### _source控制返回字段
 
 ```shell
 # 指定返回的字段
@@ -541,7 +541,7 @@ GET /lib3/user/_search
 }
 ```
 
-### 5.sort排序
+### sort排序
 
 ```shell
 # 指定排序字段
@@ -582,7 +582,7 @@ GET /lib3/user/_search
 }
 ```
 
-### 6.wildcard通配符查询
+### wildcard通配符查询
 
 允许使用通配符* 和 ?来进行查询
 
@@ -612,7 +612,7 @@ GET /lib3/user/_search
 }
 ```
 
-### 7.fuzzy模糊查询
+### fuzzy模糊查询
 
 * value：查询的关键字
 
@@ -637,7 +637,7 @@ GET /lib3/user/_search
 }
 ```
 
-### 8.高亮搜索
+### 高亮搜索
 
 ```shell
 GET /lib3/user/_search
@@ -657,7 +657,7 @@ GET /lib3/user/_search
 }
 ```
 
-### 9.Filter查询
+### Filter查询
 
 是不计算相关性的,同时可以缓存,因此,filter速度要快于query
 
@@ -687,7 +687,7 @@ GET /lib4/items/_search
 }
 ```
 
-### 10.bool过滤查询
+### bool过滤查询
 可以实现组合过滤查询
 
 格式：
@@ -763,7 +763,7 @@ GET /lib4/items/_search
 }
 ```
 
-### 11.聚合查询
+### 聚合查询
 
 ```shell
 GET /lib4/items/_search
@@ -840,9 +840,9 @@ GET /lib4/items/_search
 }
 ```
 
-# 6.API高级
+# API高级
 
-### 1.版本控制
+### 版本控制
 
 ElasticSearch采用了乐观锁来保证数据的一致性，也就是说，当用户对document进行操作时，并不需要对该document作加锁和解锁的操作，只需要指定要操作的版本即可。当版本号一致时，ElasticSearch会允许该操作顺利执行，而当版本号存在冲突时，ElasticSearch会提示冲突并抛出异常（VersionConflictEngineException异常）。
 
@@ -856,7 +856,7 @@ ElasticSearch的版本号的取值范围为1到2^63-1。
 为了保持_version与外部版本控制的数据一致
 使用version_type=external
 
-### 2.数据类型
+### 数据类型
 
 核心数据类型（Core datatypes）
 
@@ -945,9 +945,9 @@ mapper-murmur3
 
 
 
-# 7.ElasticSearch原理
+# ElasticSearch原理
 
-### 7.1 解析es的分布式架构
+### 解析es的分布式架构
 
 分片的副本：
 
@@ -957,7 +957,7 @@ shard负载均衡：比如现在有10shard，集群中有3个节点，es会进�
 
 请求路由 
 
-#### 7.1.2 扩容机制
+#### 扩容机制
 
 垂直扩容：购置新的机器，替换已有的机器
 
@@ -965,23 +965,23 @@ shard负载均衡：比如现在有10shard，集群中有3个节点，es会进�
 
 水平扩容：直接增加机器
 
-#### 7.1.3 rebalance
+#### rebalance
 
 增加或减少节点时会自动均衡
 
 ![image-20200211203614772](img/image-20200211203614772.png)
 
-#### 7.1.4 master节点
+#### master节点
 
 主节点的主要职责是和集群操作相关的内容，如创建或删除索引，跟踪哪些节点是群集的一部分，并决定哪些分片分配给相关的节点。稳定的主节点对集群的健康是非常重要的。一个集群,至少有一个master.并不是所有的请求都请求master
 
-#### 7.1.5 节点对等
+#### 节点对等
 
 每个节点都能接收请求
 每个节点接收到请求后都能把该请求路由到有相关数据的其它节点上
 接收原始请求的节点负责采集数据并返回给客户端
 
-### 7.2 分片和副本机制
+### 分片和副本机制
 
 1. index包含多个shard
 
@@ -1000,7 +1000,7 @@ shard负载均衡：比如现在有10shard，集群中有3个节点，es会进�
 8. primary shard不能和自己的replica shard放在同一个节点上（否则节点宕机，primary shard和副本都丢失，起不到容错的作用），但是可以和其他primary shard的replica shard放在同一个节点上
 
 
-### 7.3 单节点环境下创建索引分析
+### 单节点环境下创建索引分析
 
 ```shell
 PUT /myindex
@@ -1014,7 +1014,7 @@ PUT /myindex
 
 这个时候，只会将3个primary shard分配到仅有的一个node上去，另外3个replica shard是无法分配的（一个shard的副本replica，他们两个是不能在同一个节点的）。集群可以正常工作，但是一旦出现节点宕机，数据全部丢失，而且集群不可用，无法接收任何请求。
 
-### 7.4 两个节点环境下创建索引分析
+### 两个节点环境下创建索引分析
 
 将3个primary shard分配到一个node上去，另外3个replica shard分配到另一个节点上
 
@@ -1023,7 +1023,7 @@ primary shard 和replica shard 保持同步
 primary shard 和replica shard 都可以处理客户端的读请求
 
 
-### 7.5 水平扩容的过程
+### 水平扩容的过程
 
 1. 扩容后primary shard和replica shard会自动的负载均衡
 
@@ -1040,7 +1040,7 @@ primary shard 和replica shard 都可以处理客户端的读请求
 总结：扩容是为了提高系统的吞吐量，同时也要考虑容错性，也就是让尽可能多的服务器宕机还能保证数据不丢失
 
 
-### 7.6ElasticSearch的容错机制
+### ElasticSearch的容错机制
 
 以9个shard，3个节点为例：
 
@@ -1051,7 +1051,7 @@ primary shard 和replica shard 都可以处理客户端的读请求
 
 容错处理的第三步：重启故障机，新master会把所有的副本都复制一份到该节点上，（同步一下宕机后发生的修改），此时集群的状态为green，因为所有的primary shard和replica shard都是Active status
 
-### 7.7文档的核心元数据
+### 文档的核心元数据
 
 1. `_index`:
 
@@ -1075,7 +1075,7 @@ primary shard 和replica shard 都可以处理客户端的读请求
 
 可以手动指定值，也可以由es来生成这个值
 
-### 7.8 文档id生成方式
+### 文档id生成方式
 
 1.手动指定
 
@@ -1094,7 +1094,7 @@ post /index/type
  es生成的id长度为20个字符，使用的是base64编码，URL安全，使用的是GUID算法，分布式下并发生成id值时不会冲突
 
 
-### 7.9 _source元数据分析
+### _source元数据分析
 
 其实就是我们在添加文档时request body中的内容
 
@@ -1103,7 +1103,7 @@ post /index/type
 get /index/type/1?_source=name
 
 
-### 7.10 改变文档内容原理解析
+### 改变文档内容原理解析
 
 替换方式(全部替换)：
 
@@ -1137,7 +1137,7 @@ delete /lib
 
 以上3个操作文档的方式,都是把已有的document标记为deleted，随着数据量的增加，es会选择合适的时间删除掉
 
-### 7.11 基于groovy脚本执行partial update
+### 基于groovy脚本执行partial update
 
 es有内置的脚本支持，可以基于groovy脚本实现复杂的操作
 
@@ -1202,7 +1202,7 @@ POST /lib/user/4/_update
 }
 ```
 
-### 7.12 partial update 处理并发冲突
+### partial update 处理并发冲突
 
 使用的是乐观锁:_version
 
@@ -1215,7 +1215,7 @@ POST /lib/user/4/_update?retry_on_conflict=3
 重新获取文档数据和版本信息进行更新，不断的操作，最多操作的次数就是retry_on_conflict的值
 
 
-### 7.13 文档数据路由原理解析
+### 文档数据路由原理解析
 
 1.文档路由到分片上：
 
@@ -1239,9 +1239,7 @@ routing值默认是文档的_id的值，也可以手动指定一个值，手动�
 
 3.primary shard个数一旦确定就不能修改了
 
-
-
-### 3.14 文档增删改内部原理
+### 文档增删改内部原理 
 
 1:发送增删改请求时，可以选择任意一个节点，该节点就成了协调节点(coordinating node)
 
@@ -1250,20 +1248,21 @@ routing值默认是文档的_id的值，也可以手动指定一个值，手动�
 3.协调节点对客户端做出响应
 
 
-### 3.15 写一致性原理和quorum机制
+### 写一致性原理和quorum机制
 
-1.任何一个增删改操作都可以跟上一个参数
-consistency
+1. 任何一个增删改操作都可以跟上一个参数:``consistency`
 
 可以给该参数指定的值：
 
+```shell
 one: (primary shard)只要有一个primary shard是活跃的就可以执行
 
 all: (all shard)所有的primary shard和replica shard都是活跃的才能执行
 
 quorum: (default) 默认值，大部分shard是活跃的才能执行 （例如共有6个shard，至少有3个shard是活跃的才能执行写操作）
+```
 
-2.quorum机制：多数shard都是可用的，
+2. quorum机制：多数shard都是可用的，
 
 int((primary+number_of_replica)/2)+1
 
@@ -1289,7 +1288,7 @@ es默认会等待一分钟，如果在等待的期间活跃的shard的个数没�
 put /index/type/id?timeout=60s
 
 
-### 3.16 文档查询内部原理
+### 文档查询内部原理
 
 第一步：查询请求发给任意一个节点，该节点就成了coordinating node，该节点使用路由算法算出文档所在的primary shard
 
@@ -1300,27 +1299,25 @@ put /index/type/id?timeout=60s
 特殊情况：请求的文档还在建立索引的过程中，primary shard上存在，但replica shar上不存在，但是请求被转发到了replica shard上，这时就会提示找不到文档
 
 
-### 3.17 bulk批量操作的json格式解析
+### bulk批量操作的json格式解析
 
 bulk的格式：
 
+```shell
 {action:{metadata}}\n
-
 {requstbody}\n
+```
 
 为什么不使用如下格式：
 
+```shell
 [{
-
-"action": {
-
-},
-
-"data": {
-
-}
-
+    "action": {
+    },
+    "data": {
+    }
 }]
+```
 
 这种方式可读性好，但是内部处理就麻烦了：
 
@@ -1342,12 +1339,17 @@ bulk的格式：
 
 3.直接将对应的json发送到node上去
 
-### 3.18 查询结果分析
+### 查询结果分析
 
+```shell
 {
-  "took": 419,
+  # 查询耗费的时间，单位是毫秒
+  "took": 419,  
+  # 超时时间
   "timed_out": false,
+  # 共请求了多少个shard
   "_shards": {
+  	# 查询出的文档总个数
     "total": 3,
     "successful": 3,
     "skipped": 0,
@@ -1355,7 +1357,9 @@ bulk的格式：
   },
   "hits": {
     "total": 3,
+    # 本次查询中，相关度分数的最大值，文档和此次查询的匹配度越高，_score的值越大，排位越靠前
     "max_score": 0.6931472,
+    # 默认查询前10个文档
     "hits": [
       {
         "_index": "lib3",
@@ -1377,19 +1381,10 @@ bulk的格式：
           "name": "zhaoming"
         }
       }
-      
-took：查询耗费的时间，单位是毫秒
+```
 
-_shards：共请求了多少个shard
-
-total：查询出的文档总个数
-
-max_score： 本次查询中，相关度分数的最大值，文档和此次查询的匹配度越高，_score的值越大，排位越靠前
-
-hits：默认查询前10个文档
-
-timed_out：
-
+```shell
+# 设置超时时间
 GET /lib3/user/_search?timeout=10ms
 {
     "_source": ["address","name"],
@@ -1399,28 +1394,11 @@ GET /lib3/user/_search?timeout=10ms
         }
     }
 }
+```
 
+### 分页查询中的deep paging问题
 
-### 3.19 多index，多type查询模式
-
-GET _search
-
-GET /lib/_search
-
-GET /lib,lib3/_search
-
-GET /*3,*4/_search
-
-GET /lib/user/_search
-
-GET /lib,lib4/user,items/_search
-
-GET /_all/_search
-
-GET /_all/user,items/_search
-
-### 3.20 分页查询中的deep paging问题
-
+```shell
 GET /lib3/user/_search
 {
     "from":0,
@@ -1433,6 +1411,7 @@ GET /lib3/user/_search
 }
 
 GET /_search?from=0&size=3
+```
 
 deep paging:查询的很深，比如一个索引有三个primary shard，分别存储了6000条数据，我们要得到第100页的数据(每页10条)，类似这种情况就叫deep paging
 
@@ -1454,7 +1433,7 @@ deep paging性能问题
 鉴于deep paging的性能问题，所以应尽量减少使用。
 
 
-### 3.21 query string查询及copy_to解析
+### query string查询及copy_to解析
 
 GET /lib3/user/_search?q=interests:changge
 
@@ -1464,21 +1443,47 @@ GET /lib3/user/_search?q=-interests:changge
 
 copy_to字段是把其它字段中的值，以空格为分隔符组成一个大字符串，然后被分析和索引，但是不存储，也就是说它能被查询，但不能被取回显示。
 
-
-
 注意:copy_to指向的字段字段类型要为：text
 
 当没有指定field时，就会从copy_to字段中查询
 GET /lib3/user/_search?q=changge
 
 
-### 3.22字符串排序问题
+### 字符串排序问题
 
 对一个字符串类型的字段进行排序通常不准确，因为已经被分词成多个词条了
 
 解决方式：对字段索引两次，一次索引分词（用于搜索），一次索引不分词(用于排序)
 
-GET /lib3/_search
+```shell
+# 设置mapping
+PUT /lib3
+{
+    "settings":{
+        "number_of_shards" : 3,
+        "number_of_replicas" : 0
+      },
+     "mappings":{
+      "user":{
+        "properties":{
+            "name": {"type":"text"},
+            "address": {"type":"text"},
+            "age": {"type":"integer"},
+            "birthday": {"type":"date"},
+            "interests": {
+                "type":"text",
+                # 重点是在这下面
+                "fields": {
+                  "raw":{
+                     "type": "keyword"
+                   }
+                },
+                "fielddata": true
+             }
+          }
+        }
+     }
+}
 
 GET /lib3/user/_search
 {
@@ -1507,38 +1512,10 @@ GET /lib3/user/_search
     }
   ]
 }
-
-DELETE lib3
-
-PUT /lib3
-{
-    "settings":{
-        "number_of_shards" : 3,
-        "number_of_replicas" : 0
-      },
-     "mappings":{
-      "user":{
-        "properties":{
-            "name": {"type":"text"},
-            "address": {"type":"text"},
-            "age": {"type":"integer"},
-            "birthday": {"type":"date"},
-            "interests": {
-                "type":"text",
-                "fields": {
-                  "raw":{
-                     "type": "keyword"
-                   }
-                },
-                "fielddata": true
-             }
-          }
-        }
-     }
-}
+```
 
 
-### 3.23 如何计算相关度分数
+### 如何计算相关度分数
 
 使用的是TF/IDF算法(Term Frequency&Inverse Document Frequency)
 
@@ -1592,19 +1569,19 @@ GET /lib3/user/2/_explain
 }
 
 
-### 3.24 Doc Values 解析
+### Doc Values 解析
 
-DocValues其实是Lucene在构建倒排索引时，会额外建立一个有序的正排索引(基于document => field value的映射列表)
+DocValues其实是Lucene在构建倒排索引时，会额外建立一个有序的正排索引(基于document => field value的映射列表),字符串不会创建正排索引
 
+```shell
 {"birthday":"1985-11-11",age:23}
 
 {"birthday":"1989-11-11",age:29}
 
 document     age       birthday
-
 doc1         23         1985-11-11
-
 doc2         29         1989-11-11
+```
 
 存储在磁盘上，节省内存 
 
@@ -1612,6 +1589,7 @@ doc2         29         1989-11-11
 
 注意：默认对不分词的字段是开启的，对分词字段无效（需要把fielddata设置为true）
 
+```shell
 PUT /lib3
 {
     "settings":{
@@ -1633,9 +1611,10 @@ PUT /lib3
       }
      }
 }
+```
 
 
-### 3.25 基于scroll技术滚动搜索大量数据
+### 基于scroll技术滚动搜索大量数据
 
 如果一次性要查出来比如10万条数据，那么性能会很差，此时一般会采取用scoll滚动查询，一批一批的查，直到所有数据都查询完为止。
 
@@ -1645,22 +1624,26 @@ PUT /lib3
 
 3.每次发送scroll请求，我们还需要指定一个scoll参数，指定一个时间窗口，每次搜索请求只要在这个时间窗口内能完成就可以了
 
+```shell
 GET /lib3/user/_search?scroll=1m
 {
   "query": {
     "match_all": {}
   },
   "sort":["_doc"],
+  # 一批查多少个
   "size":3
 }
 
 GET /_search/scroll
 {
    "scroll": "1m",
+   # 这个是上面那个查询里获取到的
    "scroll_id": "DnF1ZXJ5VGhlbkZldGNoAwAAAAAAAAAdFkEwRENOVTdnUUJPWVZUd1p2WE5hV2cAAAAAAAAAHhZBMERDTlU3Z1FCT1lWVHdadlhOYVdnAAAAAAAAAB8WQTBEQ05VN2dRQk9ZVlR3WnZYTmFXZw=="
 }
+```
 
-### 3.26 dynamic mapping策略
+### dynamic mapping策略
 
 **dynamic**:
 
@@ -1766,23 +1749,18 @@ GET my_index/my_type/_search
   }
 }
 
-### 3.27重建索引
+### 重建索引
 
 一个field的设置是不能修改的，如果要修改一个field，那么应该重新按照新的mapping，建立一个index，然后将数据批量查询出来，重新用bulk api写入到index中。
 
 批量查询的时候，建议采用scroll api，并且采用多线程并发的方式来reindex数据，每次scroll就查询指定日期的一段数据，交给一个线程即可。
 
-
+```shell
+# 原始的数据
 PUT /index1/type1/4
 {
    "content":"1990-12-12"
 }
-
-GET /index1/type1/_search
-
-GET /index1/type1/_mapping
-
-
 
 #报错
 PUT /index1/type1/4
@@ -1790,9 +1768,7 @@ PUT /index1/type1/4
    "content":"I am very happy."
 }
 
-
 #修改content的类型为string类型,报错，不允许修改
-
 PUT /index1/_mapping/type1
 {
   "properties": {
@@ -1801,14 +1777,15 @@ PUT /index1/_mapping/type1
     }
   }
 }
+```
 
-#创建一个新的索引，把index1索引中的数据查询出来导入到新的索引中
-#但是应用程序使用的是之前的索引，为了不用重启应用程序，给index1这个索引起个#别名
+创建一个新的索引，把index1索引中的数据查询出来导入到新的索引中,但是应用程序使用的是之前的索引，为了不用重启应用程序，给index1这个索引起个
 
+```shell
+# 起别名
 PUT /index1/_alias/index2
 
-#创建新的索引，把content的类型改为字符串
-
+# 创建新的索引，把content的类型改为字符串
 PUT /newindex
 {
   "mappings": {
@@ -1822,8 +1799,7 @@ PUT /newindex
   }
 }
 
-#使用scroll批量查询
-
+# 使用scroll批量查询
 GET /index1/type1/_search?scroll=1m
 {
   "query": {
@@ -1839,19 +1815,19 @@ POST /_bulk
 {"content":"1982-12-12"}
 
 #将别名index2和新的索引关联，应用程序不用重启
-
 POST /_aliases
 {
   "actions": [
-    {"remove": {"index":"index1","alias":"index2"}},
-    {"add": {"index": "newindex","alias": "index2"}}
-]
+        {"remove": {"index":"index1","alias":"index2"}},
+        {"add": {"index": "newindex","alias": "index2"}}
+	]
 }
 
 GET index2/type1/_search
+```
 
 
-### 3.28 索引不可变的原因
+### 索引不可变的原因
 
 倒排索引包括：
 
@@ -1865,168 +1841,10 @@ GET index2/type1/_search
 
 节省cpu和io开销
 
-## 第四节 在Java应用中访问ElasticSearch
 
-### 4.1在Java应用中实现查询文档
+# 安装插件
 
-pom中加入ElasticSearch6.2.4的依赖：
-
-<dependencies>
-    <dependency>
-      <groupId>org.elasticsearch.client</groupId>
-      <artifactId>transport</artifactId>
-      <version>6.2.4</version>
-    </dependency>    
-    
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.12</version>
-      <scope>test</scope>
-    </dependency>
-
-  </dependencies> 
-
-  <build>
-      <plugins>
-			<!-- java编译插件 -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.2</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
-		</plugins>
-  </build>  
-
-### 4.2 在Java应用中实现添加文档
-
-              "{" +
-                "\"id\":\"1\"," +
-                "\"title\":\"Java设计模式之装饰模式\"," +
-                "\"content\":\"在不必改变原类文件和使用继承的情况下，动态地扩展一个对象的功能。\"," +
-                "\"postdate\":\"2018-05-20 14:38:00\"," +
-                "\"url\":\"csdn.net/79239072\"" +
-                "}"
-
- XContentBuilder doc1 = XContentFactory.jsonBuilder()
-                    .startObject()
-                    .field("id","3")
-                    .field("title","Java设计模式之单例模式")
-                    .field("content","枚举单例模式可以防反射攻击。")
-                    .field("postdate","2018-02-03")
-                    .field("url","csdn.net/79247746")
-                    .endObject();
-        
-
-        IndexResponse response = client.prepareIndex("index1", "blog", null)
-                .setSource(doc1)
-                .get();
-        
-    	System.out.println(response.status());
-
-### 4.3在Java应用中实现删除文档
-
-DeleteResponse response=client.prepareDelete("index1","blog","SzYJjWMBjSAutsuLRP_P").get();
-
-//删除成功返回OK，否则返回NOT_FOUND
-
-System.out.println(response.status());
-
-### 4.4在Java应用中实现更新文档
-
- UpdateRequest request=new UpdateRequest();
-        request.index("index1")
-                .type("blog")
-                .id("2")
-                .doc(
-                		XContentFactory.jsonBuilder().startObject()
-                        .field("title","单例模式解读")
-                        .endObject()
-                );
-UpdateResponse response=client.update(request).get();
-
-//更新成功返回OK，否则返回NOT_FOUND
-
-System.out.println(response.status());
-
-upsert方式：
-
-IndexRequest request1 =new IndexRequest("index1","blog","3")
-                .source(
-                		XContentFactory.jsonBuilder().startObject()
-                                .field("id","3")
-                                .field("title","装饰模式")
-                                .field("content","动态地扩展一个对象的功能")
-                                .field("postdate","2018-05-23")
-                                .field("url","csdn.net/79239072")
-                                .endObject()
-                );
-        UpdateRequest request2=new UpdateRequest("index1","blog","3")
-                .doc(
-                		XContentFactory.jsonBuilder().startObject()
-                        .field("title","装饰模式解读")
-                        .endObject()
-                ).upsert(request1);
-        
-UpdateResponse response=client.update(request2).get();
-        
-//upsert操作成功返回OK，否则返回NOT_FOUND
-
-System.out.println(response.status());
-
-
-### 4.5在Java应用中实现批量操作
-
- MultiGetResponse mgResponse = client.prepareMultiGet()
-	                .add("index1","blog","3","2")
-	                .add("lib3","user","1","2","3")
-	                .get();
-		    
-for(MultiGetItemResponse response:mgResponse){
-	            GetResponse rp=response.getResponse();
-	            if(rp!=null && rp.isExists()){
-	                System.out.println(rp.getSourceAsString());
-	            }
-	        }
-	        
-bulk：
-
-BulkRequestBuilder bulkRequest = client.prepareBulk();
-
-bulkRequest.add(client.prepareIndex("lib2", "books", "4")
-                .setSource(XContentFactory.jsonBuilder()
-                        .startObject()
-                        .field("title", "python")
-                        .field("price", 68)
-                        .endObject()
-                )
-        );
-bulkRequest.add(client.prepareIndex("lib2", "books", "5")
-                .setSource(XContentFactory.jsonBuilder()
-                        .startObject()
-                        .field("title", "VR")
-                        .field("price", 38)
-                        .endObject()
-                )
-        );
-        //批量执行
-BulkResponse bulkResponse = bulkRequest.get();
-        
-System.out.println(bulkResponse.status());
-if (bulkResponse.hasFailures()) {
-            
-
-            System.out.println("存在失败操作");
-        }
-
-
-### 7安装Head插件
+### 安装HEAD
 
 Head是elasticsearch的集群管理工具，可以用于数据的浏览和查询
 
@@ -2094,42 +1912,7 @@ http.cors.allow-origin: "*"
 
 浏览器输入网址：http://192.168.25.131:9100/
 
-### 1.8安装Kibana
-
-Kibana是一个针对Elasticsearch的开源分析及可视化平台，使用Kibana可以查询、查看并与存储在ES索引的数据进行交互操作，使用Kibana能执行高级的数据分析，并能以图表、表格和地图的形式查看数据
-
-(1)下载Kibana
-https://www.elastic.co/downloads/kibana
-
-(2)把下载好的压缩包拷贝到/soft目录下
-
-(3)解压缩，并把解压后的目录移动到/user/local/kibana
-
-(4)编辑kibana配置文件
-
-[root@localhost /]# vi /usr/local/kibana/config/kibana.yml
-
-![image](https://images2017.cnblogs.com/blog/210978/201708/210978-20170805113725272-708617928.png)
-
-将server.host,elasticsearch.url修改成所在服务器的ip地址
-
-(5)开启5601端口
-
-Kibana的默认端口是5601
-
-开启防火墙:systemctl start firewalld.service
-
-开启5601端口:firewall-cmd --permanent --zone=public --add-port=5601/tcp
-
-重启防火墙：firewall-cmd –reload
-
-(6)启动Kibana
-
-[root@localhost /]# /usr/local/kibana/bin/kibana
-
-浏览器访问：http://192.168.25.131:5601
-
-### 1.9安装中文分词器
+### 安装中文分词器
 
 (1)下载中文分词器
 https://github.com/medcl/elasticsearch-analysis-ik
@@ -2152,7 +1935,7 @@ mvn clean install -Dmaven.test.skip=true
 
 
 
-#### 2.1.3 分词器介绍及内置分词器
+#### 分词器介绍及内置分词器
 
 分词器：从一串文本中切分出一个一个的词条，并对每个词条进行标准化
 
@@ -2177,7 +1960,7 @@ language 分词器：特定语言的分词器，不支持中文
 
 
 
-# 8.先记着
+# 先记着
 
 用logstash去同步mysql的的增量,,需要两个字段,第一个是 id,主键,第二个是update_date,  用第二个字段去查询,默认用id去去重
 
@@ -2221,7 +2004,7 @@ PUT shouye/_mapping/rukuan/
 
 
 
-# 9.springboot整合Elasticsearch
+# springboot整合Elasticsearch
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
