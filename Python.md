@@ -2290,6 +2290,12 @@ con.close()
 
 # 7.Django
 
+项目创建
+
+```python
+django-admin startproject 项目名
+```
+
 生成数据库 迁移文件
 
 ```python
