@@ -94,8 +94,6 @@ c27561bbe42dc1ae1b08442ce0d8100d4e02a689 (HEAD -> master) stage
 e9fa63e3bafc275e99cc88b40cc68bde6933323c 123
 3d338b67e2b57dcd6887099cb3977f5d96b3cbb5 第一次提交
 
-# 本地回退到上一个版本
-git reset --hard HEAD^
 
 # 远程地址回退版本
 # 先让本地回退到指定版本
@@ -196,3 +194,19 @@ git rebase --abort/--continue/--edit-todo
 * 进入到子项目的目录中,默认的分支并不是master,需要手动切换到master
 * 删除子模块的,没有这样的功能,需要手动修改`.gitmodules`文件
 * 添加了新的子模块之后,`.gitmodules`就会被创建或者是修改,这个文件需要推送到远程仓库
+
+
+
+### 储藏
+
+比如在当前分支正在开发,突然来了一个bug,但是当前写的代码又不能提交,需要先储藏起来
+
+```shell
+ git stash
+```
+
+等bug改好,再回来
+
+```shell
+git stash pop
+```
