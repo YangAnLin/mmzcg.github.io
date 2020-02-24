@@ -996,31 +996,34 @@ cursor.close()
 con.close()
 ```
 
+
+
 # Request库
 
 
 
 # Django
 
-项目创建
-
 ```python
+# 项目创建
 django-admin startproject 项目名
-```
 
-生成数据库 迁移文件
-
-```python
+# 生成数据库 迁移文件
 python manage.py makemigrations
-```
 
-执行迁移生成表
-
-```python
+# 执行迁移生成表
 python manage.py migrate
 ```
 
 
+
+# 这个环境呀,我要吐了
+
+## pymssql
+
+访问`https://www.lfd.uci.edu/~gohlke/pythonlibs/#pymssql`
+
+下载`[pymssql‑2.1.4‑cp38‑cp38‑win32.whl]`
 
 
 
