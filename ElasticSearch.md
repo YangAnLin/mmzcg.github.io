@@ -2056,3 +2056,10 @@ PUT shouye/_mapping/rukuan/
 spring.elasticsearch.rest.uris=http://192.168.111.132:9200
 ```
 
+
+
+# 翻译文档6.6
+
+## Getting Started
+
+Elasticsearch is a highly scalable open-source full-text search and analytics engine. It allows you to store, search, and analyze big volumes of data quickly and in near real time. It is generally used as the underlying engine/technology that powers applications that have complex search features and requirements.
