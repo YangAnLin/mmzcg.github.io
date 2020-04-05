@@ -1024,11 +1024,3 @@ python manage.py migrate
 访问`https://www.lfd.uci.edu/~gohlke/pythonlibs/#pymssql`
 
 下载`[pymssql‑2.1.4‑cp38‑cp38‑win32.whl]`
-
-
-
-
-
-
-
-
