@@ -38,3 +38,25 @@ concfg import solarized-dark
 `https://www.zhihu.com/question/63867578/answer/220101109`
 
 
+# Vscode 安装图片上传插件
+1.在插件那搜索picgo,安装好插件在插件那里点设置
+2.配置阿里云oss,参考:`https://picgo.github.io/PicGo-Doc/`
+```json
+{
+  "accessKeyId": "",
+  "accessKeySecret": "",
+  "bucket": "", // 存储空间名
+  "area": "", // 存储区域代号
+  "path": "", // 自定义存储路径
+  "customUrl": "" // 自定义域名，注意要加http://或者https://
+}
+```
+3.通过三个组合键，可以分别从：1.（Ctrl+alt+U）剪切板 2.（Ctrl+alt+E）文件夹 3.（Ctrl+alt+O）指定路径
+
+# 美化powershell教程
+用的是这三个地址,等下回安装的时候再写的详细点
+```
+https://zhuanlan.zhihu.com/p/51901035
+https://blog.walterlv.com/post/beautify-powershell-like-zsh.html
+https://coolcode.org/2018/03/16/how-to-make-your-powershell-beautiful/
+```
