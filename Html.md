@@ -413,9 +413,25 @@ target属性有_self为默认值,当前页面
 ```
 
 ## 引入方式
+内部样式:写在<style>里
+行内:就是写在<p>这种标签里的
+外部:就是引用单独的css文件
+
+## Emmet语法
+想生成多个标签:div*3
+父子关系:ui>li
+兄弟关系:ui+li
+带class的,就用.banne 就会生成<div class="banner">
+        ,用p.demo就会生成 <p class="demo>
+        带顺序的  p.demo$5 ,就会生成<p class="demo1> <p class="demo2>..<p class="demo5>
+生成时候字节带文本:p{你好} 就会生成 <p>你好</p>
+
+## 复合选择器
+### 后代选择器
 ```html
 ```
 
+### 子选择器
 ```html
 ```
 
