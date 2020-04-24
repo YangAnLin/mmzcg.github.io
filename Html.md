@@ -19,7 +19,7 @@
 <p>有几位老师去帮我们买汉堡去了，我们先到那里先吃一些零食，我们作文https://Www.ZuoWEn8.Com/的午餐特别丰富，我们吃饱后，我们一起去玩游戏，第一个游戏的名字叫做动物园里有什么。第二个游戏的名字叫做学校里面有什么。第三个游戏的名字叫做萝卜蹲。最后一个游戏是猜谜语，我们玩的特别开心，我们玩猜谜语时，每答对一个问题，都有一个奖品。高年级是苏家和笔袋儿，低年级是彩铅和笔记本儿，我们玩儿了一会儿，我们又开始吃水果了，我们吃西瓜，那瓜可甜了。吃完后我们收拾了一下东西，去了下一站，鸳鸯湖去参观。</p>
 </body>
 ```
-## 换行标签<br/>
+## 换行标签
 段落之间的距离比较大,换行的距离较小
 ```html
 <body>
@@ -413,63 +413,463 @@ target属性有_self为默认值,当前页面
 ```
 
 ## 引入方式
-内部样式:写在<style>里
-行内:就是写在<p>这种标签里的
+内部样式:写在`<style>`里
+行内:就是写在`<p>`这种标签里的
 外部:就是引用单独的css文件
 
 ## Emmet语法
-想生成多个标签:div*3
-父子关系:ui>li
-兄弟关系:ui+li
-带class的,就用.banne 就会生成<div class="banner">
-        ,用p.demo就会生成 <p class="demo>
-        带顺序的  p.demo$5 ,就会生成<p class="demo1> <p class="demo2>..<p class="demo5>
-生成时候字节带文本:p{你好} 就会生成 <p>你好</p>
+* 想生成多个标签:`div*3`
+* 父子关系:`ui>li`
+* 兄弟关系:`ui+li`
+* 带class的,就用`.banne` 就会生成`<div class="banner">`
+    * 用`p.demo`就会生成 `<p class="demo">`
+    * 带顺序的  `p.demo$5` ,就会生成`<p class="demo1"> <p class="demo2">..<p class="demo5">`
+* 生成时候字节带文本:`p{你好}` 就会生成 `<p>你好</p>`
 
 ## 复合选择器
 ### 后代选择器
+
+后代选择器可以直接找孙子,不用通过儿子
+
 ```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        /* 后代选择器 */
+        ol li {
+            color: red;
+        }
+
+        ol div{
+            color: yellow;
+        }
+
+    </style>
+</head>
+<body>
+<ol>
+    <li>我是ol的孩子</li>
+    <li>我是ol的孩子</li>
+    <li><div>我是ol的孩子</div></li>
+</ol>
+
+</body>
 ```
 
 ### 子选择器
+
+只能找儿子
+
 ```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        /* 后代选择器 */
+        ol li {
+            color: red;
+        }
+
+        ol div{
+            color: yellow;
+        }
+
+        ol > div{
+            color: red;
+        }
+
+    </style>
+</head>
+<body>
+<ol>
+    <li>我是ol的孩子</li>
+    <li><div>我是ol的孩子</div></li>
+    <div>我是ol的儿子</div>
+</ol>
+
+</body>
+```
+### 复合选择器
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        div,p{
+            color: yellow;
+        }
+
+        div,p,ul>li{
+            color: red;
+        }
+
+    </style>
+</head>
+<body>
+<div>熊大</div>
+<p>熊二</p>
+<span>光头强</span>
+<ul class="pig">
+    <li>小猪佩奇</li>
+    <li>猪爸爸</li>
+    <li>猪妈妈</li>
+</ul>
+</body>
+```
+### 连接伪类选择器
+* :link 未被访问的连接
+* :visited 已经访问的连接
+* :hover 鼠标放在上面的连接
+* :active 鼠标按下没有谈起的连接
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        /* 没有选中的连接 */
+        a:link{
+            /* 把颜色改成黑色 */
+            color: #333333;
+            /* 把连接的下划线去掉 */
+            text-decoration: none;
+        }
+
+        /* 选中的过连接 */
+        a:visited{
+            color: orange;
+        }
+
+        /* 鼠标经过的连接设置成蓝色,不管这个连接有没有已经被点过 */
+        a:hover{
+            color: skyblue;
+        }
+
+        /* 点击按钮,按下没有松开 */
+        a:active{
+            color: green;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<a href="#">小猪佩奇</a>
+</body>
+```
+### focus伪类选择器
+
+获取焦点的`表单`选择器
+
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+       input:focus{
+           background-color: skyblue;
+           color: red;
+       }
+    </style>
+</head>
+<body>
+
+<label for="name">用户名</label>
+<input type="text" id="name">
+</body>
+```
+## 元素显示模式
+### 块元素
+  * div ,h1 p ul ol li  一个占一行
+  * 高度,宽度,外边距,内边距都可以控制
+  * 宽度默认是容器的100%
+  * 是一个容器及盒子,里面可以放行内或者块元素
+  * `<p>`和`<h1>` 等用于存放`文字`的标签里面不能放`<div>`
+
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #a {
+            background-color: skyblue;
+        }
+
+        #b {
+            width: 200px;
+            height: 200px;
+            background-color: pink;
+        }
+        #c {
+            background-color: pink;
+        }
+        .d{
+            background-color: yellow;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="a">块状元素,比较霸道,独占一行</div>瑟瑟发抖
+<div id="b">块状元素,可以更改宽高</div>瑟瑟发抖
+<div id="c">块状元素,宽度默认是容器的100%</div>瑟瑟发抖
+<div style="background-color: skyblue">
+    块状元素,里面可以放行内或者块元素
+    <div class="d">里块元素</div>
+    <span style="background-color: pink">行内元素1</span>
+    <span style="background-color: gray">行内元素2</span>
+</div>
+</body>
+```
+### 行内元素
+* span a strong b em i
+*  一行可以用多个
+*  宽高,设置无效,背景颜色设置有效
+* 默认宽度就是它本身内容的宽度
+* 行内元素只能放文本或者其他行内元素
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        span {
+            /* 行内元素设置宽高无效*/
+            width: 100px;
+            height: 100px;
+            background-color: red;
+        }
+
+    </style>
+</head>
+<body>
+<span>中国</span>
+<span>美国</span>
+<!--宽度本身就是内容的本身-->
+<span>中国1111111111111</span>
+<span>美国222222222222222</span>
+<span>美国2222222<em>123123123</em>22222222</span>
+</body>
+```
+
+### 特殊情况
+
+链接里面不能再放连接,`<a>`里面可以放块级元素
+
+`<input> <img>`是行内款,一行可以给多个,也能设置宽高
+
+### 元素显示模式的转换
+
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        a {
+            width: 200px;
+            height: 50px;
+            background-color: orange;
+            /* 将行内元素转成块状元素 */
+            display: block;
+        }
+        #b {
+            /* 把块元素转成行内元素 */
+            display: initial;
+        }
+
+        span{
+            width: 200px;
+            height: 50px;
+            background-color: orange;
+            /* 将行内元素转成块状元素 */
+            display: inline-block;
+        }
+
+    </style>
+</head>
+<body>
+<a href="#">这是个按钮和超链接</a>
+
+<div id="a">我是块级元素</div>1
+<div id="b">我是块级元素</div>1
+<div id="c">我是块级元素</div>1
+
+<span>行内转速转成行内块元素</span>
+<span>行内转速转成行内块元素</span>
+
+</body>
+```
+### 元素显示模式Demo
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        a {
+            width: 230px;
+            /* 盒子的高度 */
+            height: 40px;
+            color: white;
+            background-color: #55585a;
+            display: block;
+            text-decoration: none;
+            text-indent: 2em;
+            line-height: 40px;
+        }
+
+        a:hover{
+            background-color: #ff6700;
+        }
+
+    </style>
+</head>
+<body>
+<a href="">手机 电话卡</a>
+<a href="">电视 盒子</a>
+<a href="">笔记本 平板</a>
+<a href="">出行 穿戴</a>
+<a href="">职能 路由器</a>
+<a href="">健康 儿童</a>
+<a href="">耳机 音响</a>
+</body>
+```
+## CSS背景
+背景色默认是透明的
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+        /* 背景透明-默认值*/
+        .a {background-color: transparent;}
+
+        /* 背景图片*/
+        .b {
+            height: 300px;
+            width: 600px;
+            background-image: url("logo.png");
+            /* 平铺 */
+            background-repeat: no-repeat;
+            /* 图片位置 */
+            background-position: center center;
+        }
+
+        h3 {
+            width: 150px;
+            height: 40px;
+            font-size: 14px;
+            font-weight: normal;
+            line-height: 40px;
+            background-image: url("21_4f16e.png");
+            background-position: left center;
+            background-repeat: no-repeat;
+            text-indent: 3.3em;
+        }
+
+        body{
+            background-image: url("918481363662609.jpg");
+            background-position: center top;
+            background-repeat: no-repeat;
+        }
+
+        p {
+            width: 200px;
+            height: 200px;
+            /* 最后一个参数是透明 */
+            background: rgba(0,10,0,0.5);
+            display: block;
+
+        }
+
+    </style>
+</head>
+<body>
+<div class="a"></div>
+<div class="b"></div>
+<!-- 装饰类扸 不是用这种方式实现-->
+<!--<h3><img src="21_4f16e.png"></img>成长守护平台</h3>-->
+<!-- 装饰类图片用这种-->
+<h3>成长守护平台</h3>
+<p>1</p>
+
+</body>
+```
+
+## CCS的三大特性
+### 层叠性
+
+就近原则的那个生效,有冲突的话,只是冲突相同的属性,不冲突的依然生效
+
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+       
+        div{
+            color: red;
+            font-size: 16px;
+        }
+        
+        div{
+            color: yellow;
+        }
+    </style>
+</head>
+<body>
+<!-- 最终生效的是  16px 和 yellow-->
+<div>这个字体会变色</div>
+</body>
+```
+
+
+
+### 继承性
+
+子标签会继承父标签的样式,通常是继承文本属性
+
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body{
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<div>这个字体会变色</div>
+</body>
+```
+
+
+
+### 优先级
+
+算了算了,我搞不定这,哈哈哈,我算知道就差不多了
+
+![image-20200424163130735](https://image.yanganlin.com/blog/20200424163132.png)
+
+## 盒子模型
+```html
+
 ```
 
 ```html
+
 ```
 
 ```html
+
 ```
 
 ```html
+
 ```
 
 ```html
-```
 
-```html
-```
-
-```html
-```
-
-```html
-```
-
-```html
-```
-
-```html
-```
-
-```html
-```
-
-```html
-```
-
-```html
-```
-
-```html
 ```
