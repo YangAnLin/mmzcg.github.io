@@ -854,22 +854,316 @@ target属性有_self为默认值,当前页面
 ![image-20200424163130735](https://image.yanganlin.com/blog/20200424163132.png)
 
 ## 盒子模型
-```html
+### 边框
 
-```
+还有个表格边框合并的属性:`border-collapse:`两条边合并成一条边 
 
-```html
-
-```
+边框变改变原本盒子的大小
 
 ```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .a {
+            width: 300px;
+            height: 200px;
+            /* 边框的粗细 */
+            border-width: 5px;
+            /* 边框的样式 */
+            border-style: dotted;
+            /* 边框颜色 */
+            border-color: red;
+        }
 
+        .b {
+            width: 300px;
+            height: 200px;
+            /* 边框的粗细 */
+            border-width: 5px;
+            /* 边框的样式 */
+            border-style: dotted;
+            border-top-color: red;
+            border-top-style: solid;
+        }
+
+
+    </style>
+</head>
+<body>
+<div class="a"></div>
+<hr>
+<div class="b"></div>
+</body>
 ```
+### 内边距
+
+* 也会影响盒子的实际大小
+
+* padding 值得顺序是 上 右 下 左
+* 没有指定width,加了padding就不会改变盒子宽度
 
 ```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .a {
+            width: 300px;
+            height: 200px;
+            /* 边框的粗细 */
+            border-width: 5px;
+            /* 边框的样式 */
+            border-style: dotted;
+            /* 边框颜色 */
+            border-color: red;
+        }
 
+        .b {
+            width: 300px;
+            height: 200px;
+            /* 边框的样式 */
+            border-style: solid;
+            /* 边框颜色 */
+            border-color: red;
+            /* 内边距左边 */
+            padding-left: 20px;
+            /* 内边距上面 */
+            padding-top: 30px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="a">你好的</div>
+<div class="b">你好的</div>
 ```
+### 外边距
+
+margin的语法跟padding用法一样
 
 ```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        div {
+            width: 200px;
+            height: 200px;
+            background-color: red;
 
+        }
+
+        .one{
+            margin-bottom: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="one"></div>
+<div></div>
+
+</body>
 ```
+#### 外边距应用-盒子居中
+
+让盒子居中显示,我想写博客的中间的内容的东西
+
+让盒子居中的前提条件是:
+
+* 盒子必须指定了宽度
+* 盒子左右的外边距都设置为auto
+
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .header {
+            width: 900px;
+            height: 200px;
+            background-color: red;
+            
+            margin: 1px auto;
+            /* 让行内元素或者行内块居中 这样才是起作用的 */
+            text-align: center;
+
+        }
+        /* 这个是不起作用的,并不能让行内元素或者行内块居中,需要在父级添加 */
+        span{
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <span>里面的蚊子</span>
+</div>
+
+<div class="header">
+    <img src="logo.png" alt="">
+</div>
+</body>
+```
+#### 相邻外边距合并
+
+解决这种,尽量只给一个盒子添加外边距
+
+![image-20200425120828983](https://image.yanganlin.com/blog/20200425120830.png)
+
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        div {
+            width: 200px;
+            height: 200px;
+            background-color: black;
+        }
+
+        .a {
+            margin-bottom: 100px;
+        }
+
+        .b {
+            margin-top: 200px;
+        }
+        /* a和b 之间的最终边距是200px,而不是300px*/
+    </style>
+</head>
+<body>
+
+<div class="a"></div>
+<div class="b"></div>
+</body>
+```
+
+#### 嵌套外边距塌陷
+
+在浮动,固定,绝对定位的盒子就不会有塌陷问题
+
+![image-20200425122026566](https://image.yanganlin.com/blog/20200425122028.png)
+
+```html
+ <head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .father {
+            width: 200px;
+            height: 200px;
+            background-color: black;
+            /* 问题:第一步先让父盒子移动50px*/
+            margin-top: 50px;
+            /* 解决方法1: 给父元素定义上边框*/
+            /*border-top: 1px solid transparent;*/
+            /* 解决方法2:指定一个上内边距*/
+            /*padding: 1px;*/
+            /* 解决方法三:为父元素添加 overflow*/
+            overflow: hidden;
+        }
+        .son{
+            width: 100px;
+            height: 100px;
+            background-color: burlywood;
+            /* 问题:第二步 又想让子盒子下移50px,就造成了塌陷的问题*/
+            margin-top: 100px;
+        }
+    </style>
+</head>
+<body>
+<div class="father">
+    <div class="son"></div>
+</div>
+</body>
+```
+
+#### 清除内外边距
+
+* 不同的浏览器都带有默认的内外边距
+
+* 行内元素不要设置上下外边距,设置了也没有用
+
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        /* 把所有的元素的内外边距都设置为0 */
+        * {
+            margin: 0 0;
+        }
+    </style>
+</head>
+<body>
+123
+</body>
+```
+
+### 圆角边框
+
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        div {
+            height: 300px;
+            width: 300px;
+            background-color: black;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div></div>
+</body>
+```
+
+### 盒子阴影
+
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        div {
+            height: 300px;
+            width: 300px;
+            background-color: black;
+            box-shadow: 10px 10px 10px 10px black;
+        }
+    </style>
+</head>
+<body>
+
+<div></div>
+</body>
+```
+
+### 文字阴影
+
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        div {
+            text-shadow: 5px 5px 5px red;
+        }
+    </style>
+</head>
+<body>
+
+<div>
+    文字阴影
+</div>
+</body>
+```
+
+## 盒子浮动
+
