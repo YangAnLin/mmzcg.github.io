@@ -896,6 +896,8 @@ target属性有_self为默认值,当前页面
 <div class="b"></div>
 </body>
 ```
+```html
+
 ### 内边距
 
 * 也会影响盒子的实际大小
@@ -1165,5 +1167,121 @@ margin的语法跟padding用法一样
 </body>
 ```
 
-## 盒子浮动
+## 浮动
+
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        div {
+            float: left;
+            width: 150px;
+            height: 200px;
+            background-color: red;
+            /* 可以让三个盒子并排排列,但是盒子之间会有缝隙 */
+            /*display:inline-block;*/
+        }
+    </style>
+</head>
+<body>
+
+<div>1</div>
+<div>2</div>
+<div>3</div>
+</body>
+```
+
+### 标准流
+
+就是按照标签规定好的默认方式排列
+
+多个块级元素纵向排列找标准流,多个块级元素横向排列找浮动
+
+加入了浮动之后:
+
+* 浮动元素会脱离标准流
+
+  * 浮动的盒子不会保留原先的位置,会让其他的标准流占有
+
+  * ```html
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <style>
+            .box1 {
+                float: left;
+                width: 150px;
+                height: 200px;
+                background-color: red;
+            }
+    
+            .box2 {
+                width: 300px;
+                height: 400px;
+                background-color: burlywood;
+            }
+        </style>
+    </head>
+    <body>
+    <div class="box1">1</div>
+    <div class="box2">2</div>
+    </body>
+    ```
+
+* 浮动的元素会一行内显示并且元素顶部对齐
+* 浮动的元素会具有行内块元素的特性
+* 行内元素添加浮动之后,就具有行内块元素相似的特性
+* 浮动的盒子只会影响盒子后面的标准流,不会影响前面的标准流
+
+### 布局Demo
+
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .box {
+            width: 1200px;
+            height: 460px;
+            background-color: pink;
+            margin: 0 auto;
+        }
+
+        .div1 {
+            float: left;
+            width: 230px;
+            height: 460px;
+            background-color: purple;
+        }
+
+        .div2 {
+            float: left;
+            width: 970px;
+            height: 460px;
+            background-color: skyblue;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <div class="div1">左侧</div>
+    <div class="div2">右侧</div>
+</div>
+</body>
+```
+
+### 清除浮动
+
+由于父级盒子很多情况下,不方便给高度,但是子盒子浮动又不占位置,最后父级盒子高度为0时,就会影响下面的标准被盒子
+
+* 比如淘宝的一直往下托,就一直会与产品,这个时候就不方便给父盒子高度
+* 比如新闻,有的新闻字数比较多,有的字数比较少,也不方便给告诉
+
+如果不给高度,父级盒子就会变成一条线,子盒子会浮起来,然后父级盒子下面的标准元素,就会被浮起来的子元素挡住,如下图:
+
+![image-20200427164126306](https://image.yanganlin.com/blog/20200427164129.png)
+
+
 
