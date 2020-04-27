@@ -905,7 +905,7 @@ target属性有_self为默认值,当前页面
 * padding 值得顺序是 上 右 下 左
 * 没有指定width,加了padding就不会改变盒子宽度
 
-```html
+​```html
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -1272,7 +1272,47 @@ margin的语法跟padding用法一样
 </body>
 ```
 
-### 清除浮动
+### 清除浮动的原因
+
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .box {
+            width: 800px;
+            border: 1px solid blue;
+            margin: 0 auto;
+        }
+
+        .damao {
+            float: left;
+            width: 300px;
+            height: 200px;
+            background-color: purple;
+        }
+
+        .ermao {
+            float: left;
+            width: 200px;
+            height: 200px;
+            background-color: pink;
+        }
+        .footer {
+            height: 200px;
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <div class="damao">大毛</div>
+    <div class="ermao">二毛</div>
+</div>
+<div class="footer"></div>
+</body>
+```
 
 由于父级盒子很多情况下,不方便给高度,但是子盒子浮动又不占位置,最后父级盒子高度为0时,就会影响下面的标准被盒子
 
@@ -1283,5 +1323,176 @@ margin的语法跟padding用法一样
 
 ![image-20200427164126306](https://image.yanganlin.com/blog/20200427164129.png)
 
+### 清除浮动的方法
 
+* 额外标签法,是W3C推荐的做法
 
+* 父级添加overflow属性
+
+  * ```html
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <style>
+            .box {
+                width: 800px;
+                border: 1px solid blue;
+                margin: 0 auto;
+                /* 清除浮动 */
+                overflow: hidden;
+            }
+    
+            .damao {
+                float: left;
+                width: 300px;
+                height: 200px;
+                background-color: purple;
+            }
+    
+            .ermao {
+                float: left;
+                width: 200px;
+                height: 200px;
+                background-color: pink;
+            }
+            .footer {
+                height: 200px;
+                background-color: black;
+            }
+        </style>
+    </head>
+    <body>
+    
+    <div class="box">
+        <div class="damao">大毛</div>
+        <div class="ermao">二毛</div>
+    </div>
+    <div class="footer"></div>
+    </body>
+    ```
+
+  * 优点:代码简洁
+
+  * 缺点:无法显示溢出的部分
+
+* 父级添加after元素
+
+  * ```html
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <style>
+            .clearfix:after {
+                content: "";
+                display: block;
+                height: 0;
+                clear: both;
+                visibility: hidden;
+            }
+            .clearfix {
+                /* IE6 ,7 专用*/
+                *zoom: 1;
+            }
+    
+            .box {
+                width: 800px;
+                border: 1px solid blue;
+                margin: 0 auto;
+            }
+    
+            .damao {
+                float: left;
+                width: 300px;
+                height: 200px;
+                background-color: purple;
+            }
+    
+            .ermao {
+                float: left;
+                width: 200px;
+                height: 200px;
+                background-color: pink;
+            }
+            .footer {
+                height: 200px;
+                background-color: black;
+            }
+        </style>
+    </head>
+    <body>
+    
+    <div class="box clearfix">
+        <div class="damao">大毛</div>
+        <div class="ermao">二毛</div>
+    </div>
+    <div class="footer"></div>
+    </body>
+    ```
+
+  * 优点:没有添加标签,结构更简单
+
+  * 缺点:照顾低版本浏览器
+
+* 父级添加双伪元素
+
+  * ```html
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <style>
+    
+            .clearfix:before,
+            .clearfix:after {
+                content: "";
+                display: table;
+            }
+            .clearfix:after{
+                clear: both;
+            }
+            .clearfix{
+                *zoom:1
+            }
+    
+            .box {
+                width: 800px;
+                border: 1px solid blue;
+                margin: 0 auto;
+            }
+    
+            .damao {
+                float: left;
+                width: 300px;
+                height: 200px;
+                background-color: purple;
+            }
+    
+            .ermao {
+                float: left;
+                width: 200px;
+                height: 200px;
+                background-color: pink;
+            }
+            
+            .footer {
+                height: 200px;
+                background-color: black;
+            }
+        </style>
+    </head>
+    <body>
+    
+    <div class="box clearfix">
+        <div class="damao">大毛</div>
+        <div class="ermao">二毛</div>
+    </div>
+    <div class="footer"></div>
+    </body>
+    ```
+
+  * 优点:代码简单
+
+  * 缺点:照顾低版本浏览器
+
+  * 代表网站:小米,腾讯
+
+  
