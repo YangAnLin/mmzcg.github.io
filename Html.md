@@ -1045,7 +1045,7 @@ margin的语法跟padding用法一样
 
 #### 嵌套外边距塌陷
 
-在浮动,固定,绝对定位的盒子就不会有塌陷问题
+在`浮动`,固定,绝对定位的盒子就不会有塌陷问题
 
 ![image-20200425122026566](https://image.yanganlin.com/blog/20200425122028.png)
 
@@ -1494,5 +1494,326 @@ margin的语法跟padding用法一样
   * 缺点:照顾低版本浏览器
 
   * 代表网站:小米,腾讯
+
+## 定位
+
+  标准流或者浮动无法快速实现,需要定位来实现
+
+### 定位总结
+
+| 定位模式         | 是否脱标       | 移动位置       | 是否常用   |
+| ---------------- | -------------- | -------------- | ---------- |
+| static静态定位   | 否             | 不能使用边偏移 | 很少       |
+| relative相对定位 | 否(占有位置)   | 相对于自身偏移 | 常用       |
+| absolute绝对定位 | 是(不占有位置) | 带有定位的父级 | 常用       |
+| fixed固定定位    | 是(不占有位置) | 浏览器可视区   | 常用       |
+| sticky粘性定位   | 否(占有位置)   | 浏览器可视区   | 当前阶段少 |
+
+### 定位组成
+
+  将盒子定再某一个位置,按照定位的方式移动盒子
+
+  定位=定位模式+边偏移
+
+  定位模式用于指定一个元素再文档中的定位方式,边偏移则决定了该元素的最终位置
+
+### 定位模式
+
+| 值       | 语义     |
+| -------- | -------- |
+| static   | 静态定位 |
+| relative | 相对定位 |
+| absolute | 绝对定位 |
+| fixed    | 固定定位 |
+
+### 边偏移
+
+  边偏移就是定位的盒子移动到最终的位置,有top,bottom left 和 right4个属性
+
+  是相对于父级盒子的偏移
+
+### 静态定位`static`
+
+  静态定位,是元素默认的定位方式,无定位的意思
+
+  * 按照标准流的特性摆放位置它没有边偏移
+
+### 相对定位`relative`
+
+* 它是相对于自己原来的位置移动的
+
+* 原来再标准流的位置继续占有,后面的盒子仍然以标准占位
+
+* ```html
+  <head>
+      <meta charset="UTF-8">
+      <title>Title</title>
+      <style>
+  
+          * {
+              padding: 0;
+              margin: 0;
+          }
+          div {
+              width: 200px;
+              height: 200px;
+          }
+  
+          .box1 {
+              position: relative;
+              top: 100px;
+              left: 100px;
+              background-color: pink;
+          }
+  
+          .box2{
+              background-color: black;
+          }
+      </style>
+  </head>
+  <body>
+  <div class="box1"></div>
+  <div class="box2"></div>
+  </body>
+  ```
+
+### 绝对定位 absolute
+
+元素在移动位置的时候,是相对于它祖先元素来说的
+
+如果没有祖先元素或者祖先元素没有定位,则以浏览器为准定位
+
+* 没有祖先元素
+
+  * ```html
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <style>
+            * {
+                padding: 0;
+                margin: 0;
+            }
+    
+            div {
+                width: 200px;
+                height: 200px;
+            }
+    
+            .box1 {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                background-color: pink;
+            }
+        </style>
+    </head>
+    <body>
+    <div class="box1"></div>
+    </body>
+    ```
+
+* 祖先元素没有定位
+
+  * ```html
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <style>
+           .father {
+               width: 500px;
+               height: 500px;
+               background-color: skyblue;
+           }
+    
+            .son{
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                width: 200px;
+                height: 200px;
+                background-color: pink;
+            }
+        </style>
+    </head>
+    <body>
+    <div class="father">
+        <div class="son"></div>
+    </div>
+    </body>
+    ```
+
+* 父级有定位
+
+  * 祖先元素有定位(相对,绝对,固定定位),都可以作为参考点,并且是以最进一级的有定位i元素,如果爸爸没有定位,爷爷有定位,就以爷爷的为参考点
+
+  * 绝对定位,像浮动一样,不占有原来的位置
+
+  * ```html
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <style>
+           .father {
+               position: relative;
+               width: 500px;
+               height: 500px;
+               background-color: skyblue;
+           }
+    
+            .son{
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                width: 200px;
+                height: 200px;
+                background-color: pink;
+            }
+        </style>
+    </head>
+    <body>
+    <div class="father">
+        <div class="son"></div>
+    </div>
+    </body>
+    ```
+
+### 固定定位
+
+  * 以浏览器的可视窗口为定位,不收滚动条的影响,也跟父级元素没有关系
+
+  * 不占有原先的位置
+
+*   固定定位是特殊的绝对定位
+
+* 小技巧
+
+  * ```html
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <style>
+            .w {
+                width: 800px;
+                height: 800px;
+                background-color: pink;
+                margin: 0 auto;
+            }
+          .fixed {
+              position: fixed;
+              /* 1.先浏览器宽度的一半 */
+              left: 50%;
+              /* 2.margin,走版心盒子宽度的一半*/
+              margin-left: 405px;
+              width: 50px;
+              height: 50px;
+              background-color: skyblue;
+          }
+        </style>
+    </head>
+    <body>
+    <div class="fixed"></div>
+    <div class="w">版心盒子,像素800</div>
+    </body>
+    ```
+
+### 粘性定位
+
+以浏览器的可视窗口为参考
+
+占有原先的位置
+
+必须添加top left right bottom中的一个才有效
+
+### 定位叠放顺序
+
+z-index 数值越大,盒子月考上
+
+如果属性相同,则按照书写顺序,后来居上
+
+只有定位的盒子才有z-index属性
+
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+        .box {
+            height: 200px;
+            width: 200px;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .xiongda{
+            background-color: red;
+            z-index: 1;
+        }
+
+        .xionger{
+            background-color: green;
+        }
+
+        .qinangge{
+            background-color: blue;
+        }
+    </style>
+</head>
+<body>
+<div class="box xiongda">xiongda</div>
+<div class="box xionger">xionger</div>
+<div class="box qinangge">qinangge</div>
+</body>
+```
+
+## 显示隐藏
+### display
+
+display:block 除了转换为块级元素之外,同时还有显示元素的意思
+
+display:none 隐藏之后,也不会占用位置
+
+### visibility
+
+visibility:visible 元素可见
+
+visibility:hidden 元素隐藏,但是占用位置
+
+### overflow
+
+| 属性值  | 描述                                      |
+| ------- | ----------------------------------------- |
+| visible | 不剪切内容也不添加滚动条                  |
+| hidden  | 不显示超过对象尺寸的内容,超出的部分隐藏掉 |
+| scroll  | 不管超出的内容否总是显示滚动条            |
+| auto    | 超出自动显示滚动条,不超出不显示滚动条     |
+
+
+
+## CSS高级
+
+### 精灵图
+
+background-position 
+
+### 字体
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
 
   
