@@ -365,3 +365,50 @@ http.cors.allow-origin: "*"
 docker restart es
 ```
 
+## 安装Portainer
+
+Manage the Docker environment where Portainer is running.
+
+ Ensure that you have started the Portainer container with the following Docker flag:
+
+`-v "/var/run/docker.sock:/var/run/docker.sock"` (Linux).
+
+```shell
+docker volume create portainer_data
+
+docker run -d 
+		   -p 9000:9000 \
+		   -v /var/run/docker.sock:/var/run/docker.sock  \
+		   -v portainer_data:/data portainer/portainer
+```
+
+添加docker node
+
+https://blog.csdn.net/bj_chengrong/article/details/90300972
+
+## 安装Redis
+
+```shell
+docker run -itd \
+		   --name redis-test \
+		   -p 6379:6379 \
+           redis
+```
+
+## 安装Mysql
+
+```shell
+ docker run -itd --name mysql-test\
+ 			-p 3306:3306 \
+			-e MYSQL_ROOT_PASSWORD=123456 \
+			mysql
+```
+
+## 安装Nginx
+
+```shell
+docker run --name nginx-test \
+		   -p 8080:80 \
+		   -d \
+           nginx
+```
