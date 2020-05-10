@@ -96,8 +96,6 @@ docker container logs
  docker container stop 05909cd09bf9
 ```
 
-
-
 #### 启动容器
 
 ```shell
@@ -113,8 +111,6 @@ docker attach 5cc239848ce5
 docker exec -it 5cc239848ce5 bash
 ```
 
-
-
 #### 停止容器
 
 ```shell
@@ -125,8 +121,6 @@ docker stop myredis
 ```shell
 docker restart id
 ```
-
-
 
 ### 镜像
 
