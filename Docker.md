@@ -1,8 +1,8 @@
 [toc]
-## Docker教程
+## 教程
 
 ### 修改时区
-进入容器,需要 重启容器
+进入容器,需要重启容器
 ```shell
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime 
 echo "Asia/Shanghai" > /etc/timezone
@@ -266,59 +266,21 @@ ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
 
 
 
-## Docker安装Jenkins
-
-1.拉取镜像
+## 安装Jenkins
 
 ```shell
-[root@localhost ~]# docker pull jenkins
-Using default tag: latest
-latest: Pulling from library/jenkins
-55cbf04beb70: Pull complete 
-1607093a898c: Pull complete 
-9a8ea045c926: Pull complete 
-d4eee24d4dac: Pull complete 
-c58988e753d7: Pull complete 
-794a04897db9: Pull complete 
-70fcfa476f73: Pull complete 
-0539c80a02be: Pull complete 
-54fefc6dcf80: Pull complete 
-911bc90e47a8: Pull complete 
-38430d93efed: Pull complete 
-7e46ccda148a: Pull complete 
-c0cbcb5ac747: Pull complete 
-35ade7a86a8e: Pull complete 
-aa433a6a56b1: Pull complete 
-841c1dd38d62: Pull complete 
-b865dcb08714: Pull complete 
-5a3779030005: Pull complete 
-12b47c68955c: Pull complete 
-1322ea3e7bfd: Pull complete 
-Digest: sha256:eeb4850eb65f2d92500e421b430ed1ec58a7ac909e91f518926e02473904f668
-Status: Downloaded newer image for jenkins:latest
+docker run \
+--name jenkins \
+--user=root \
+-p 8080:8080 \
+-p 50000:50000 \
+-v /opt/data/jenkins_home:/var/jenkins_home \
+-d \
+jenkins
+
+# 查看密码
+cat /var/jenkins_home/secrets/initialAdminPassword
 ```
-
-
-
-2.启动
-
-```shell
-[root@localhost ~]# docker run --name jenkins --user=root -p 8080:8080 -p 50000:50000 -v /opt/data/jenkins_home:/var/jenkins_home -d jenkins
-3400ad147754fed34b50992fdc1e7c2b43679133877f1a355eafc0102c683014
-
-root@3400ad147754:/# cat /var/jenkins_home/secrets/initialAdminPassword
-c30f7e72ae3d46f0a4b54bc9837afd08
-```
-
-
-
-3.在linux 目录 /opt/data/jenkins_home 下 找到密码,也可以进入到docker容器中
-
-```shell
-[root@localhost ~]# docker exec -it 3400ad147754fed34b50992fdc1e7c2b43679133877f1a355eafc0102c683014 bash
-```
-
-
 
 4.安装插件完之后,安装maven插件,在主机上下载maven,上传到容器中
 
@@ -328,8 +290,6 @@ docker cp maven-3.6.0 jenkins:/usr/local/
 // 上传本机的配置文件 
 docker cp settings.xml jenkins:/home/
 ```
-
-
 
 5.进入容器
 
@@ -341,13 +301,9 @@ docker exec -it jenkins bash
 docker exec -it -u 0 jenkins bash
 ```
 
-
-
 6.从本机拷贝到容器,是不需要用到权限的,但是在容器内,比如从/home下的文件移动到/root 就需要权限,就需要使用 -u 0
 
-
-
-## Docker安装ElasticSearch
+## 安装ElasticSearch
 
 ```shell
 docker run -d --name es -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:6.3.2
@@ -367,17 +323,12 @@ docker restart es
 
 ## 安装Portainer
 
-Manage the Docker environment where Portainer is running.
-
- Ensure that you have started the Portainer container with the following Docker flag:
-
-`-v "/var/run/docker.sock:/var/run/docker.sock"` (Linux).
-
 ```shell
 docker volume create portainer_data
 
 docker run -d 
 		   -p 9000:9000 \
+		   # 这个是必须的
 		   -v /var/run/docker.sock:/var/run/docker.sock  \
 		   -v portainer_data:/data portainer/portainer
 ```
@@ -412,3 +363,23 @@ docker run --name nginx-test \
 		   -d \
            nginx
 ```
+
+## 安装nexus3
+
+```shell
+# 创建数据文件夹
+mkdir /usr/local/docker/nexus/nexus-data
+
+# 如果有权限问题
+chmod 777 /usr/local/docker/nexus/nexus-data
+
+docker run -d \
+		   -p 8081:8081 \
+		   --name nexus \
+		   -v /usr/local/docker/nexus/nexus-data:/nexus-data \
+		   sonatype/nexus3
+
+# 查看密码
+cat /usr/local/docker/nexus/nexus-data/admin.password
+```
+
