@@ -349,6 +349,16 @@ docker run -itd \
 			mysql
 ```
 
+```shell
+docker run -itd \
+           --name mysql-test \
+           -p 3306:3306 \
+           -e MYSQL_ROOT_PASSWORD=123456 \
+           -v /home/anthony/soft-config/my.cnf:/etc/mysql/conf.d/my.cnf \
+           -v /home/anthony/soft-data/mysql/data:/var/lib/mysql \
+           mysql
+```
+
 ## 安装Nginx
 
 ```shell
