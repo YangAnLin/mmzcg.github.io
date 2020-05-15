@@ -51,7 +51,10 @@ sudo apt-get dist-upgrade （进入列新你系统和系统里安装的软件）
 ```
 
 ### 查看前几行
+
+```shell
 ifconfig | head -n 100
+```
 
 ### yum无法使用
 ```shell
