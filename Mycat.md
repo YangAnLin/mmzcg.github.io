@@ -1,3 +1,11 @@
+
+
+
+
+# 主从复制
+
+
+
 ## 启动
 
 1 .下载jre包
@@ -213,4 +221,68 @@ show slave status;
 主要看Slave_io_running =yes
 
 主要看Slave_sql_running =yes
+
+# 读写分离
+
+## scheml.xml
+
+### schema标签
+
+```xml
+<schema name="TESTDB" checkSQLschema="true" sqlMaxLimit="100" randomDataNode="dn1">
+    <!-- auto sharding by id (long) -->
+    <!--splitTableNames 启用<table name 属性使用逗号分割配置多个表,即多个表使用这个配置-->
+    <table name="travelrecord,address" dataNode="dn1,dn2,dn3" rule="auto-sharding-long" splitTableNames ="true"/>
+    <!-- <table name="oc_call" primaryKey="ID" dataNode="dn1$0-743" rule="latest-month-calldate"
+   /> -->
+</schema>
+```
+
+* name: 配置逻辑库的名称
+
+* checkSQLschema: 当执行`select * from T_Account.user`
+
+​	为true时,mycat会把sql转成``select * from user``
+
+​	false 会报错
+
+* sqlMaxLimit:最大查询每页条数,如果sql指定了limit,就以sql为准,没有,就以配置为准
+* randomDataNode:这个先不用,先改成`datanote='dn1'`
+
+### datanote标签
+
+```xml
+<dataNode name="dn1" dataHost="localhost1" database="db1" />
+<dataNode name="dn2" dataHost="localhost1" database="db2" />
+<dataNode name="dn3" dataHost="localhost1" database="db3" />
+```
+
+* name:数据分片节点名称
+* dataHost:定义该数据分片节点属于哪台数据库主机
+* database:指定哪个数据库,db_java1234
+
+### datahost标签
+
+```xml
+<dataHost name="localhost1" maxCon="1000" minCon="10" balance="3"
+          writeType="0" dbType="mysql" dbDriver="native" switchType="1"  slaveThreshold="100">
+    <heartbeat>select user()</heartbeat>
+    <!-- can have multi write hosts -->
+    <writeHost host="hostM1" url="localhost:3306" user="root"
+               password="123456">
+    </writeHost>
+    <!-- <writeHost host="hostM2" url="localhost:3316" user="root" password="123456"/> -->
+</dataHost>
+```
+
+* name:跟datanote标签的datahost对应
+* maxCon 指定每个读写实例连接池的的最大链接,write合readhost标签都会使用这个属性的值来实例化出连接池的最大连接数
+* min 最小的连接
+* balance:
+  * 0 不开启读写分离,所有读操作都发送到当前可用的writehost上
+  * 1 
+  * 2 所有读操作都随机在writehost合readehost上分发
+  * 3 所有读请求随机分发到writehost合readhos
+
+
 
