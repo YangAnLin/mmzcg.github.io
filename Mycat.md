@@ -286,3 +286,49 @@ show slave status;
 
 
 
+
+
+# 双组双从
+
+## 第二套主从
+
+1.在mysql添加中添加
+
+```shell
+log-slave-update
+auto-increment-increment=2
+auto-increment-offset=1
+```
+
+2.把mysql文件复制一份mysql3
+
+3.把mysql3的配置文件修修改这些配置
+
+```shell
+# 主服务器ID,必须唯一
+server-id=5
+auto-increment-offset=2
+```
+
+4.再创建两个容器,m2 和 s2
+
+## master 和 master同步
+
+就是相互slave
+
+# 测试读写分离
+
+插入语句
+
+```sql
+insert into test valus(@@hostname)
+```
+
+```mermaid
+graph TD
+A(总结) -->B(英语)
+A --> C(数学)
+A --> D(语文)
+B --> E(英语第一章)
+```
+
