@@ -430,7 +430,7 @@ GET /lib3/user/_search/
     "terms": {
       "name": ["zhou","lisi"]
     }
-  }
+  
 }
 ```
 
