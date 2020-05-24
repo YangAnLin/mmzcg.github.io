@@ -387,3 +387,15 @@ docker run -d \
 cat /usr/local/docker/nexus/nexus-data/admin.password
 ```
 
+## 安装ElasticSearch
+
+```shell
+docker run -itd \
+	   -p 9200:9200 \
+	   -p 9300:9300 \
+	   -e "discovery.type=single-node" \
+       -v /home/anthony/es/config:/usr/share/elasticsearch/config/ \
+       --name elasticsearch \
+       docker.elastic.co/elasticsearch/elasticsearch:7.7.0
+```
+
