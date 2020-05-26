@@ -44,7 +44,7 @@
 </project>
 ```
 
-```shell
+```xml
 <mirrors>
     <mirror>
       <id>alimaven</id>

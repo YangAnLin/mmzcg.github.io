@@ -1,3 +1,49 @@
+
+
+
+
+
+
+
+
+# centos7安装python3
+特别是在喜欢环境中已经安装的python2.x的版本中
+
+```shell
+# 这个可能不一定要装
+sudo yum -y groupinstall "Development tools"
+
+# 需要的
+sudo yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel libffi-devel
+
+# 下载安装包
+wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0a1.tar.xz
+
+# 解压
+tar -xvxf  Python-3.7.0a1.tar.xz
+
+# 复制文件夹
+mv Python-3.7.0 /usr/local
+
+# 进入到文件夹
+cd /usr/local/Python-3.7.0/
+
+# 编译,一定需要后面的参数
+./configure --prefix=/usr/local/bin/python3
+make & make install
+
+# 添加软连接
+ln -s /usr/local/bin/python3/bin/python3 /usr/bin/python3
+ln -s /usr/local/bin/python3/bin/pip3 /usr/bin/pip3
+
+# 验证
+python3
+pip3
+```
+
+
+
+
 # 基础语法
 
 ## 1.注释
@@ -31,13 +77,8 @@ print("hello")  # 这是单行注释
 
 ## 2.算数运算符
 
-```python
-print("取整数:4",9//2)
-print("取余数:1",9%2)
-print("幂次方:81",9**2)
-```
-
 乘法的使用,用`*`可以拼接字符串
+
 ```python
 In [1]: "A" * 30
 Out[1]: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
@@ -163,16 +204,16 @@ Out[15]: 3
 
 ### 3.6.变量的格式化输出
 
-| 符号 |  描述 |
-|:-------------:|:-------------:|
-| %c | 格式化字符(输出数值对应的ASCII码) |
-| **%s** |格式化字符串 |
-| **%d** | 格式化整数(%06d,不足的补0) |
-| %x | 格式化十六进制数（小写） |
-| %X | 格式化十六进制数（大写） |
-| %o | 格式化八进制数 |
+|  符号  |                   描述                   |
+| :----: | :--------------------------------------: |
+|   %c   |    格式化字符(输出数值对应的ASCII码)     |
+| **%s** |               格式化字符串               |
+| **%d** |        格式化整数(%06d,不足的补0)        |
+|   %x   |         格式化十六进制数（小写）         |
+|   %X   |         格式化十六进制数（大写）         |
+|   %o   |              格式化八进制数              |
 | **%f** | 格式化浮点数字，可以指定小数点精度(%.2f) |
-| **%%** |输出%号|
+| **%%** |                 输出%号                  |
 
 ```python
 """'
@@ -1000,6 +1041,134 @@ con.close()
 
 # Request
 
+## post请求参数
+
+```python
+# 表单提交
+import requests
+
+data = {
+    "name":"anthony",
+    "age":"12"
+}
+
+requests.post(url=url,data=data)
+
+# json提交
+import requests
+
+json_data = {
+    "name":"anthony",
+    "age":"12"
+}
+requests.post(url=url,json=json_data)
+```
+
+## cookie操作
+
+```python
+cookies={
+    'auther':'11223'
+}
+request.post(url=url,data=data,cookies=cookies)
+```
+
+## headers
+
+```python
+headers ={
+    'auth':'123'
+}
+request.post(url=url,data=data,cookies=cookies,headers=headers)
+```
+
+## 请求超时
+
+```python
+# 如果超过2s就超时报错
+requests.post(url=url,timeout=2)
+```
+
+## 鉴权
+
+有些页面,需要,比如spring secuity的页面
+
+```python
+requests.post(url=url,timeout=2,auth=('anthony','123456'))
+```
+
+## 编码
+
+```python
+# 先编码 再解码
+r.text.encode('utf-8').decode(unicode_escape)
+
+```
+
+
+
+# Pytest
+
+## 安装
+
+```shell
+# 安装pytest
+pip install pytest
+
+# 安装python-html包,生成html报告
+pip install pytest-html
+
+# 生成allure报告
+pip install allure-pytest
+```
+
+## 规范
+
+测试文件已test_开头
+
+测试类已Test开头,并且不能带有init方法
+
+测试函数以test_开头
+
+断言基本使用assert
+
+## 生成报告
+
+```shell
+# 生成html
+'--html=../report/report.html'
+
+# 生成xml格式的报告
+'--junitxml=./report/report.xml'
+
+# 生成allure报告
+'--alluredir','../report/reportallure'
+
+```
+
+## 生成allure报告
+
+```python
+pytest.main(['../test_case/','--alluredir','../report/reportallure/'])
+
+# 在report的文件夹执行
+allure generate ./reportallure/ -o ./reporthtml/ --clean
+```
+
+
+
+# Locust
+
+```shell
+pip install locust
+
+# centos需要添加环境变量
+# 如果locust在哪个目录,如果python安装在这个目录:/usr/local/bin/python3
+ln -s /usr/local/bin/python3/bin/locust /usr/bin/locust
+
+locust --version
+```
+
 
 
 # Django
@@ -1018,6 +1187,8 @@ python manage.py migrate
 
 
 # 这个环境呀,我要吐了
+
+
 
 ## pymssql
 
