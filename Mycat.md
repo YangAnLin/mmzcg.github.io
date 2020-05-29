@@ -324,11 +324,5 @@ auto-increment-offset=2
 insert into test valus(@@hostname)
 ```
 
-```mermaid
-graph TD
-A(总结) -->B(英语)
-A --> C(数学)
-A --> D(语文)
-B --> E(英语第一章)
-```
+
 

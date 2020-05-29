@@ -1,7 +1,5 @@
 [toc]
 
-## Git
-
 ### 用命令pull request代码,
 
 ```sehll
@@ -210,3 +208,12 @@ git rebase --abort/--continue/--edit-todo
 ```shell
 git stash pop
 ```
+
+### 升级
+
+window
+
+```shell
+git update-git-for-windows
+```
+
