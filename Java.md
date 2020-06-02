@@ -1,7 +1,5 @@
 # **1.Continue 和 Break**
 
-![img](img/clipboa1212rd.png)
-
 
 
 # **2.List转成string,去掉两边的中括号**
@@ -23,4 +21,10 @@ public static void main(String[] args) {
     System.out.println(long3 == long4);  //true
 }
 ```
+
+
+
+# 基础
+
+## IO
 
