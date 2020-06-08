@@ -371,6 +371,21 @@ BOOTPROTO=dhcp
 service network restart
 ```
 
+### ubuntu右上角网络图标消失并且上不了网
+
+```shell
+sudo service network-manager stop
+sudo rm /var/lib/NetworkManager/NetworkManager.state
+sudo service network-manager start
+
+sudo gedit /etc/NetworkManager/nm-system-settings.conf
+把false改成true
+
+sudo service network-manager restart
+```
+
+
+
 ## 教程
 
 ### Mysql

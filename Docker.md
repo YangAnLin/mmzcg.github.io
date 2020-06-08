@@ -264,13 +264,13 @@ ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
 
 ```shell
 docker run \
---name jenkins \
---user=root \
--p 8080:8080 \
--p 50000:50000 \
--v /opt/data/jenkins_home:/var/jenkins_home \
--d \
-jenkins
+    --name jenkins \
+    --user=root \
+    -p 8080:8080 \
+    -p 50000:50000 \
+    -v /home/anthony/jenkins:/var/jenkins_home \
+    -d \
+    jenkins
 
 # 查看密码
 cat /var/jenkins_home/secrets/initialAdminPassword
