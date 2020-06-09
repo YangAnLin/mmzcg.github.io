@@ -188,8 +188,6 @@ lsof -i:端口号查看某个端口是否被占用
 netstat -anp|grep 80 
 ```
 
-
-
 ### 获取远程服务器上的文件
 
 ```shell
@@ -235,8 +233,6 @@ scp -P 2222 -r /home/lnmp0.4/* *root@www.vpser.net:/root/lnmp0.4/
 * /home/lnmp0.4/表示准备要上传的目录，root@www.vpser.net 表示使用root用户登录远程服务器www.vpser.net，
 * `:/root/lnmp0.4/`表示保存在远程服务器上的目录位置。
 
-
-
 ### 历史命令
 
 ```shell
@@ -244,15 +240,11 @@ scp -P 2222 -r /home/lnmp0.4/* *root@www.vpser.net:/root/lnmp0.4/
 history -3
 ```
 
-
-
 ### 定时器
 
 ```shell
 crontab -e
 ```
-
-
 
 ### Shell脚本
 
@@ -265,15 +257,11 @@ each输出
 
 ```
 
-
-
 ### data
 
 ```shell
 data
 ```
-
-
 
 ### Vim行号
 
@@ -281,23 +269,17 @@ data
 set nu
 ```
 
-
-
 ### 查看系统版本
 
 ```shell
 cat /etc/os-release
 ```
 
-
-
 ### 开放端口
 
 ```shell
 sudo ufw allow 80
 ```
-
-
 
 ### 查看端口
 
@@ -309,8 +291,6 @@ netstat -a
 # 如查看8888端口，则在终端中输入：
 lsof -i:8888
 ```
-
-
 
 ### 安装Wget
 
@@ -330,8 +310,6 @@ lsof -i:8888
 ```
 su anthony
 ```
-
-
 
 ### Ubuntu-Nginx
 
@@ -384,8 +362,6 @@ sudo gedit /etc/NetworkManager/nm-system-settings.conf
 sudo service network-manager restart
 ```
 
-
-
 ## 教程
 
 ### Mysql
@@ -418,8 +394,6 @@ source /root/20151010.sql
 ```shell
 show database
 ```
-
-
 
 ### Nginx
 
@@ -707,40 +681,6 @@ worker_connection是 1024; 一个核 最大允许多少个链接
 不写    一般匹配
 
 ~          正则匹配
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## 知识点
 
