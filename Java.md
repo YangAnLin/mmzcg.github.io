@@ -509,13 +509,106 @@ public class StringDemo {
 # 第94的abcd指的是t
 ```
 
+## 字符串常量池
+
+### String Pool机制
+
+目的:JVM为了提高性能和减少内存开销,实现数据共享
+
+1.为字符串开辟一个字符串常量池(存在于方法区)
+
+2.创建字符串常量时,首页坚持字符串常量池是否存在该字符串
+
+3.存在该字符串,返回引用实例,不存在,实例化该字符串并放入池中
+
+### intern()
+
+String的intern()方法会查找在常量池中是否存在一份equal相等的字符串,如果有则返回该字符串的引用,如果没有则添加自己的字符串进入常量池
+
+```java
+public static void main(String[] args) {    
+      String s1 = new String("计算机");
+      String s2 = s1.intern();
+      String s3 = "计算机";
+      System.out.println("s1 == s2? " + (s1 == s2));
+      System.out.println("s3 == s2? " + (s3 == s2));
+}
+s1 == s2? false
+s3 == s2? true
+```
+
+## Integer常量池
+
+```java
+public class ArrayTest {
+    public static void main(String[] args) {
+        Integer i1 = new Integer(1);
+        Integer i2 = new Integer(1);
+        System.out.println(i1.hashCode()); // 1
+        System.out.println(i2.hashCode()); // 1
+        System.out.println(i1 == i2);      // false,new出来的地址不一样
+        System.out.println(i1.equals(i2)); // true,数值内容是一样的
+
+        System.out.println("-------------------");
+
+        Integer i3 = 1;
+        Integer i4 = 1;
+        System.out.println(i3.hashCode()); // 1
+        System.out.println(i4.hashCode()); // 1
+        System.out.println(i3 == i4);  	   // true,在常量池汇中,应用一样	
+        System.out.println(i3.equals(i4)); // true,数值内容一样
+    }
+}
+```
 
 
 
+```java
+# 源码
+public class ArrayTest {
+    public static void main(String[] args) {
+        Integer i1 = 25;
+        Integer i2 = new Integer(26);
+    }
+}
 
+# 反编译
+public class ArrayTest{
+  public static void main(String[] paramArrayOfString){
+    Integer localInteger1 = Integer.valueOf(25);
+    Integer localInteger2 = new Integer(26);
+  }
+}
 
+# valueOf源码
+public static Integer valueOf(int i) {
+    assert IntegerCache.high >= 127;
+    if (i >= IntegerCache.low && i <= IntegerCache.high)
+        return IntegerCache.cache[i + (-IntegerCache.low)];
+    return new Integer(i);
+}
+```
 
+## Class常量池
 
+###  class常量池简介(Class Constant Pool)
+
+我们写的每一个Java类被编译后，就会形成一份class文件；class文件中除了包含类的版本、字段、方法、接口等描述信息外，还有一项信息就是常量池(constant pool table)，用于存放编译器生成的各种字面量(Literal)和符号引用(Symbolic References)；
+每个class文件都有一个class常量池
+
+###  什么是字面量和符号引用
+
+- 字面量包括：1.文本字符串 2.八种基本类型的值 3.被声明为final的常量等;
+- 符号引用包括：1.类和方法的全限定名 2.字段的名称和描述符 3.方法的名称和描述符
+
+## 运行时常量池(Runtime Constant Pool)
+
+运行时常量池存在于内存中，也就是class常量池被加载到内存之后的版本，不同之处是：它的字面量可以动态的添加(String#intern()),符号引用可以被解析为直接引用
+JVM在执行某个类的时候，必须经过加载、连接、初始化，而连接又包括验证、准备、解析三个阶段。而当类加载到内存中后，jvm就会将class常量池中的内容存放到运行时常量池中，由此可知，运行时常量池也是每个类都有一个。在解析阶段，会把符号引用替换为直接引用，解析的过程会去查询字符串常量池，也就是我们上面所说的StringTable，以保证运行时常量池所引用的字符串与字符串常量池中是一致的
+
+## 集合框架
+
+![](https://image.yanganlin.com/blog/20200717134605.jpg)
 
 
 
