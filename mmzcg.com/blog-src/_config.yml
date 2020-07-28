@@ -101,3 +101,9 @@ deploy:
   type: 'git'
   repo: https://github.com/YangAnLin/mmzcg.github.io.git
   branch: master
+
+
+sitemap:
+  path: sitemap.xml
+baidusitemap:
+  path: baidusitemap.xml
