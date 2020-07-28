@@ -1,4 +1,4 @@
-.idea/
+../.idea
 .deploy_git/
 node_modules/
 public/
