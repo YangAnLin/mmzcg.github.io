@@ -763,9 +763,9 @@ swiftype_key:
 # See: https://chatra.io
 # Dashboard: https://app.chatra.io/settings/general
 chatra:
-  enable: false
+  enable: true
   async: true
-  id: # Visit Dashboard to get your ChatraID
+  id: EihoqJa35Kbyapqdo
   #embed: # Unfinished experimental feature for developers. See: https://chatra.io/help/api/#injectto
 
 # Tidio Support
