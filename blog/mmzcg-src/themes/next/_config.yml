@@ -581,7 +581,7 @@ comments:
 
 # Disqus
 disqus:
-  enable: true
+  enable: false
   shortname: Anthony
   count: true
   #post_meta_order: 0
@@ -610,10 +610,10 @@ changyan:
 # Valine
 # For more information: https://valine.js.org, https://github.com/xCss/Valine
 valine:
-  enable: false
-  appid: # Your leancloud application appid
-  appkey: # Your leancloud application appkey
-  notify: false # Mail notifier
+  enable: true
+  appid: vjuDbu6NurR8quggYWOD14w6-gzGzoHsz
+  appkey: uceYrDYYqitfkh2G5I5uuCLu
+  notify: true # Mail notifier
   verify: false # Verification code
   placeholder: Just go go # Comment box placeholder
   avatar: mm # Gravatar style
@@ -622,7 +622,7 @@ valine:
   language: # Language, available values: en, zh-cn
   visitor: false # Article reading statistic
   comment_count: true # If false, comment count will only be displayed in post page, not in home page
-  recordIP: false # Whether to record the commenter IP
+  recordIP: true # Whether to record the commenter IP
   serverURLs: # When the custom domain name is enabled, fill it in here (it will be detected automatically by default, no need to fill in)
   #post_meta_order: 0
 
