@@ -1,8 +1,8 @@
 # Created by .ignore support plugin (hsz.mobi)
 .idea/
-.deploy_git/
 node_modules/
 public/
 db.json
 /blog/yanganlin-src/.deploy_git/
 /blog/mmzcg-src/.deploy_git/
+/blog/yanganlin-src/.deploy_git/
