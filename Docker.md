@@ -335,7 +335,7 @@ https://blog.csdn.net/bj_chengrong/article/details/90300972
 
 ```shell
 docker run -itd \
-		   --name redis-test \
+		   --name redis \
 		   -p 6379:6379 \
            redis
 ```
