@@ -359,7 +359,7 @@ docker run -itd \
            mysql
 ```
 
-## 安装Nginx
+## 安装 Nginx
 
 ```shell
 docker run --name nginx-test \
@@ -368,7 +368,7 @@ docker run --name nginx-test \
            nginx
 ```
 
-## 安装nexus3
+## 安装nexus 3
 
 ```shell
 # 创建数据文件夹
@@ -387,7 +387,7 @@ docker run -d \
 cat /usr/local/docker/nexus/nexus-data/admin.password
 ```
 
-## 安装ElasticSearch
+## 安装Elastic Search
 
 ```shell
 docker run -itd \
@@ -397,5 +397,11 @@ docker run -itd \
        -v /home/anthony/es/config:/usr/share/elasticsearch/config/ \
        --name elasticsearch \
        docker.elastic.co/elasticsearch/elasticsearch:7.7.0
+```
+
+# 安装Zookeeper
+
+```shell
+docker run -d -p 2181:2181 --name some-zookeeper --restart=always zookeeper
 ```
 
