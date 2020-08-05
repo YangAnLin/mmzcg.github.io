@@ -346,7 +346,8 @@ docker run -itd \
  docker run -itd --name mysql-test\
  			-p 3306:3306 \
 			-e MYSQL_ROOT_PASSWORD=123456 \
-			mysql
+			--restart=always
+			mysql:5.7
 ```
 
 ```shell
@@ -396,6 +397,7 @@ docker run -itd \
 	   -e "discovery.type=single-node" \
        -v /home/anthony/es/config:/usr/share/elasticsearch/config/ \
        --name elasticsearch \
+       --restart=always \
        docker.elastic.co/elasticsearch/elasticsearch:7.7.0
 ```
 

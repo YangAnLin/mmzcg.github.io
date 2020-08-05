@@ -40,4 +40,4 @@ Disallow:
 User-agent: *
 Disallow:
 Disallow: /bin/
-Sitemap: http://mmzcg.com/sitemap.xml
+Sitemap: https://mmzcg.com/sitemap.xml
