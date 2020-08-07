@@ -5,11 +5,12 @@
 
 ```shell
 docker run \
-       -p 6699:6379 \
+       -p 6379:6379 \
        --name myredis \
        -v $PWD/redis.conf:/etc/redis/redis.conf \
        -v $PWD/data:/data \
        -d redis:3.2 redis-server /etc/redis/redis.conf \
+       --restart=always \
        --appendonly yes
 ```
 
@@ -18,7 +19,8 @@ docker run \
 * `-p 6699:6379` ： 端口映射，默认redis启动的是6379,外部端口(6699)。
 * `-v $PWD/redis.conf:/etc/redis/redis.conf` ： 将主机中当前目录下的redis.conf配置文件映射。
 * `-v $PWD/data:/data -d redis:latest`： 将主机中当前目录下的data挂载到容器的/data
-* `--redis-server --appendonly yes` :在容器执行redis-server启动命令，并打开redis持久化配置\
+* `--redis-server --appendonly yes` :在容器执行redis-server启动命令，并打开redis持久化配置
+* `--restart=always`:自动启动
 * 注意事项：
   * 如果不需要指定配置，`-v $PWD/redis.conf:/etc/redis/redis.conf` 可以不用 
   * redis-server 后面的那段 `/etc/redis/redis.conf` 也可以不用。
@@ -33,7 +35,7 @@ docker inspect myredis | grep IP
 docker run -it redis:latest redis-cli -h 192.168.42.32 
 ```
 
-## Centos-Redis源码集群安装
+## Centos-Redis Cluster安装
 ### 1.配置
 用两台虚拟机模拟6个节点，一台机器3个节点，创建出3 master、3 salve 环境。
 
@@ -231,14 +233,9 @@ PATH=$PATH:$HOME/bin:/usr/local/redis-3.2.8/src/
 # source ~/.bash_profile  
 ```
 
-## Windows安装包安装redis
-下载: https://github.com/MSOpenTech/redis/releases  
-可视化软件: Redis Desktop Manager
 
-## Windows源码安装redis
-启动redis:redis-server --service-start
-卸载redis:redis-server --service-uninstall
-安装成服务:redis-server --service-install redis.windows.conf
+
+## Centos-Redis主从安装
 
 
 
