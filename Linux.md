@@ -362,6 +362,12 @@ sudo gedit /etc/NetworkManager/nm-system-settings.conf
 sudo service network-manager restart
 ```
 
+### 过滤注释
+
+```shell
+ cat redis.conf |grep -v '#' |grep -v '^$' >redis-6237.conf
+```
+
 ## 教程
 
 ### Mysql
@@ -681,6 +687,10 @@ worker_connection是 1024; 一个核 最大允许多少个链接
 不写    一般匹配
 
 ~          正则匹配
+
+
+
+## Vim
 
 ## 知识点
 
