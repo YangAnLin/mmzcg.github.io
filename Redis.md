@@ -1,49 +1,588 @@
+# Redis的特性
 
-## Redis环境变量
-### 一.开机启动
+1. 数据间没有必然的关联关系
+2. 内部采用单线程机制进行工作
+3. 高性能。官方提供测试数据，50个并发执行100000个请求，读的速度是110000次/s，写的速度是81000次/s。
+4. 多数据类型支持：string（字符串类型）、list（列表类型）、hash（散列类型）、set（集合类型）、sorted_set（有序集合类型）
+5. 持久化支持。可以进行数据灾难恢复
+
+# redis的数据类型
+
+redis自身是一个Map,其中所有的数据都是采用key:value的形式存储
+
+数据类型指的是存储的数据的类型，也就是value部分的类型，key部分永远都是字符串
+
+- string --> String
+- hash --> Hashmap
+- list --> LinkList
+- set --> HashSet
+- sorted_set --> TreeSet
+
+## String
+
+- 存储的数据：单个数据，最简单的数据存储类型，也是最常用的数据存储类型
+- 存储数据的格式：一个存储空间保存一个数据
+- 存储内容：通常使用字符串，如果字符串以整数的形式展示，可以作为数字操作使用,最后实际上还是字符串
+
+![在这里插入图片描述](https://image.yanganlin.com/20200814043602.png)
+
+
+
+```shell
+# 设值
+192.168.245.129:0>set k1 anthony
+"OK"
+
+# 取值
+192.168.245.129:0>get k1
+"anthony"
+
+# 删除值,成功返回1
+192.168.245.129:0>del k1
+"1"
+
+# 删除值,不成功返回0
+192.168.245.129:0>del k1234
+"0"
+
+# 一次性存入多个值
+192.168.245.129:0>mset k1 v1 k2 v2 k3 v3
+"OK"
+
+# 一次性取出多个值
+192.168.245.129:0>mget k1 k2 k3
+ 1)  "v1"
+ 2)  "v2"
+ 3)  "v3"
+192.168.245.129:0>
+
+# 打印值的长度
+192.168.245.129:1>set name anthony
+"OK"
+192.168.245.129:1>get name
+"anthony"
+192.168.245.129:1>strlen name
+"7"
+
+# 追加
+# 有数据就追加
+192.168.245.129:1>append name 666
+"10"
+192.168.245.129:1>get name
+"anthony666"
+# 没数据就新建
+192.168.245.129:1>append othername frankie
+"7"
+192.168.245.129:1>get othername
+"frankie"
+
+# 递增递减,小数不行
+192.168.245.129:1>set num 1
+"OK"
+192.168.245.129:1>incr num
+"2"
+192.168.245.129:1>incr num
+"3"
+192.168.245.129:1>decr num
+"2"
+192.168.245.129:1>decr num
+"1"
+
+# 递增递减指定值,小数不行
+192.168.245.129:1>incrby num 4
+"6"
+192.168.245.129:1>decrby num 2
+"4"
+# 小数不行
+192.168.245.129:1>incrby num 1.5
+"ERR value is not an integer or out of range"
+
+# 递增指定小数,貌似没有递减
+192.168.245.129:1>incrbyfloat num 1.5
+"5.5"
+
+# 指定生命周期  setex key seconds value
+# setex 秒
+# psetex 毫秒
+192.168.245.129:1>setex phone2 2 1392465115
+"OK"
+192.168.245.129:1>get phone2
+null
+```
+
+- string在redis内部存储默认就是一个字符串，当遇到增减类操作incr,decr时会转成数值型进行计算
+- redis所有的操作都是原子性的，采用单线程处理所有业务，命令是一个一个执行的，因此无需考虑并发带来的数据影响。
+- 注意：按数值进行操作的数据，如果原始数据不能转成数值，或超过了redis数值上线范围，将会报错。9223372036854775807 (java中long型数据最大值，Long.MAX_VALUE)
+
+## 业务场景
+
+```shell
+setex key    time value
+setex userid 100   1
+```
+
+## 热点数据key命名惯例
+
+
+
+![在这里插入图片描述](https://image.yanganlin.com/20200814043612.png)
+
+## Hash
+
+- 需要的内存结构：一个存储空间保存多少个键值对数据
+- hash类型：底层使用哈希表结构实现数据存
+
+![在这里插入图片描述](https://image.yanganlin.com/20200814043617.png)
+
+```shell
+# 设值/修改值  hset key filed1 value
+192.168.245.129:0>HSET user name zhangsan
+"1"
+192.168.245.129:0>hset user age 38
+"1"
+
+# 取一个属性值
+192.168.245.129:0>hget user age
+"38"
+
+# 取多个属性值
+192.168.245.129:0>hmget user age name
+ 1)  "45"
+ 2)  "zhangsan"
+
+# 取一个key
+192.168.245.129:0>hgetall user
+ 1)  "name"
+ 2)  "zhangsan"
+ 3)  "age"
+ 4)  "38"
+ 
+ # 删除一个属性值
+192.168.245.129:0>hdel user name
+"1"
+192.168.245.129:0>hgetall user
+ 1)  "age"
+ 2)  "38"
+ 
+ # 查看有多少个属性
+ 192.168.245.129:0>hlen user
+"3"
+
+# 获取所有的属性
+192.168.245.129:0>hkeys user
+ 1)  "age"
+ 2)  "name"
+ 3)  "sex"
+ 
+# 获取所有的属性值
+192.168.245.129:0>hvals user
+ 1)  "45"
+ 2)  "zhangsan"
+ 3)  "n"
+ 
+ # 指定属性增加指定值
+ 192.168.245.129:0>hincrby user age 1
+"46"
+```
+
+## List
+
+数据存储需求：存储多个数据，并对数据进入存储空间的顺序进行区分
+需要的存储数据：一个存储空间保存多个数据，且通过数据可以体现进入顺序
+list类型：保存多个数据，底层使用双向链表存储结构实现
+
+![image-20200806002003265](https://image.yanganlin.com/20200814043625.png)
+
+```shell
+# 先插入huawei
+192.168.245.129:0>lpush list1 huawei
+"1"
+# 再插入apple
+192.168.245.129:0>lpush list1 apple
+"2"
+# 最后插入Microsoft
+192.168.245.129:0>lpush list1 microsoft
+"3"
+# 从左边取
+192.168.245.129:0>lrange list1 0 2
+ 1)  "microsoft"
+ 2)  "apple"
+ 3)  "huawei"
+ 
+ # 一次性插入多条数据
+192.168.245.129:0>rpush list2 a b c
+"3"
+
+#  从左边取
+# lrange key start stop
+# lindex key index 取指定索引的值
+# llen key 取长度
+# 没有rrange
+192.168.245.129:0>lrange list2 0 2
+ 1)  "a"
+ 2)  "b"
+ 3)  "c"
+ # 从左边取的第二钟方法
+192.168.245.129:0>lrange list2 0 -1
+ 1)  "a"
+ 2)  "b"
+ 3)  "c"
+ 
+# lpop从左边删,rpop从右边删 
+192.168.245.129:0>lpush list3 a b c
+"3"
+192.168.245.129:0>lpop list3
+"c"
+
+----------------------------------------------------------------------------------------------------
+
+# 阻塞取值,从运行命令开始,如果有数据,取出来,立马返回,如果没有数据,就等指定的时间20s,有就立马返回结束,如果没有,就一直等到时间结束
+192.168.245.129:0>blpop list4 20
+ 1)  "list4"
+ 2)  "32"
+
+# 删除指定数据
+# lrem key count value
+# count是删除多少个value
+192.168.245.129:0>lpush dianzan  a b c d
+"4"
+192.168.245.129:0>lrem dianzan 1 c
+"1"
+192.168.245.129:0>lrange dianzan 0 -1
+ 1)  "d"
+ 2)  "b"
+ 3)  "a"
+```
+
+## 业务场景
+
+list可以对数据进行分页操作,通常第一页的信息来自list,第二页和更多的数据通过数据库形式
+
+也可以用作队列,比如日志收集
+
+## Set
+
+- list 中保存的数据都是string类型的，数据总容量式由西安的，最多232-1个元素（4294967295）
+- list具有索引的概念，但是操作数据时候通常以队列的形式进行入队出队操作，或以栈的形式进入栈出栈的操作
+- 获取全部数据操作结束索引设置为-1
+- list 可以对数据进行分页操作，通过第一页的信息来自list，第2页及更多的信息通过数据库的形式加载
+- 因为list在存查大量数据的时候,存储慢,查询慢,所有有了set
+
+![在这里插入图片描述](https://image.yanganlin.com/20200814043632.png)
+
+```shell
+# 添加
+192.168.245.129:0>sadd users zs
+"1"
+192.168.245.129:0>sadd users lisi
+"1"
+192.168.245.129:0>sadd users ww
+"1"
+
+# 查列表
+192.168.245.129:0>smembers users
+ 1)  "lisi"
+ 2)  "ww"
+ 3)  "zs"
+ 
+ # 查数量
+192.168.245.129:0>scard users
+"3"
+
+# 判断是否有指定数据
+192.168.245.129:0>sismember users ls
+"0"
+192.168.245.129:0>sismember users ww
+"1"
+192.168.245.129:0>smembers users
+ 1)  "lisi"
+ 2)  "ww"
+ 3)  "zs"
+ 
+ # 删除指定数据
+192.168.245.129:0>srem users ww
+"1"
+192.168.245.129:0>smembers users
+ 1)  "lisi"
+ 2)  "zs"
+ 
+ # 随机获取集合中指定数量的数据,获取之后,原来的队列数据不变
+ srandmember key count
+ # 随机获取集合中的某个数据并讲该数据移除集合
+ spop key
+ 
+ --------------------------------------------------------------------------------------
+ > sadd u1 a1
+1
+> sadd u1 a2
+1
+> sadd u1 a3
+1
+> sadd u2 a1
+1
+> sadd u2 a2
+1
+# 交集
+> sinter u1 u2
+a2
+a1
+# 并集
+> sunion u1 u2
+a1
+a2
+a3
+# 差集 (u1,u2)顺序不一样,结果不一样
+> sdiff u1 u2
+a3
+```
+
+## 业务场景
+
+redis应用于随机推荐类信息检索，例如热点歌单推荐，热点新闻推荐，热点旅游线路，应用APP推荐，大V推荐等
+
+## sort_set
+
+```shell
+# 添加数据
+> zadd scores 100  zhangsan
+1
+> zadd scores 90  lisi
+1
+> zadd scores 95  wangwu
+1
+
+# 获取全部数据
+> zrange scores 0 -1
+lisi
+wangwu
+zhangsan
+
+# 获取全部数据
+> zrange scores 0 -1 withscores
+lisi
+90
+wangwu
+95
+zhangsan
+100
+
+# 反向获取全部数据
+> zrevrange scores 0 -1 withscores
+zhangsan
+100
+wangwu
+95
+lisi
+90
+
+# 删除数据
+> zrem scores zhangsan
+1
+> zrange scores 0 -1 withscores
+lisi
+90
+wangwu
+95
+
+# 按条件获取数据,可以用作分页
+zrangebyscore key min max [WITHSCORES] [LIMIT]
+zrevrangebyscore key max min [WITHSCORES]
+
+# 条件删除
+zremrangebyrank key start stop
+zremrangebyscore key min max
+
+-----------------------------------------排名-------------------------------------------------------
+# 添加模拟数据
+> zadd movies 143 aa 97 bb 201 cc
+3
+
+# 获取数据对应的索引(排名)
+> zrank movies bb
+0
+# 反向获取
+> zrevrank movies bb
+2
+
+# score 值获取与修改
+zscore key member
+zincrby key increment member
+
+
+```
+
+## Redis 通用命令
+
+```shell
+-------------------------------------基本操作
+# 删除
+del key
+
+# 获取key是否存在
+exists key
+
+# 获取key的类型
+type key
+
+
+-----------------------------有效期
+
+# 设置指定有效期
+# 秒
+expire key second 
+# 毫秒
+pexpire key milliseconds 
+# 有效期是时间戳
+expireat key timestamp
+
+# 获取key的有效期
+ttl key
+pttl key  毫秒
+
+# 切换key从时效性变成永久性
+persist key
+
+
+-------------------------------------查询
+# 具体看图片
+keys pattern
+
+
+-------------------------------------其它操作
+# 重命名
+# 不判断newkey存不存在,newkey就用key的值覆盖,再改成
+rename key newkey
+
+# 如果newkey 存在,就不能改
+rename key newkey
+
+```
+
+![在这里插入图片描述](https://image.yanganlin.com/20200814043640.png)
+
+```shell
+# 为key改名
+rename key newkey //如果已经有newkey的数据，直接覆盖
+renamenx key newkey //如果已经有，则失败
+
+# 对所有key排序
+sort
+
+----------------------------------------------数据库操作
+
+# 切换数据库
+select index
+```
+
+# 高级数据类型
+
+## Bitmaps
+
+## HyperLogLog
+
+## GEO
+
+# 安装redis
+
+## Docker安装单机
+```shell
+docker run \
+       -p 6379:6379 \
+       --name myredis \
+       -v $PWD/redis.conf:/etc/redis/redis.conf \
+       -v $PWD/data:/data \
+       -d redis:3.2 redis-server /etc/redis/redis.conf \
+       --restart=always \
+       --appendonly yes
+```
+
+命令说明：
+* `--name myredis` : 指定容器名称，这个最好加上，不然在看docker进程的时候会很尴尬。
+* `-p 6699:6379` ： 端口映射，默认redis启动的是6379,外部端口(6699)。
+* `-v $PWD/redis.conf:/etc/redis/redis.conf` ： 将主机中当前目录下的redis.conf配置文件映射。
+* `-v $PWD/data:/data -d redis:latest`： 将主机中当前目录下的data挂载到容器的/data
+* `--redis-server --appendonly yes` :在容器执行redis-server启动命令，并打开redis持久化配置
+* `--restart=always`:自动启动
+* 注意事项：
+  * 如果不需要指定配置，`-v $PWD/redis.conf:/etc/redis/redis.conf` 可以不用 
+  * redis-server 后面的那段 `/etc/redis/redis.conf` 也可以不用。
+  * `$PWD` 在window系统下貌似不能用,可以用相对路径`/`
+
+客户端连接
+
+```shell
+# 先查询到myredis容器的ip地址。
+docker inspect myredis | grep IP 
+# 连接到redis容器。然后就进入redis命令行了。
+docker run -it redis:latest redis-cli -h 192.168.42.32
+```
+## 源码安装单机
+
+### centos下安装
+
+```shell
+# 安装需要的软件
+yum -y install gcc gcc-c++ kernel-devel make
+
+# 下载redis
+wget http://download.redis.io/releases/redis-5.0.5.tar.gz
+tar -zxvf redis-5.0.5.tar.gz
+cd redis-5.0.5
+
+# 安装redis
+make && make instal
+```
+注意make的时候可能会报错,
+```shell
+yum install gcc
+make MALLOC=libc
+```
+
+### 开机启动
+
 启动脚本 `redis_init_script` 位于位于`Redis`的 `/utils/` 目录下。
 
 大致浏览下该启动脚本，发现redis习惯性用监听的端口名作为配置文件等命名，我们后面也遵循这个约定。
-```
-#redis服务器监听的端口
+
+```shell
+
+# redis服务器监听的端口
 REDISPORT=6379
-#服务端所处位置，在make install后默认存放与`/usr/local/bin/redis-server`，如果未make install则需要修改该路径，下同。
+
+# 服务端所处位置，在make install后默认存放与`/usr/local/bin/redis-server`，如果未make install则需要修改该路径，下同。
 EXEC=/usr/local/bin/redis-server
-#客户端位置
+
+# 客户端位置
 CLIEXEC=/usr/local/bin/redis-cli
-#Redis的PID文件位置
+
+# Redis的PID文件位置
 PIDFILE=/var/run/redis_${REDISPORT}.pid
+
 #配置文件位置，需要修改
 CONF="/etc/redis/${REDISPORT}.conf"
-配置环境
 ```
 
-* 1.根据启动脚本要求，将修改好的配置文件以端口为名复制一份到指定目录。需使用root用户。
-
-```
+根据启动脚本要求，将修改好的配置文件以端口为名复制一份到指定目录。需使用root用户。
+```shell
 mkdir /etc/redis
 cp redis.conf /etc/redis/6379.conf
 ```
-* 2.将启动脚本复制到`/etc/init.d`目录下，本例将启动脚本命名为redisd（通常都以d结尾表示是后台自启动服务）。
-
-```
+将启动脚本复制到`/etc/init.d`目录下，本例将启动脚本命名为redisd（通常都以d结尾表示是后台自启动服务）
+```shell
 cp redis_init_script /etc/init.d/redisd
 ```
-
-* 3.设置为开机自启动
-
+设置为开机自启动
 此处直接配置开启自启动 `chkconfig redisd on` 将报错误： `service redisd does not support chkconfig` 
-参照 此篇文章 ，在启动脚本开头添加如下两行注释以修改其运行级别：
 
-```
+```shell
 #!/bin/sh
 # chkconfig:   2345 90 10
 # description:  Redis is a persistent key-value database
 #
 ```
- 再设置即可成功。
+再设置即可成功。
 
-```
+```shell
 #设置为开机自启动服务器
 chkconfig redisd on
 #打开服务
@@ -51,17 +590,14 @@ service redisd start
 #关闭服务
 service redisd stop
 ```
-
-### 二.添加到PATH
-#### 问题描述:  
-
+### 添加到PATH
 由于redis-cli命令没有设置到PATH中,每次想使用时,都需要执行find命令去找这个命令在哪里
 ```
 # find / -name redis-cli  
 ```
 找到之后, 再执行命令, 这样实在太麻烦
 
-#### 解决方案:  
+解决方案:  
 
 将`redis-cli`命令配置到`PATH`中,这样每次使用时,就像`ls`这种命令一样不加路径执行
 
@@ -80,160 +616,776 @@ PATH=$PATH:$HOME/bin:/usr/local/redis-3.2.8/src/
 ```
 
 
+## 源码安装集群Redis-cluster
 
-## 
+### 1.配置
+用一台虚拟机模拟6个节点，创建出3 master、3 salve 环境。
 
-
-
-* 
-
-# 2.为什么要用 Redis/为什么要用缓存
-
-**高性能：**
-
-假如用户第一次访问数据库中的某些数据。这个过程会比较慢，因为是从硬盘上读取的。将该用户访问的数据存在数缓存中，这样下一次再访问这些数据的时候就可以直接从缓存中获取了。操作缓存就是直接操作内存，所以速度相当快。如果数据库中的对应数据改变的之后，同步改变缓存中相应的数据即可！
-
-![](http://my-blog-to-use.oss-cn-beijing.aliyuncs.com/18-9-24/54316596.jpg)
+### 2.下载,解压,编译安装
 
 
-**高并发：**
-
-直接操作缓存能够承受的请求是远远大于直接访问数据库的，所以我们可以考虑把数据库中的部分数据转移到缓存中去，这样用户的一部分请求会直接到缓存这里而不用经过数据库。
-
-![](http://my-blog-to-use.oss-cn-beijing.aliyuncs.com/18-9-24/85146760.jpg)
-
-# 
-
-# 4.redis 和 memcached 的区别
-
-| 对比参数     | Redis                                                        | Memcached                                                  |
-| ------------ | ------------------------------------------------------------ | ---------------------------------------------------------- |
-| 类型         | 1.支持内存<br/>  2.非关系型数据库                            | 1.支持内存<br/>2.key-value键值对<br/>3.缓存系统            |
-| 数据存储类型 | 1.String<br/>2.List<br/>3.Set<br/>4.Hash<br/>5.SortSet(ZSet) | 1.文本型<br/>2.二进制类型                                  |
-| 查询操作     | 1.批量操作<br/>2.事务支持(假的事务)<br/>3.每个类型的CRUD     | CURD                                                       |
-| 附加功能     | 1.发布/订阅模式<br/>2.主从分区<br/>3.序列化支持<br/>4.Lua脚本支持 | 多线程服务支持                                             |
-| 网络IO模型   | 单线程的多路IO复用                                           | 多线程非阻塞IO复用                                         |
-| 事件库       | 自封装简易事件库AeEvent                                      | 贵族血统的LibEvent事件库                                   |
-| 持久化支持   | 1.RDB(快照)<br/>2.AOF(持久化)                                | 不支持                                                     |
-| 集群模式     | 1.主从<br/>2分片集群                                         | 有原生的集群模式，需要依靠客户端来实现往集群中分片写入数据 |
-
-
-# 5.redis 常见数据结构以及使用场景分析
-
-#### 1.String
-
-> **常用命令:**  set,get,decr,incr,mget 等。
-
-String数据结构是简单的key-value类型，value其实不仅可以是String，也可以是数字。 
-常规key-value缓存应用； 
-常规计数：微博数，粉丝数等。
-
-#### 2.Hash
-> **常用命令：** hget,hset,hgetall 等。
-
-hash 是一个 string 类型的 field 和 value 的映射表，hash 特别适合用于存储对象，后续操作的时候，你可以直接仅仅修改这个对象中的某个字段的值。 比如我们可以 hash 数据结构来存储用户信息，商品信息等等。比如下面我就用 hash 类型存放了我本人的一些信息：
-
-```
-key=JavaUser293847
-value={
-  “id”: 1,
-  “name”: “SnailClimb”,
-  “age”: 22,
-  “location”: “Wuhan, Hubei”
-}
-
+### 3.创建节点,在worker1
+创建文件
+```shell
+cd /usr/local
+mkdir redis_cluster
+cd redis_cluster
+mkdir 7000
+mkdir 7001
+mkdir 7002
+cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7000/
+cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7001/
+cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7002/
+cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7003/
+cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7004/
+cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7005/
 ```
 
-
-#### 3.List
-> **常用命令:** lpush,rpush,lpop,rpop,lrange等
-
-list 就是链表，Redis list 的应用场景非常多，也是Redis最重要的数据结构之一，比如微博的关注列表，粉丝列表，消息列表等功能都可以用Redis的 list 结构来实现。
-
-Redis list 的实现为一个双向链表，即可以支持反向查找和遍历，更方便操作，不过带来了部分额外的内存开销。
-
-另外可以通过 lrange 命令，就是从某个元素开始读取多少个元素，可以基于 list 实现分页查询，这个很棒的一个功能，基于 redis 实现简单的高性能分页，可以做类似微博那种下拉不断分页的东西（一页一页的往下走），性能高。
-
-#### 4.Set
-
-> **常用命令：**
-> sadd,spop,smembers,sunion 等
-
-set 对外提供的功能与list类似是一个列表的功能，特殊之处在于 set 是可以自动排重的。
-
-当你需要存储一个列表数据，又不希望出现重复数据时，set是一个很好的选择，并且set提供了判断某个成员是否在一个set集合内的重要接口，这个也是list所不能提供的。可以基于 set 轻易实现交集、并集、差集的操作。
-
-比如：在微博应用中，可以将一个用户所有的关注人存在一个集合中，将其所有粉丝存在一个集合。Redis可以非常方便的实现如共同关注、共同粉丝、共同喜好等功能。这个过程也就是求交集的过程，具体命令如下：
-
-```
-sinterstore key1 key2 key3     将交集存在key1内
+分别修改三个文件夹里的配置文件,修改如下内容
+```conf
+port  7000      //端口7000,7002,7003,7004,7005,7001       
+bind 0.0.0.0     //自己建议修改为0.0.0.0
+daemonize yes   //redis后台运行
+pidfile  /var/run/redis_7000.pid    //pidfile文件对应7000,7001,7002
+cluster-enabled  yes    //开启集群  把注释#去掉
+cluster-config-file  nodes_7000.conf   //集群的配置,配置文件首次启动自动生成7000,7001,7002
+cluster-node-timeout  15000  //请求超时  默认15秒，可自行设置
+appendonly  yes //aof日志开启 
 ```
 
-#### 5.Sorted Set
-> **常用命令：** zadd,zrange,zrem,zcard等
+启动节点的redis
+`/usr/local/bin/redis-server` 这是在`make & make install`生成的
+```shell
+/usr/local/bin/redis-server redis_cluster/7000/redis.conf
+/usr/local/bin/redis-server redis_cluster/7001/redis.conf
+/usr/local/bin/redis-server redis_cluster/7002/redis.conf
+/usr/local/bin/redis-server redis_cluster/7003/redis.conf
+/usr/local/bin/redis-server redis_cluster/7002/redis.conf
+/usr/local/bin/redis-server redis_cluster/7002/redis.conf
+```
+
+检查 redis 启动情况
+```shell
+ps -ef | grep redi
+root      61020      1  0 02:14 ?        00:00:01 redis-server 0.0.0.0:7000 [cluster]   
+root      61024      1  0 02:14 ?        00:00:01 redis-server 0.0.0.0:7001 [cluster]   
+root      61029      1  0 02:14 ?        00:00:01 redis-server 0.0.0.0:7002 [cluster]
+root      61029      1  0 02:14 ?        00:00:01 redis-server 0.0.0.0:7002 [cluster]
+root      61029      1  0 02:14 ?        00:00:01 redis-server 0.0.0.0:7002 [cluster]
+root      61029      1  0 02:14 ?        00:00:01 redis-server 0.0.0.0:7002 [cluster]
+```
+### 4.再在worker2 上做相同的操作
+
+### 5.启动集群
+装的redis是5.x的版本,这里没有应用到`redis-trib.rb`,所以就不需要装ruby
+```shell
+cd /usr/local/bin
+redis-cli --cluster create 192.168.0.100:7003 192.168.0.100:7004 192.168.0.100:7005 192.168.0.179:7000 192.168.0.179:7001 192.168.0.179:7002 --cluster-replicas 1
+```
+
+遇到
+```shell
+Can I set the above configuration? (type 'yes' to accept): yes
+```
+如数`yes`
+
+### 6.校验,等运行完成
+`redis-cli --cluster check 192.168.0.179:7000`
+```
+[root@worker1 src]# redis-cli --cluster check 192.168.0.179:7000
+192.168.0.179:7000 (27bce53b...) -> 0 keys | 5462 slots | 1 slaves.
+192.168.0.100:7004 (6b0173d9...) -> 0 keys | 5461 slots | 1 slaves.
+192.168.0.100:7003 (9f15a932...) -> 0 keys | 5461 slots | 1 slaves.
+[OK] 0 keys in 3 masters.
+0.00 keys per slot on average.
+>>> Performing Cluster Check (using node 192.168.0.179:7000)
+M: 27bce53bda92341ca4a5c82c2361ab99f24c0b27 192.168.0.179:7000
+   slots:[5461-10922] (5462 slots) master
+   1 additional replica(s)
+S: c7ebcd900fb7d9afb1980797acba45518cb7d877 192.168.0.100:7005
+   slots: (0 slots) slave
+   replicates 27bce53bda92341ca4a5c82c2361ab99f24c0b27
+S: ed5256f8db1bf556a8dadbe8f2b07699507e17d9 192.168.0.179:7001
+   slots: (0 slots) slave
+   replicates 6b0173d925f70807a9081b7bc09bcd37be857342
+S: 758609eaea88bac25b864f2badbab2171a68089b 192.168.0.179:7002
+   slots: (0 slots) slave
+   replicates 9f15a9329a9d0ec5c7fcb5abbba817730f0942f9
+M: 6b0173d925f70807a9081b7bc09bcd37be857342 192.168.0.100:7004
+   slots:[10923-16383] (5461 slots) master
+   1 additional replica(s)
+M: 9f15a9329a9d0ec5c7fcb5abbba817730f0942f9 192.168.0.100:7003
+   slots:[0-5460] (5461 slots) master
+   1 additional replica(s)
+[OK] All nodes agree about slots configuration.
+>>> Check for open slots...
+>>> Check slots coverage...
+[OK] All 16384 slots covered.
+```
+
+### 7.主机上下线
+
+### 8.Cluster配置
+
+```shell
+
+# 设置加入cluster，成为其中的节点
+cluster-enabled yes|no
+
+# cluster配置文件名，该文件属于自动生成，仅用于快速查找文件并查询文件内容
+cluster-config-file < filename>
+
+# 节点服务响应超时时间，用于判定该节点是否下线或切换为从节点
+cluster-node-timeout < milliseconds>
+
+# master连接的slave最小数量
+cluster-migration-barrier < count>
+```
+
+### 9.Cluster节点操作命令
+
+```shell
+
+# 查看集群节点信息
+cluster nodes
+
+# 进入一个从节点redis，切换其主节点
+cluster replication < master-id>
+
+# 发现一个新节点，新增主节点
+cluster meet ip:port
+
+# 忽略一个没有solt的节点
+cluster forget
+
+# 手动故障转移
+cluster failover
+```
+
+## 源码安装主从
+
+看着已经要过时了,不搞了
 
 
-和set相比，sorted set增加了一个权重参数score，使得集合中的元素能够按score进行有序排列。
 
-**举例：** 在直播系统中，实时排行信息包含直播间在线用户列表，各种礼物排行榜，弹幕消息（可以理解为按消息维度的消息排行榜）等信息，适合使用 Redis 中的 Sorted Set 结构进行存储。
+# 持久化
+
+很多时候我们需要持久化数据也就是将内存中的数据写入到硬盘里面，大部分原因是为了之后重用数据（比如重启机器、机器故障之后恢复数据），或者是为了防止系统故障而将数据备份到一个远程位置。
+
+Redis不同于Memcached的很重一点就是，Redis支持持久化，而且支持两种不同的持久化操作。
+
+Redis的一种持久化方式叫快照（snapshotting，RDB）
+
+另一种方式是只追加文件（append-only file,AOF）
+
+这两种方法各有千秋，下面我会详细这两种持久化方法是什么，怎么用，如何选择适合自己的持久化方法。
+
+![image-20200813080458881](https://image.yanganlin.com/20200814043655.png)
+
+## RDB(快照)
+
+save 会生成rdb文件
+
+### RDB启动方式——save指令相关配置
+
+- dbfilename dump.rdb
+  说明：设置本地数据库文件名，默认值为dump.rdb
+  经验：通常设置为dump-端口号.rdb,就是配置文件里配置的地址
+- dir
+  说明：设置存储.rdb文件的路径
+  经验：通常设置成存储空间较大的目录中，目录名称data
+- rdbcompression yes
+  说明：设置存储至本地数据库时是否压缩数据，默认为yes，采用LZF压缩
+  经验：通常默认为开启状态，如果设置成no，可以节省CPU运行时间，但会使存储的文件变大（巨大）
+- rdbchecksumy yes
+  说明：设置是否进行RDB文件格式的校验，该校验过程在写文件和读文件过程均进行
+  经验：通常默认为开启状态，如果设置为no，可以节约读写性过程约10%时间消耗，但是存储一定的数据损坏风险
+
+注意：**Redis是单线程的**，所有命令都会在类似队列中排好队，不建议使用save指令，因为save指令的执行会阻塞当前Redis服务器，直到当前RDB过程完成位置，有可能会造成长时间阻塞，**线上环境不建议使用**
+
+### RDB启动方式——bgsave指令
+
+手动启动后台保存操作，但不是立即执行
+
+![在这里插入图片描述](https://image.yanganlin.com/20200814043701.png)
+
+执行成功了不会在控制台输出,可以在日志中看到
+
+```shell
+58142:M 07 Aug 2020 07:23:17.355 * Starting BGSAVE for SYNC with target: disk
+58142:M 07 Aug 2020 07:23:17.355 * Background saving started by pid 58183
+58183:C 07 Aug 2020 07:23:17.357 * DB saved on disk
+58183:C 07 Aug 2020 07:23:17.357 * RDB: 0 MB of memory used by copy-on-write
+58142:M 07 Aug 2020 07:23:17.456 * Background saving terminated with success
+```
+
+bgsave命令是针对save阻塞问题做的优化。Redis内部所有涉及到RDB操作都采用bgsave的方式，save命令可以放弃使用
+
+### RDB启动方式——save配置
+
+```shell
+save second changes
+
+second：监控时间范围
+changes：监控key的变化量
+```
+
+```shell
+save 900 1      #在900秒(15分钟)之后，如果至少有1个key发生变化，Redis就会自动触发BGSAVE命令创建快照。
+save 300 10     #在300秒(5分钟)之后，如果至少有10个key发生变化，Redis就会自动触发BGSAVE命令创建快照。
+save 60 10000    #在60秒(1分钟)之后，如果至少有10000个key发生变化，Redis就会自动触发BGSAVE命令创建快照。
+```
+
+### RDB启动方式——save配置原理
+
+![在这里插入图片描述](https://image.yanganlin.com/20200814043708.png)
+
+**注意：**
+save配置要根据实际业务情况进行设置，频度过高或过低都会出现性能问题，结果可能是灾难性的
+save配置中对second与changes设置通常具有互补对应关系，尽量不要设置成包含性关系
+save配置启动后执行的是bgsave操作
+
+### RDB启动方式——对比
+
+![在这里插入图片描述](https://image.yanganlin.com/20200814043714.png)
+
+### RDB启动方式——其它启动方式
+
+- 全量复制
+  在主从复制中会提到
+- 服务器运行过程中重启
+  debug reload
+- 关闭服务器时指定保存数据
+  shutdown save
+
+### RDB 优缺点
+
+##### RDB优点
+
+- RDB是一个紧凑压缩的二进制文件，存储效率较高
+- RDB内部存储的是redis在某个时间点的数据快照，非常适合用于数据备份，全量复制等场景
+- RDB恢复数据的速度要比AOF快很多
+- 应用：服务器中每X小时执行bgsave备份，并将RDB文件拷贝到远程己气中，用于灾难恢复
+
+##### RDB缺点
+
+- RDB方式无论是执行指令还是利用配置，无法做到实时持久化，具体较大的可能性丢失数据
+- bgsave指令每次运行要执行fork操作创建子进程，要牺牲掉一些性能
+- Redis的众多版本中未进行RDB文件格式的版本统一，有可能出现个版本服务之间数据格式无法兼容现象
+
+##### RDB存储的弊端
+
+- 存储数据量较大，效率较低——基于快照思想，每次读写都是全部数据，当数据量巨大时，效率非常低
+- 大数据量下的IO性能较低
+- 基于fork创建子进程，内存产生额外消耗
+- 宕机带来的数据丢失风险
+
+##### 解决思路
+
+- 不写全数据，仅记录部分数据
+- 改记录数据未记录操作过程
+- 对所有操作均进行记录，排除丢失数据的风险
+- 这也就是AOF的引入
+
+## AOF
+
+##### AOF写数据过程
+
+![在这里插入图片描述](https://image.yanganlin.com/20200814043720.png)
+
+##### AOF写数据的三种策略
+
+```shell
+appendfsync always  #每次有数据修改发生时都会写入AOF文件,这样会严重降低Redis的速度
+appendfsync everysec #每秒钟同步一次，显示地将多个写命令同步到硬盘 **(默认的)**
+appendfsync no    #让操作系统决定何时进行同步
+```
+
+##### AOF功能开启和相关配置
+
+```shell
+# 是否开启APF持久化功能，默认为不开启
+appendonly yes|no
+
+# AOF写数据策略
+appendfsync always|everysec|no
+
+# AOF持久化文件名，默认文件名为appendonly.aof,建议配置为appendonly-端口号.aof
+appendfilename filename
+
+# AOF持久化文件保存路径，与RDB持久化文件保持一致即可
+dir
+```
+
+##### 重写
+
+随着命令的不断写入AOF，文件会越来越大，为了解决这个问题，Redis引入AOF重写机制压缩文件体积，AOF文件重写是将Redis进程内的数据转换为写命令同步到新AOF文件的过程，简单说就是将同样一个数据的若干个命令执行结果转换为最终结果数据对应的指令进行记录
+
+###### AOF重写作用
+
+- 降低磁盘占用量，提高磁盘利用路
+- 提高持久化效率，降低持久化写时间，提高IO性能
+- 降低数据恢复用时，提高数据恢复效率
+
+###### AOF重写规则
+
+- 进程内已超时的数据不再写入文件
+- 忽略无效指令，重写时使用进程内数据直接生成，这样新的AOF文件只保留最终数据的写入命令　
+  如del key1,hdel key2,srem key3,set key 222等
+- 对统一数据的多条命令合并为一条命令
+  如 lpush list1 a ,lpush list1 b,lpush list1 c可以转化为lpush list1 a b c
+  为防止数据量过大造成客户端缓冲区溢出，对list,set,hash,set等类型，每条指令最多写入64个元素
+
+###### 重写方式
+
+```shell
+
+# 手动重写,在命令行执行,会覆盖原来的aof文件,但是文件更小
+bgrewriteaof
+
+# 自动重写
+auto-aof-rewrite-min-size 		size
+auto-aof-rewrite-percentage 	percentage
+```
+
+手动重写流程:
+
+![在这里插入图片描述](https://image.yanganlin.com/20200814043726.png)
+
+自动重写的触发条件:
+
+```shell
+# 自动重写触发条件设置
+auto-aof-rewrite-min-size
+auto-aof-rewrite-percentage percent
+
+# 自动重写触发对比参数（运行指令info Persistence获取具体信息）
+aof_current_size
+aof_base_size
+```
+
+![在这里插入图片描述](https://image.yanganlin.com/20200814043732.png)
+
+![在这里插入图片描述](https://image.yanganlin.com/20200814043737.png)
+
+![在这里插入图片描述](https://image.yanganlin.com/20200814043743.png)
+
+## AOF和RDB的区别
+
+![在这里插入图片描述](https://image.yanganlin.com/20200814043748.png)
+
+##### RDB和AOF的选择之感
+
+- 对数据非常敏感，建议使用默认的AOF持久化方案
+  AOF持久化策略使用erverysecond，每秒钟fsync一次。该策略redis任然可以保持很好的处理性能，当出现问题时，最多丢失0-1秒中的数据。
+  注意：由于AOF文件存储体积较大，且恢复数据较慢
+- 数据呈现阶段有效性，建议使用RDB持久化方案
+  数据可以良好的做到阶段内无丢失（该阶段是开发者或运维人工手工维护的），且恢复速度较快，阶段点数据恢复通常采用RDB方案
+  注意：利用RDB实现紧凑的数据持久化会使Redis降得很低
+- 综合对比
+
+1. RDB与AOF得选择实际上是在做一种权衡，每种都有利弊
+2. 如不能承受数分钟以内得数据丢失，对业务数据非常敏感，选用AOF
+3. 如能承受数分钟以内数据丢失，且追求大数据集得恢复速度，选用RDB
+   灾难恢复选用RDB
+4. 双保险策略，同时开启RDB和AOF，重启后，Redis优先使用AOF来恢复数据，降低丢失数据的量
+
+## **Redis 4.0 对于持久化机制的优化**
+
+Redis 4.0 开始支持 RDB 和 AOF 的混合持久化（默认关闭，可以通过配置项 `aof-use-rdb-preamble` 开启）。
+
+如果把混合持久化打开，AOF 重写的时候就直接把 RDB 的内容写到 AOF 文件开头。这样做的好处是可以结合 RDB 和 AOF 的优点, 快速加载同时避免丢失过多的数据。当然缺点也是有的， AOF 里面的 RDB 部分是压缩格式不再是 AOF 格式，可读性较差。
+
+# 事务
+
+```shell
+# 开启事务,设定事务的开启位置，此指令执行后，后续的所有指令均加入到事务中
+multi
+
+# 执行提交事务,加入事务的命令暂时到任务队列中，并没有立即执行，只有执行exec命令才开始执行
+exec
+
+# 取消事务,终止当前事务定义，发生在multi之后，exec之前
+discard
+```
+
+## 事务的工作流程
+
+![image-20200813091633178](https://image.yanganlin.com/20200814043756.png)
+
+## 事务的注意事项
+
+- 语法错误
+  指命令书写格式有误
+- 处理结果
+  如果定义的事务中所包含的命令存在语法错误，整体事务中所有命令均不会被执行。包括那些语法正确的命令
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+- 运行错误
+  指命令格式正确，但是无法正常的执行。例如对list进行incr操作
+- 处理结果
+  能够正确运行的命令会执行，运行错误的命令不会执行
+  注意：已经执行完毕的命令对应的数据不会自动回滚，需要程序员自己在代码中实现回滚。
+
+### 手动进行事务回滚(基本没法用)
+
+- 记录操作过程中被影响的数据之前的状态
+  单数据：string
+  多数据：hash,list,set,zset
+- 设置指令恢复所有的被修改的项
+  单数据：直接set（注意周边属性，例如时效）
+  多数据：修改对应值或整体克隆复制
+
+## 锁
+
+```shell
+# 对key添加监视锁，在执行exec前如果key发生了变化，终止事务执行
+watch key1 [key2…]
+
+# 取消对所有key的监视
+unwatch
+```
+
+## 分布式锁
+
+```shell
+# 加锁
+setnx lock-key value
+
+# 设置超时时间
+expire lock-key second
+
+# 删除锁
+dek lock-key
+```
+
+- 利用setnx命令的返回值特征，有值则返回设置失败，无值则返回设置成功
+- 对于返回设置成功的，拥有控制权，进行下一步的具体业务操作
+- 对于返回设置失败的，不具有控制权，排队或等待
+  操作完毕通过**del**操作释放锁
+
+# 删除策略
+
+## 过期数据删除策略
+
+- Redis是一种内存级数据库，所有数据均存放在内存中，内存中的数据可以通过TTL指令获取其状态
+- XX : 具有时效性的数据
+- -1 : 永久有效的数据
+- -2 : 已经国企的数据 或 被删除的数据 或 未定义的数据
+
+## 时效性数据的存储结构
+
+![在这里插入图片描述](https://image.yanganlin.com/20200814043802.png)
+
+### 定时删除
+
+- 创建一个定时器，当key设置过期时间，且过期时间到达时，由定时器任务立即执行对键的删除操作
+- **优点**：节约内存，到时就删除，快速释放掉不必要的内存占用
+- **缺点**：CPU压力很大，无论CPU此时负载多高，均占用CPU，会影响redis服务器响应时间和指令吞吐量
+- **总结**：用处理器性能换取存储空间
+
+### 惰性删除
+
+- 数据到达过期时间，不做处理。等下次访问该数据
+
+1. 如果未过期，返回数据
+2. 发现已经过期，删除，返回不存在
+
+- 优点：节约CPU性能，发现必须删除的时候才删除
+- 缺点：内存压力很大，出现长期占用内存的数据
+- 总结：用存储空间换取处理器性能
+
+### 定期删除
+
+- Redis启动服务器初始化时，读取配置server.hz的值，默认为10
+- 每秒钟执行server.hz次serverCron()
+
+![img](https://image.yanganlin.com/20200814043809.png)
+
+- 周期性轮询redis库中时效性数据，采用随机抽取的策略，利用过期数据占比的方式删除频度
+- 特点1：CPU性能占用设置有峰值，检测频度可自定义设置
+- 特点2：内存压力不是很大，长期占用内存的冷数据会被持续清理
+- 总结：周期性抽查存储空间
+
+![1. 定时删除](https://image.yanganlin.com/20200814044000.png)
+
+## 逐出算法
+
+- Redis使用内存存储数据，在执行每一个命令前，会调用freeMemorylfNeeded()检测内存是否充足。如果内存不满足新加入数据的最低存储要求，redis要临时删除一些数据为当前指令清理存储空间。清理数据的策略称为逐出算法。
+- 注意：逐出数据的过程不是100%能够清理出足够的可使用的内存空间，如果不成功则反复执行。当对所有数据尝试完毕后，如果不能达到内存清理的要求，将出现错误信息
+
+![在这里插入图片描述](https://image.yanganlin.com/20200814043816.png)
 
 
 
+相关配置
+
+```shell
+
+# 最大可使用内存
+maxmemory
+
+# 每次选取代删除数据的个数
+maxmemory-samples
+
+# 删除策略
+maxmemory-policy
+```
+
+| 属性            | 说明                                                         |
+| --------------- | ------------------------------------------------------------ |
+| volatile-lru    | 从已设置过期时间的数据集（server.db[i].expires）中挑选最近最少使用的数据淘汰 |
+| volatile-ttl    | 从已设置过期时间的数据集（server.db[i].expires）中挑选将要过期的数据淘汰 |
+| volatile-random | 从已设置过期时间的数据集（server.db[i].expires）中任意选择数据淘汰 |
+| volatile-lfu    | 从已设置过期时间的数据集(server.db[i].expires)中挑选最不经常使用的数据淘汰 |
+| allkeys-lru     | 当内存不足以容纳新写入数据时，在键空间中，移除最近最少使用的key **（这个是最常用的）** |
+| allkeys-random  | 从数据集（server.db[i].dict）中任意选择数据淘汰         |
+| allkeys-lfu     | 当内存不足以容纳新写入数据时，在键空间中，移除最不经常使用的key |
+| no-eviction     | 禁止驱逐数据，也就是说当内存不足以容纳新写入数据时，新写入操作会报错。这个应该没人使用吧！ |
+
+![在这里插入图片描述](https://image.yanganlin.com/20200814043823.png)
+
+数据逐出策略配置依据
+
+- 使用INFO命令输出监控信息，查询缓存int和miss的次数，根据业务需求调优Redis配置
 
 
 
+# 配置文件
+
+```shell
+
+# 设置服务器以守护进程的方式运行
+deamonize yes|no
+
+# 绑定主机地址
+bind 127.0.0.1
+
+# 设置服务器端口号
+port 6379
+
+# 设置数据库数量
+databases 16
+
+----------------------------------日志配置--------------------------------------
+# 设置服务器以指定日志记录级别
+loglevel debug|verbose|notice|warning
+
+# 日志记录文件名
+logfile 端口号.log
+
+----------------------------------日志配置--------------------------------------
+
+# 设置同一时间最大客户链接数，默认无限制。当客户端连接到达上线，Redis会关闭新的链接
+maxclients 0
+
+# 客户端限制等待最大时常，达到最大之后关闭连接。如需关闭该功能，设置为0
+timeout 300
+```
+
+# Redis-Cluster结构设计
+
+## 数据存储设计
+
+Key -> CRC16(Key) 相当于HashCode值--->%16384
+
+- 将所有的存储空间计划切割成16384份，每台主机保存一部分,每份代表的使一个存储空间，不是一个key的保存空间
+- 将key按照计算出的结果放到对应的存储空间
 
 
-# 10.缓存雪崩和缓存穿透问题解决方案
 
-## 10.1 缓存雪崩
+![在这里插入图片描述](https://image.yanganlin.com/20200814043859.png)
 
-简介：缓存同一时间大面积的失效，所以，后面的请求都会落到数据库上，造成数据库短时间内承受大量请求而崩掉。
+当有新的机器加入集群的时候,就会每台机器转移一些数据空间
 
-解决办法（中华石杉老师在他的视频中提到过，视频地址在最后一个问题中有提到）：
+![image-20200814035108993](https://image.yanganlin.com/20200814043906.png)
 
-- 事前：尽量保证整个 redis 集群的高可用性，发现机器宕机尽快补上。选择合适的内存淘汰策略。
-- 事中：本地ehcache缓存 + hystrix限流&降级，避免MySQL崩掉
-- 事后：利用 redis 持久化机制保存的数据尽快恢复缓存
+## 集群内部通讯设计
 
-![](http://my-blog-to-use.oss-cn-beijing.aliyuncs.com/18-9-25/6078367.jpg)
+![image-20200814035235743](https://image.yanganlin.com/20200814043913.png)
 
+# 解决方案
 
-## 10.2 缓存穿透
+## 缓存预热
+
+在高请求之前，做好一系列措施，保证大量用户数量点击造成灾难。
+
+1. 请求数量较高
+2. 主从之间数据吞吐量较大，数据同步操作频度较高
+
+### 缓存预热解决方案
+
+前置准备工作：
+
+1. 日常例行统计数据访问记录，统计访问频度较高的热点数据
+2. 利用LRU数据删除策略，构建数据留存队列
+   例如：storm与kafka配合
+
+准备工作：
+
+1. 将统计结果中的数据分类，根据级别，redis优先加载级别较高的热点数据
+2. 利用分布式多服务器同时进行数据读取，提速数据加载过程
+
+实施：
+
+1. 使用脚本程序固定出大数据预热过程
+2. 如果条件允许，使用CDN（内容分发网络），效果会更好
+
+缓存预热总结：
+缓存预热就是系统启动前，提前将相关的缓存数据直接加载到缓存系统。避免在用户请求的时候，先查询数据库，然后再将数据缓存的问题！用户直接查询事先被预热的缓存数据!
+
+## 缓存雪崩
+
+1. 系统平稳运行过程中，忽然数据库连接量激增
+2. 应用服务器无法及时请求
+3. 大量408，500错误页面出现
+4. 客户反复刷新页面获取数据
+5. 数据库崩溃
+6. 应用服务器崩溃
+7. 重启应用服务器无效
+8. Redis服务器崩溃
+9. Redis集群崩溃
+10. 重启数据之后再次被瞬间流量放倒
+
+### 问题排查
+
+简介：缓存同一时间大面积的失效，所以，后面的请求都会落到数据库上，造成数据库短时间内承受大量请求而崩掉
+
+1. 在一个较短的时间内，缓存中较多的key集中过期
+2. 此周期内请求访问过期的数据，redis未命中，redis向数据库获取数据
+3. 数据库同时接受到大量的请求无法即时处理
+4. Redis大量请求被积压，开始出现超时现象
+5. 数据库流量激增，数据库崩溃
+6. 重启后任然面对缓存中无数据可用
+7. Redis服务器资源被严重占用，Redis服务器崩溃
+8. Redis集群呈现崩塌，集群瓦解
+9. 应用服务器无法即时得到数据响应请求，来自客户端的请求数量越来越多，应用服务器崩溃
+10. 应用服务器，redis，数据库全部重启，效果不理想
+
+### 问题分析
+
+- 短时间范围内
+- 大量key集中过期
+
+### 解决方案（道）
+
+1. 更多的页面静态化处理
+2. 构建多级缓存架构
+   Nginx缓存+redis缓存+ehcache缓存
+3. 检测Mysql严重耗时业务进行优化
+   对数据库的瓶颈排查：例如超时查询、耗时较高事务等
+4. 灾难预警机制
+   监控redis服务器性能指标
+   1、CPU占用、CPU使用率
+   2、内存容量
+   3、查询平均响应时间
+   4、线程数
+5. 限流、降级
+   短时间范围内习生一些客户体验，限制一部分请求访问，降低应用服务器压力，待业务低速运转后再逐渐放开访问
+
+### 解决方案（术）
+
+1. LRU与LFU切换
+2. 数据有效期策略调整
+   根据业务数据有效期进行分类错峰，A类90分钟，B类80分钟，C类70分钟
+   过期时间使用固定形式+随机值的形式，稀释集中到期的key的数量
+3. 超热数据使用永久key
+4. 定期维护（自动+人工）
+   对即将过期数据做访问量分析，确认是否演示，配合访问量统计，做热点数据的延时
+5. 加锁 慎用！！！！！！！
+
+总结
+缓存雪崩式瞬间过期数量太大，导致对数据库服务器造成压力。如果能有效避免过期时间集中，可以有效解决雪崩现象的出现（约40%）。配合其他策略一起使用，并监控服务器的运行数据，根据运行巨鹿做快速调整
+
+![在这里插入图片描述](https://image.yanganlin.com/20200814043924.png)
+
+## 缓存击穿
+
+### 数据库服务器崩溃（2）
+
+1. 系统平稳运行过程中
+2. 数据库连接量瞬间激增
+3. Redis服务器无大量key过期
+4. Redis内存平稳，无波动
+5. Redis服务器CPU正常
+6. 数据库崩溃
+
+### 问题排查
+
+1. Redis中某个key过期，该key访问量巨大
+2. 多个数据请求从服务器直接压到Redis后，均为命中
+3. Redis在短时间内发起了大量对数据库中同一个数据的访问
+
+**问题分析**
+
+- 单个key高热数据
+- key过期
+
+### 解决方案（术）
+
+1. 预先设定
+   以电商为例，每个商家根据店铺等级，指定若干款主打商品，在购物节期间，加大此类信息key的过期时常
+   注意：购物节不仅仅指当天，以及后续若干天，访问峰值呈现逐渐降低趋势
+2. 现场调整
+   监控访问量，对自然流量激增的数据延长过期时间或设置为永久性key
+3. 后台刷新数据
+   启动定时任务，高峰期来临之前，刷新数据有效期，保存不丢失
+4. 二级缓存
+   设置不同的失效时间，保障不会被同时淘汰就行
+5. 加锁
+   分布式锁，防止被击穿，但是要注意也是性能瓶颈，慎重！！！！！！！！
+
+总结：
+缓存击穿就是单个高热数据过期的瞬间，数据访问较大，未命中redis后，发起了大量对同一数据的数据库访问，导致对数据库服务器造成压力。应对策略应该在业务数据分析与预防方面进行，配合运行监控测试与即时调整策略，毕竟单个key的过期监控难度较高，配合雪崩处理策略即可
+
+## 缓存穿透
+
+### 数据库服务器崩溃（3）
 
 简介：一般是黑客故意去请求缓存中不存在的数据，导致所有的请求都落到数据库上，造成数据库短时间内承受大量请求而崩掉。
 
-解决办法： 有很多种方法可以有效地解决缓存穿透问题，最常见的则是采用布隆过滤器，将所有可能存在的数据哈希到一个足够大的bitmap中，一个一定不存在的数据会被 这个bitmap拦截掉，从而避免了对底层存储系统的查询压力。另外也有一个更为简单粗暴的方法（我们采用的就是这种），如果一个查询返回的数据为空（不管是数 据不存在，还是系统故障），我们仍然把这个空结果进行缓存，但它的过期时间会很短，最长不超过五分钟。
+1. 系统平稳运行过程中
+2. 应用服务器流量随时间增量较大
+3. Redis服务器命中率随时间逐步降低
+4. Redis内存平稳，内存无压力
+5. Redis服务器CPU占用激增
+6. 数据库服务器压力激增
+7. 数据库崩溃
 
-参考：
+### 问题排查
 
-- [https://blog.csdn.net/zeb_perfect/article/details/54135506](https://blog.csdn.net/zeb_perfect/article/details/54135506)
+1. redis中大面积出现未命中
+2. 出现非正常URL访问
 
-# 11.如何解决 Redis 的并发竞争 Key 问题
+**问题分析**
 
-所谓 Redis 的并发竞争 Key 的问题也就是多个系统同时对一个 key 进行操作，但是最后执行的顺序和我们期望的顺序不同，这样也就导致了结果的不同！
+- 获取的数据在数据库中也不存在，数据库查询未得到对应数据
+- Redis获取到null数据未进行持久化，直接返回
+- 下次此类数据到达重复上述过程
+- 出现黑客攻击服务器
 
-推荐一种方案：分布式锁（zookeeper 和 redis 都可以实现分布式锁）。（如果不存在 Redis 的并发竞争 Key 问题，不要使用分布式锁，这样会影响性能）
+### 解决方法（术）
 
-基于zookeeper临时有序节点可以实现的分布式锁。大致思想为：每个客户端对某个方法加锁时，在zookeeper上的与该方法对应的指定节点的目录下，生成一个唯一的瞬时有序节点。 判断是否获取锁的方式很简单，只需要判断有序节点中序号最小的一个。 当释放锁的时候，只需将这个瞬时节点删除即可。同时，其可以避免服务宕机导致的锁无法释放，而产生的死锁问题。完成业务流程后，删除对应的子节点释放锁。
+1. 缓存null
+   对查询结果为null的数据进行缓存（长期使用，定期清理），设定短时限，例如30-60秒，最高五分钟
+2. 白名单策略
+   提前预热各种分类数据id对应的bitmaps,id作为bitmaps的offset,相当于设置了数据白名单。当加载正常数据后放型，加载异常数据时直接拦截（效率偏低）
+   使用布隆过滤器（有关布隆过滤器的命中问题对当前状态可以忽略）
+3. 实时监控
+   试试监控redis命中率（业务正常范围时，通常回有一个波动值）与null数据的占比
+   非活动时间波动：通常检测3-5倍，超过5倍纳入重点排查对象
+   活动时间波动：通常检测10-50倍，超过50倍纳入重点排查对象
+   根据背书不同，启动不同的排查流程。然后使用黑名单进行防控（运营）
+4. key加密
+   问题出现后，临时启动防灾业务key,对key进行业务层传输加密服务，设定校验程序，过来的key校验
+   例如每天随机分配60个加密串，挑选2-3个，混淆到页面数据id中，发现访问key不满足规则，驳回数据访问
 
-在实践中，当然是从以可靠性为主。所以首推Zookeeper。
+**总结**
+缓存穿透是访问了不存在的数据，跳过了合法数据的redis数据缓存阶段，每次访问数据库，导致对数据库服务器造成压力。通常此类数据的出现量是一个较低的值，当出现此类情况以毒攻毒，并即时报警。应对策略应该在临时预案防范方面多做文章
+无论是黑名单还是白名单，都是对整体系统的压力，警报解除后尽快移除
 
-参考：
-
-- https://www.jianshu.com/p/8bddd381de06
-
-# 12.如何保证缓存与数据库双写时的数据一致性?
-
-你只要用缓存，就可能会涉及到缓存与数据库双存储双写，你只要是双写，就一定会有数据一致性的问题，那么你如何解决一致性问题？
-
-一般来说，就是如果你的系统不是严格要求缓存+数据库必须一致性的话，缓存可以稍微的跟数据库偶尔有不一致的情况，最好不要做这个方案，读请求和写请求串行化，串到一个内存队列里去，这样就可以保证一定不会出现不一致的情况
-
-串行化之后，就会导致系统的吞吐量会大幅度的降低，用比正常情况下多几倍的机器去支撑线上的一个请求。
-
-
-
-# Jedis操作Redis集群
+# Redis-Java
 
 ```java
 public class Demo {
@@ -269,11 +1421,6 @@ public class Demo {
 }
 ```
 
-
-
-# Redis-Java操作
-
-1.
 ```java
 public static void deleteRedisStoreInformationByToken(String token,RedisTemplate<String,String> redisTemplate) {
         String userid = token.split("_")[0];
@@ -283,8 +1430,6 @@ public static void deleteRedisStoreInformationByToken(String token,RedisTemplate
     }
 }
 ```
-
-
 ```java
 //模糊模糊查询redis的keys
 Set<String> keys=redisTemplate.keys(RedisKeyPrefix.GAME_SERVICE_GAME_STATUS +tbGameSiteVo.getSiteId()+":"+"*");
@@ -310,4 +1455,3 @@ try {
    log.error("在线人数为空"+e.getMessage());
 }
 ```
-
