@@ -6,7 +6,7 @@
 4. 多数据类型支持：string（字符串类型）、list（列表类型）、hash（散列类型）、set（集合类型）、sorted_set（有序集合类型）
 5. 持久化支持。可以进行数据灾难恢复
 
-# redis的数据类型
+# Redis的数据类型
 
 redis自身是一个Map,其中所有的数据都是采用key:value的形式存储
 

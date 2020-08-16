@@ -1799,6 +1799,66 @@ background-position
 
 ### 字体
 
+# 好玩的
+
+## 1
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #loading{
+            position: absolute;
+            left: 50%;
+            top:50%;
+            transform: translate(-50%,-50%);
+        }
+
+        #loading .gear1{
+            position: relative;
+            width: 100px;
+            height: 100px;
+        }
+
+        #loading .gear1>div{
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            top: 0;
+            left: 0;
+        }
+
+        #loading .gear1 div:first-child{
+            background: pink;
+            transform: rotate(130deg);
+        }
+
+        #loading .gear1 div:nth-child(2){
+            background: blueviolet;
+            transform: rotate(240deg);
+        }
+
+        #loading .gear1 div:nth-child(3){
+            background: yellowgreen
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <div class="gear1">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+</body>
+</html>
+```
+
 
 
 
