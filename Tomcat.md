@@ -370,7 +370,7 @@ Tomcat设计了4种容器，分别是Engine、Host、Context和Wrapper。这4种
 
 # 源码
 
-## 初始化
+## 初始化init()
 
 Bootstrap
 
@@ -815,4 +815,1234 @@ public void bind() throws Exception {
 }
 ```
 
+## 初始化start()
+
+BootStrap
+
+```java
+public static void main(String args[]) {
+
+        if (daemon == null) {
+            // Don't set daemon until init() has completed
+            Bootstrap bootstrap = new Bootstrap();
+            try {
+                bootstrap.init();
+            } catch (Throwable t) {
+                handleThrowable(t);
+                t.printStackTrace();
+                return;
+            }
+            daemon = bootstrap;
+        } else {
+            // When running as a service the call to stop will be on a new
+            // thread so make sure the correct class loader is used to prevent
+            // a range of class not found exceptions.
+            Thread.currentThread().setContextClassLoader(daemon.catalinaLoader);
+        }
+
+        try {
+            String command = "start";
+            if (args.length > 0) {
+                command = args[args.length - 1];
+            }
+
+            if (command.equals("startd")) {
+                args[args.length - 1] = "start";
+                daemon.load(args);
+                daemon.start();
+            } else if (command.equals("stopd")) {
+                args[args.length - 1] = "stop";
+                daemon.stop();
+            } else if (command.equals("start")) {
+                daemon.setAwait(true);
+                // init流程
+                daemon.load(args);
+                // start流程
+                daemon.start();
+                if (null == daemon.getServer()) {
+                    System.exit(1);
+                }
+            } else if (command.equals("stop")) {
+                daemon.stopServer(args);
+            } else if (command.equals("configtest")) {
+                daemon.load(args);
+                if (null == daemon.getServer()) {
+                    System.exit(1);
+                }
+                System.exit(0);
+            } else {
+                log.warn("Bootstrap: command \"" + command + "\" does not exist.");
+            }
+        } catch (Throwable t) {
+            // Unwrap the Exception for clearer error reporting
+            if (t instanceof InvocationTargetException &&
+                    t.getCause() != null) {
+                t = t.getCause();
+            }
+            handleThrowable(t);
+            t.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
+    public void start()
+        throws Exception {
+        if( catalinaDaemon==null ) init();
+
+        // 通过反射,调用Catalina的start方法
+        Method method = catalinaDaemon.getClass().getMethod("start", (Class [] )null);
+        method.invoke(catalinaDaemon, (Object [])null);
+
+    }
+```
+
+Catalina
+
+```java
+public void start() {
+
+    if (getServer() == null) {
+        load();
+    }
+
+    if (getServer() == null) {
+        log.fatal("Cannot start server. Server instance is not configured.");
+        return;
+    }
+
+    long t1 = System.nanoTime();
+
+    // Start the new server
+    try {
+        // 调用这里
+        getServer().start();
+    } catch (LifecycleException e) {
+        log.fatal(sm.getString("catalina.serverStartFail"), e);
+        try {
+            getServer().destroy();
+        } catch (LifecycleException e1) {
+            log.debug("destroy() failed for failed Server ", e1);
+        }
+        return;
+    }
+
+    // 省略代码
+
+}
+```
+
+LifecycleBase,这里用的也是模板方法
+
+```java
+public final synchronized void start() throws LifecycleException {
+
+    // 省略代码
+
+    try {
+        setStateInternal(LifecycleState.STARTING_PREP, null, false);
+        // 调用server的start方法
+        startInternal();
+        if (state.equals(LifecycleState.FAILED)) {
+            // This is a 'controlled' failure. The component put itself into the
+            // FAILED state so call stop() to complete the clean-up.
+            stop();
+        } else if (!state.equals(LifecycleState.STARTING)) {
+            // Shouldn't be necessary but acts as a check that sub-classes are
+            // doing what they are supposed to.
+            invalidTransition(Lifecycle.AFTER_START_EVENT);
+        } else {
+            setStateInternal(LifecycleState.STARTED, null, false);
+        }
+    } catch (Throwable t) {
+        // This is an 'uncontrolled' failure so put the component into the
+        // FAILED state and throw an exception.
+        ExceptionUtils.handleThrowable(t);
+        setStateInternal(LifecycleState.FAILED, null, false);
+        throw new LifecycleException(sm.getString("lifecycleBase.startFail", toString()), t);
+    }
+}
+```
+
+StandardServer
+
+```java
+@Override
+protected void startInternal() throws LifecycleException {
+
+    fireLifecycleEvent(CONFIGURE_START_EVENT, null);
+    setState(LifecycleState.STARTING);
+
+    globalNamingResources.start();
+
+    // Start our defined Services
+    synchronized (servicesLock) {
+        for (int i = 0; i < services.length; i++) {
+            // 调用service的start方法
+            services[i].start();
+        }
+    }
+}
+```
+
+然后又会调用LifecycleBase的start方法,这里就不重复写了
+
+StandardService
+
+```java
+@Override
+protected void startInternal() throws LifecycleException {
+
+   // 省略代码
+
+    // Start our defined Container first
+    if (engine != null) {
+        synchronized (engine) {
+            // 调用engine的start方法
+            engine.start();
+        }
+    }
+
+    synchronized (executors) {
+        for (Executor executor: executors) {
+            // 启动线程池
+            executor.start();
+        }
+    }
+
+    mapperListener.start();
+
+    // Start our defined Connectors second
+    synchronized (connectorsLock) {
+        for (Connector connector: connectors) {
+            try {
+                // If it has already failed, don't try and start it
+                if (connector.getState() != LifecycleState.FAILED) {
+                    // 调用连接器的start方法
+                    connector.start();
+                }
+            } catch (Exception e) {
+                log.error(sm.getString(
+                    "standardService.connector.startFailed",
+                    connector), e);
+            }
+        }
+    }
+}
+```
+
+看先engine.start();
+
+StandardEngine
+
+```java
+@Override
+protected synchronized void startInternal() throws LifecycleException {
+
+    // Log our server identification information
+    if(log.isInfoEnabled())
+        log.info( "Starting Servlet Engine: " + ServerInfo.getServerInfo());
+
+    // Standard container startup
+    super.startInternal();
+}
+```
+
+StandardHost
+
+```java
+@Override
+protected synchronized void startInternal() throws LifecycleException {
+
+    // 省略代码
+    
+    // 调用context的start方法
+    super.startInternal();
+}
+```
+
+StandardContext
+
+```java
+@Override
+protected synchronized void startInternal() throws LifecycleException {
+    // 调用到这里,这里的start就结束了
+}
+```
+
+再看connector.start();
+
+Connector
+
+```java
+@Override
+protected void startInternal() throws LifecycleException {
+
+    // Validate settings before starting
+    if (getPort() < 0) {
+        throw new LifecycleException(sm.getString(
+            "coyoteConnector.invalidPort", Integer.valueOf(getPort())));
+    }
+
+    setState(LifecycleState.STARTING);
+
+    try {
+        // 调用AbstractProtocol的start方法
+        protocolHandler.start();
+    } catch (Exception e) {
+        throw new LifecycleException(
+            sm.getString("coyoteConnector.protocolHandlerStartFailed"), e);
+    }
+}
+```
+
+AbstractProtocol
+
+```java
+@Override
+public void start() throws Exception {
+    if (getLog().isInfoEnabled()) {
+        getLog().info(sm.getString("abstractProtocolHandler.start", getName()));
+    }
+
+    // 调用 AbstractEndpoint的start方法
+    endpoint.start();
+
+    // Start async timeout thread
+    asyncTimeout = new AsyncTimeout();
+    Thread timeoutThread = new Thread(asyncTimeout, getNameInternal() + "-AsyncTimeout");
+    int priority = endpoint.getThreadPriority();
+    if (priority < Thread.MIN_PRIORITY || priority > Thread.MAX_PRIORITY) {
+        priority = Thread.NORM_PRIORITY;
+    }
+    timeoutThread.setPriority(priority);
+    timeoutThread.setDaemon(true);
+    timeoutThread.start();
+}
+```
+
+AbstractEndpoint
+
+```java
+public final void start() throws Exception {
+    if (bindState == BindState.UNBOUND) {
+        // 绑定socket
+        bind();
+        bindState = BindState.BOUND_ON_START;
+    }
+    // 请求下一步
+    startInternal();
+}
+```
+
+NioEndpoint
+
+```java
+@Override
+public void startInternal() throws Exception {
+
+    if (!running) {
+        running = true;
+        paused = false;
+
+        processorCache = new SynchronizedStack<>(SynchronizedStack.DEFAULT_SIZE,
+                                                 socketProperties.getProcessorCache());
+        eventCache = new SynchronizedStack<>(SynchronizedStack.DEFAULT_SIZE,
+                                             socketProperties.getEventCache());
+        nioChannels = new SynchronizedStack<>(SynchronizedStack.DEFAULT_SIZE,
+                                              socketProperties.getBufferPool());
+
+        // Create worker collection
+        if ( getExecutor() == null ) {
+            createExecutor();
+        }
+
+        initializeConnectionLatch();
+
+        // Start poller threads
+        pollers = new Poller[getPollerThreadCount()];
+        for (int i=0; i<pollers.length; i++) {
+            pollers[i] = new Poller();
+            Thread pollerThread = new Thread(pollers[i], getName() + "-ClientPoller-"+i);
+            pollerThread.setPriority(threadPriority);
+            pollerThread.setDaemon(true);
+            pollerThread.start();
+        }
+
+        // 启动socket
+        startAcceptorThreads();
+    }
+}
+
+
+protected final void startAcceptorThreads() {
+    int count = getAcceptorThreadCount();
+    acceptors = new Acceptor[count];
+
+    for (int i = 0; i < count; i++) {
+        // 创建接收器
+        acceptors[i] = createAcceptor();
+        String threadName = getName() + "-Acceptor-" + i;
+        acceptors[i].setThreadName(threadName);
+        Thread t = new Thread(acceptors[i], threadName);
+        t.setPriority(getAcceptorThreadPriority());
+        t.setDaemon(getDaemon());
+        // 启动,调用run方法
+        t.start();
+    }
+}
+
+
+
+protected class Acceptor extends AbstractEndpoint.Acceptor {
+
+    @Override
+    public void run() {
+
+        int errorDelay = 0;
+
+        // Loop until we receive a shutdown command
+        while (running) {
+
+            // Loop if endpoint is paused
+            while (paused && running) {
+                state = AcceptorState.PAUSED;
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    // Ignore
+                }
+            }
+
+            if (!running) {
+                break;
+            }
+            state = AcceptorState.RUNNING;
+
+            try {
+                //if we have reached max connections, wait
+                countUpOrAwaitConnection();
+
+                SocketChannel socket = null;
+                try {
+                    // Accept the next incoming connection from the server
+                    // socket
+                    // 这里是重点
+                    socket = serverSock.accept();
+                } catch (IOException ioe) {
+                    // We didn't get a socket
+                    countDownConnection();
+                    if (running) {
+                        // Introduce delay if necessary
+                        errorDelay = handleExceptionWithDelay(errorDelay);
+                        // re-throw
+                        throw ioe;
+                    } else {
+                        break;
+                    }
+                }
+                // Successful accept, reset the error delay
+                errorDelay = 0;
+
+                // Configure the socket
+                if (running && !paused) {
+                    // setSocketOptions() will hand the socket off to
+                    // an appropriate processor if successful
+                    if (!setSocketOptions(socket)) {
+                        closeSocket(socket);
+                    }
+                } else {
+                    closeSocket(socket);
+                }
+            } catch (Throwable t) {
+                ExceptionUtils.handleThrowable(t);
+                log.error(sm.getString("endpoint.accept.fail"), t);
+            }
+        }
+        state = AcceptorState.ENDED;
+    }
+
+
+
+    // 省略代码
+}
+```
+
+
+
+
+
+
+
 ## 请求处理
+
+先创建个web项目
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+
+    <servlet>
+        <servlet-name>bbsServlet</servlet-name>
+        <servlet-class>cn.itcast.web.BBSServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>bbsServlet</servlet-name>
+        <url-pattern>/bbs</url-pattern>
+    </servlet-mapping>
+</web-app>
+```
+
+```java
+public class BBSServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("====================get===========");
+    }
+
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("====================post===========");
+    }
+}
+```
+
+build下,把生成的代码,放到源码的webapps目录下
+
+
+
+NioEndpoint.Acceptor
+
+```java
+protected class Acceptor extends AbstractEndpoint.Acceptor {
+
+    @Override
+    public void run() {
+
+        int errorDelay = 0;
+
+        // Loop until we receive a shutdown command
+        while (running) {
+
+
+            // 省略代码
+
+            try {
+                //if we have reached max connections, wait
+                countUpOrAwaitConnection();
+
+                SocketChannel socket = null;
+                try {
+                    // Accept the next incoming connection from the server
+                    // socket
+                    // 当有请求的时候,首先在这里打断点,这里会接受到请求
+                    socket = serverSock.accept();
+                } catch (IOException ioe) {
+                    // We didn't get a socket
+                    countDownConnection();
+                    if (running) {
+                        // Introduce delay if necessary
+                        errorDelay = handleExceptionWithDelay(errorDelay);
+                        // re-throw
+                        throw ioe;
+                    } else {
+                        break;
+                    }
+                }
+                // Successful accept, reset the error delay
+                errorDelay = 0;
+
+                // Configure the socket
+                if (running && !paused) {
+                    // setSocketOptions() will hand the socket off to
+                    // an appropriate processor if successful
+                    // 放到队列里,所以accept只是用来做接收请求的功能
+                    if (!setSocketOptions(socket)) {
+                        closeSocket(socket);
+                    }
+                } else {
+                    closeSocket(socket);
+                }
+            } catch (Throwable t) {
+                ExceptionUtils.handleThrowable(t);
+                log.error(sm.getString("endpoint.accept.fail"), t);
+            }
+        }
+        state = AcceptorState.ENDED;
+    }
+    // 省略代码
+}
+```
+
+org.apache.tomcat.util.net.NioEndpoint#setSocketOptions
+
+```java
+protected boolean setSocketOptions(SocketChannel socket) {
+        // Process the connection
+        try {
+            //disable blocking, APR style, we are gonna be polling it
+            socket.configureBlocking(false);
+            Socket sock = socket.socket();
+            socketProperties.setProperties(sock);
+
+            // 构造对象
+            NioChannel channel = nioChannels.pop();
+            if (channel == null) {
+                SocketBufferHandler bufhandler = new SocketBufferHandler(
+                        socketProperties.getAppReadBufSize(),
+                        socketProperties.getAppWriteBufSize(),
+                        socketProperties.getDirectBuffer());
+                if (isSSLEnabled()) {
+                    channel = new SecureNioChannel(socket, bufhandler, selectorPool, this);
+                } else {
+                    channel = new NioChannel(socket, bufhandler);
+                }
+            } else {
+                channel.setIOChannel(socket);
+                channel.reset();
+            }
+            // 创建的对象放到队列里
+            getPoller0().register(channel);
+        } catch (Throwable t) {
+            ExceptionUtils.handleThrowable(t);
+            try {
+                log.error("",t);
+            } catch (Throwable tt) {
+                ExceptionUtils.handleThrowable(tt);
+            }
+            // Tell to close the socket
+            return false;
+        }
+        return true;
+    }
+```
+
+org.apache.tomcat.util.net.NioEndpoint.Poller#register
+
+```java
+public void register(final NioChannel socket) {
+    socket.setPoller(this);
+    NioSocketWrapper ka = new NioSocketWrapper(socket, NioEndpoint.this);
+    socket.setSocketWrapper(ka);
+    ka.setPoller(this);
+    ka.setReadTimeout(getSocketProperties().getSoTimeout());
+    ka.setWriteTimeout(getSocketProperties().getSoTimeout());
+    ka.setKeepAliveLeft(NioEndpoint.this.getMaxKeepAliveRequests());
+    ka.setSecure(isSSLEnabled());
+    ka.setReadTimeout(getConnectionTimeout());
+    ka.setWriteTimeout(getConnectionTimeout());
+    PollerEvent r = eventCache.pop();
+    ka.interestOps(SelectionKey.OP_READ);//this is what OP_REGISTER turns into.
+    if ( r==null) r = new PollerEvent(socket,ka,OP_REGISTER);
+    else r.reset(socket,ka,OP_REGISTER);
+    // 加入到队列中
+    addEvent(r);
+}
+```
+
+```java
+private final SynchronizedQueue<PollerEvent> events =new SynchronizedQueue<>();
+```
+
+这里涉及到NIO编程,也要去学习下
+
+org.apache.tomcat.util.net.NioEndpoint.Poller#run
+
+```java
+@Override
+public void run() {
+    // Loop until destroy() is called
+    while (true) {
+
+        // 省略代码
+        // 走到这里
+        processKey(sk, attachment);
+
+}
+    
+    
+protected void processKey(SelectionKey sk, NioSocketWrapper attachment) {
+    try {
+        if ( close ) {
+            cancelledKey(sk);
+        } else if ( sk.isValid() && attachment != null ) {
+            if (sk.isReadable() || sk.isWritable() ) {
+                if ( attachment.getSendfileData() != null ) {
+                    processSendfile(sk,attachment, false);
+                } else {
+                    unreg(sk, attachment, sk.readyOps());
+                    boolean closeSocket = false;
+                    // Read goes before write
+                    if (sk.isReadable()) {
+                        // 这里
+                        if (!processSocket(attachment, SocketEvent.OPEN_READ, true)) {
+                            closeSocket = true;
+                        }
+                    }
+                    if (!closeSocket && sk.isWritable()) {
+                        if (!processSocket(attachment, SocketEvent.OPEN_WRITE, true)) {
+                            closeSocket = true;
+                        }
+                    }
+                    if (closeSocket) {
+                        cancelledKey(sk);
+                    }
+                }
+            }
+        } else {
+            //invalid key
+            cancelledKey(sk);
+        }
+    } catch ( CancelledKeyException ckx ) {
+        cancelledKey(sk);
+    } catch (Throwable t) {
+        ExceptionUtils.handleThrowable(t);
+        log.error("",t);
+    }
+}
+```
+
+org.apache.tomcat.util.net.AbstractEndpoint#processSocket
+
+```java
+public boolean processSocket(SocketWrapperBase<S> socketWrapper,
+            SocketEvent event, boolean dispatch) {
+        try {
+            if (socketWrapper == null) {
+                return false;
+            }
+            SocketProcessorBase<S> sc = processorCache.pop();
+            if (sc == null) {
+                sc = createSocketProcessor(socketWrapper, event);
+            } else {
+                sc.reset(socketWrapper, event);
+            }
+            Executor executor = getExecutor();
+            if (dispatch && executor != null) {
+                // 给线程池运行,调用SocketProcessorBase的run方法
+                executor.execute(sc);
+            } else {
+                sc.run();
+            }
+        } catch (RejectedExecutionException ree) {
+            getLog().warn(sm.getString("endpoint.executor.fail", socketWrapper) , ree);
+            return false;
+        } catch (Throwable t) {
+            ExceptionUtils.handleThrowable(t);
+            // This means we got an OOM or similar creating a thread, or that
+            // the pool and its queue are full
+            getLog().error(sm.getString("endpoint.process.fail"), t);
+            return false;
+        }
+        return true;
+    }
+```
+
+org.apache.tomcat.util.net.SocketProcessorBase#run
+
+```java
+    @Override
+    public final void run() {
+        synchronized (socketWrapper) {
+          	// 省略代码
+            doRun();
+        }
+    }
+```
+
+org.apache.tomcat.util.net.NioEndpoint.SocketProcessor#doRun
+
+```java
+@Override
+protected void doRun() {
+    NioChannel socket = socketWrapper.getSocket();
+    SelectionKey key = socket.getIOChannel().keyFor(socket.getPoller().getSelector());
+
+    try {
+        int handshake = -1;
+
+        try {
+            if (key != null) {
+                if (socket.isHandshakeComplete()) {
+                    // No TLS handshaking required. Let the handler
+                    // process this socket / event combination.
+                    handshake = 0;
+                } else if (event == SocketEvent.STOP || event == SocketEvent.DISCONNECT ||
+                           event == SocketEvent.ERROR) {
+                    // Unable to complete the TLS handshake. Treat it as
+                    // if the handshake failed.
+                    handshake = -1;
+                } else {
+                    handshake = socket.handshake(key.isReadable(), key.isWritable());
+                    // The handshake process reads/writes from/to the
+                    // socket. status may therefore be OPEN_WRITE once
+                    // the handshake completes. However, the handshake
+                    // happens when the socket is opened so the status
+                    // must always be OPEN_READ after it completes. It
+                    // is OK to always set this as it is only used if
+                    // the handshake completes.
+                    event = SocketEvent.OPEN_READ;
+                }
+            }
+        } catch (IOException x) {
+            handshake = -1;
+            if (log.isDebugEnabled()) log.debug("Error during SSL handshake",x);
+        } catch (CancelledKeyException ckx) {
+            handshake = -1;
+        }
+        if (handshake == 0) {
+            SocketState state = SocketState.OPEN;
+            // Process the request from this socket
+            if (event == null) {
+                state = getHandler().process(socketWrapper, SocketEvent.OPEN_READ);
+            } else {
+                // 调用这里
+                state = getHandler().process(socketWrapper, event);
+            }
+            if (state == SocketState.CLOSED) {
+                close(socket, key);
+            }
+        } else if (handshake == -1 ) {
+            close(socket, key);
+        } else if (handshake == SelectionKey.OP_READ){
+            socketWrapper.registerReadInterest();
+        } else if (handshake == SelectionKey.OP_WRITE){
+            socketWrapper.registerWriteInterest();
+        }
+    } catch (CancelledKeyException cx) {
+        socket.getPoller().cancelledKey(key);
+    } catch (VirtualMachineError vme) {
+        ExceptionUtils.handleThrowable(vme);
+    } catch (Throwable t) {
+        log.error("", t);
+        socket.getPoller().cancelledKey(key);
+    } finally {
+        socketWrapper = null;
+        event = null;
+        //return to cache
+        if (running && !paused) {
+            processorCache.push(this);
+        }
+    }
+}
+```
+
+org.apache.coyote.AbstractProtocol.ConnectionHandler#process
+
+```java
+@Override
+public SocketState process(SocketWrapperBase<S> wrapper, SocketEvent status) {
+	// 省略代码
+    state = processor.process(wrapper, status);
+}
+```
+
+org.apache.coyote.AbstractProcessorLight#process
+
+```java
+@Override
+public SocketState process(SocketWrapperBase<?> socketWrapper, SocketEvent status)
+    throws IOException {
+
+    SocketState state = SocketState.CLOSED;
+    Iterator<DispatchType> dispatches = null;
+    do {
+        if (dispatches != null) {
+            DispatchType nextDispatch = dispatches.next();
+            state = dispatch(nextDispatch.getSocketStatus());
+        } else if (status == SocketEvent.DISCONNECT) {
+            // Do nothing here, just wait for it to get recycled
+        } else if (isAsync() || isUpgrade() || state == SocketState.ASYNC_END) {
+            state = dispatch(status);
+            if (state == SocketState.OPEN) {
+                // There may be pipe-lined data to read. If the data isn't
+                // processed now, execution will exit this loop and call
+                // release() which will recycle the processor (and input
+                // buffer) deleting any pipe-lined data. To avoid this,
+                // process it now.
+                // 调用servie
+                state = service(socketWrapper);
+            }
+        } else if (status == SocketEvent.OPEN_WRITE) {
+            // Extra write event likely after async, ignore
+            state = SocketState.LONG;
+        } else if (status == SocketEvent.OPEN_READ){
+            state = service(socketWrapper);
+        } else {
+            // Default to closing the socket if the SocketEvent passed in
+            // is not consistent with the current state of the Processor
+            state = SocketState.CLOSED;
+        }
+
+        if (getLog().isDebugEnabled()) {
+            getLog().debug("Socket: [" + socketWrapper +
+                           "], Status in: [" + status +
+                           "], State out: [" + state + "]");
+        }
+
+        if (state != SocketState.CLOSED && isAsync()) {
+            state = asyncPostProcess();
+            if (getLog().isDebugEnabled()) {
+                getLog().debug("Socket: [" + socketWrapper +
+                               "], State after async post processing: [" + state + "]");
+            }
+        }
+
+        if (dispatches == null || !dispatches.hasNext()) {
+            // Only returns non-null iterator if there are
+            // dispatches to process.
+            dispatches = getIteratorAndClearDispatches();
+        }
+    } while (state == SocketState.ASYNC_END ||
+             dispatches != null && state != SocketState.CLOSED);
+
+    return state;
+}
+```
+
+org.apache.coyote.http11.Http11Processor#service
+
+```java
+@Override
+public SocketState service(SocketWrapperBase<?> socketWrapper)
+    throws IOException {
+    // 省略很多很多代码
+    // 调用适配器的service
+	getAdapter().service(request, response);
+}
+```
+
+org.apache.catalina.connector.CoyoteAdapter#service
+
+```java
+@Override
+public void service(org.apache.coyote.Request req, org.apache.coyote.Response res)
+    throws Exception {
+    // Calling the container
+    // 省略代码
+    // 适配器已经转好了协议
+    // 从这里开始,就开始调用容器里的各个层级的责任链了
+    // 这里调用的Engine的责任链
+    connector.getService().getContainer().getPipeline().getFirst().invoke(request, response);
+}
+```
+
+org.apache.catalina.core.StandardEngineValve#invoke
+
+```java
+@Override
+public final void invoke(Request request, Response response)throws IOException, ServletException {
+
+    // Select the Host to be used for this Request
+    Host host = request.getHost();
+    if (host == null) {
+        response.sendError
+            (HttpServletResponse.SC_BAD_REQUEST,
+             sm.getString("standardEngine.noHost",
+                          request.getServerName()));
+        return;
+    }
+    if (request.isAsyncSupported()) {
+        request.setAsyncSupported(host.getPipeline().isAsyncSupported());
+    }
+
+    // Ask this Host to process this request
+    host.getPipeline().getFirst().invoke(request, response);
+
+}
+```
+
+org.apache.catalina.core.StandardHostValve#invoke
+
+```java
+@Override
+public final void invoke(Request request, Response response)
+    throws IOException, ServletException {
+
+
+    try {
+        // 省略代码
+        context.bind(Globals.IS_SECURITY_ENABLED, MY_CLASSLOADER);
+
+        // Ask this Context to process this request. Requests that are
+        // already in error must have been routed here to check for
+        // application defined error pages so DO NOT forward them to the the
+        // application for processing.
+        try {
+            if (!response.isErrorReportRequired()) {
+                // 调用Context责任链
+                context.getPipeline().getFirst().invoke(request, response);
+            }
+        } catch (Throwable t) {
+          
+        }
+
+        
+}
+```
+
+org.apache.catalina.core.StandardContextValve#invoke
+
+```java
+@Override
+public final void invoke(Request request, Response response)
+    // 省略代码
+    wrapper.getPipeline().getFirst().invoke(request, response);
+}
+```
+
+org.apache.catalina.core.StandardWrapperValve#invoke
+
+```java
+@Override
+public final void invoke(Request request, Response response)throws IOException, ServletException {
+
+    // Initialize local variables we may need
+    boolean unavailable = false;
+    Throwable throwable = null;
+    // This should be a Request attribute...
+    long t1=System.currentTimeMillis();
+    requestCount.incrementAndGet();
+    StandardWrapper wrapper = (StandardWrapper) getContainer();
+    // 终于看到Servlet了
+    Servlet servlet = null;
+    Context context = (Context) wrapper.getParent();
+
+    // Check for the application being marked unavailable
+    if (!context.getState().isAvailable()) {
+        response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                           sm.getString("standardContext.isUnavailable"));
+        unavailable = true;
+    }
+
+    // Check for the servlet being marked unavailable
+    if (!unavailable && wrapper.isUnavailable()) {
+        container.getLogger().info(sm.getString("standardWrapper.isUnavailable",
+                                                wrapper.getName()));
+        long available = wrapper.getAvailable();
+        if ((available > 0L) && (available < Long.MAX_VALUE)) {
+            response.setDateHeader("Retry-After", available);
+            response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                               sm.getString("standardWrapper.isUnavailable",
+                                            wrapper.getName()));
+        } else if (available == Long.MAX_VALUE) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND,
+                               sm.getString("standardWrapper.notFound",
+                                            wrapper.getName()));
+        }
+        unavailable = true;
+    }
+
+    // Allocate a servlet instance to process this request
+    try {
+        if (!unavailable) {
+            // 把当前请求的Servlet赋值
+            servlet = wrapper.allocate();
+        }
+    } 
+    // Create the filter chain for this request
+    // 创建过滤器责任链
+    ApplicationFilterChain filterChain =
+        ApplicationFilterFactory.createFilterChain(request, wrapper, servlet);
+    
+    
+	// 调用责任链
+    filterChain.doFilter(request.getRequest(),response.getResponse());
+}
+```
+
+org.apache.catalina.core.ApplicationFilterChain#doFilter
+
+```java
+@Override
+public void doFilter(ServletRequest request, ServletResponse response)
+    throws IOException, ServletException {
+
+    if( Globals.IS_SECURITY_ENABLED ) {
+
+    } else {
+        // 省略代码
+        internalDoFilter(request,response);
+    }
+}
+```
+
+org.apache.catalina.core.ApplicationFilterChain#internalDoFilter
+
+```java
+private void internalDoFilter(ServletRequest request,
+                                  ServletResponse response)
+        throws IOException, ServletException {
+
+        // Call the next filter if there is one
+    	// 开始循环调用过滤器
+        if (pos < n) {
+            ApplicationFilterConfig filterConfig = filters[pos++];
+            try {
+                Filter filter = filterConfig.getFilter();
+
+                if (request.isAsyncSupported() && "false".equalsIgnoreCase(
+                        filterConfig.getFilterDef().getAsyncSupported())) {
+                    request.setAttribute(Globals.ASYNC_SUPPORTED_ATTR, Boolean.FALSE);
+                }
+                if( Globals.IS_SECURITY_ENABLED ) {
+                    final ServletRequest req = request;
+                    final ServletResponse res = response;
+                    Principal principal =
+                        ((HttpServletRequest) req).getUserPrincipal();
+
+                    Object[] args = new Object[]{req, res, this};
+                    SecurityUtil.doAsPrivilege ("doFilter", filter, classType, args, principal);
+                } else {
+                    // 执行过滤器
+                    filter.doFilter(request, response, this);
+                }
+            } catch (IOException | ServletException | RuntimeException e) {
+                throw e;
+            } catch (Throwable e) {
+                e = ExceptionUtils.unwrapInvocationTargetException(e);
+                ExceptionUtils.handleThrowable(e);
+                throw new ServletException(sm.getString("filterChain.filter"), e);
+            }
+            return;
+        }
+
+        // We fell off the end of the chain -- call the servlet instance
+        try {
+            if (ApplicationDispatcher.WRAP_SAME_OBJECT) {
+                lastServicedRequest.set(request);
+                lastServicedResponse.set(response);
+            }
+
+            if (request.isAsyncSupported() && !servletSupportsAsync) {
+                request.setAttribute(Globals.ASYNC_SUPPORTED_ATTR,
+                        Boolean.FALSE);
+            }
+            // Use potentially wrapped request from this point
+            if ((request instanceof HttpServletRequest) &&
+                    (response instanceof HttpServletResponse) &&
+                    Globals.IS_SECURITY_ENABLED ) {
+                final ServletRequest req = request;
+                final ServletResponse res = response;
+                Principal principal =
+                    ((HttpServletRequest) req).getUserPrincipal();
+                Object[] args = new Object[]{req, res};
+                SecurityUtil.doAsPrivilege("service",
+                                           servlet,
+                                           classTypeUsedInService,
+                                           args,
+                                           principal);
+            } else {
+                // 执行完过滤器,就开始要调用HttpServlet的方法
+                servlet.service(request, response);
+            }
+        } catch (IOException | ServletException | RuntimeException e) {
+            throw e;
+        } catch (Throwable e) {
+            e = ExceptionUtils.unwrapInvocationTargetException(e);
+            ExceptionUtils.handleThrowable(e);
+            throw new ServletException(sm.getString("filterChain.servlet"), e);
+        } finally {
+            if (ApplicationDispatcher.WRAP_SAME_OBJECT) {
+                lastServicedRequest.set(null);
+                lastServicedResponse.set(null);
+            }
+        }
+    }
+```
+
+javax.servlet.http.HttpServlet#service(javax.servlet.ServletRequest, javax.servlet.ServletResponse)
+
+```java
+@Override
+public void service(ServletRequest req, ServletResponse res)
+    throws ServletException, IOException {
+
+    HttpServletRequest  request;
+    HttpServletResponse response;
+
+    try {
+        request = (HttpServletRequest) req;
+        response = (HttpServletResponse) res;
+    } catch (ClassCastException e) {
+        throw new ServletException("non-HTTP request or response");
+    }
+    service(request, response);
+}
+```
+
+```java
+protected void service(HttpServletRequest req, HttpServletResponse resp)
+    throws ServletException, IOException {
+
+    String method = req.getMethod();
+
+    if (method.equals(METHOD_GET)) {
+        long lastModified = getLastModified(req);
+        if (lastModified == -1) {
+            // servlet doesn't support if-modified-since, no reason
+            // to go through further expensive logic
+            // 这里就开始调用我们自己写的Servlet的方法了
+            doGet(req, resp);
+        } else {
+
+
+    } else if (method.equals(METHOD_HEAD)) {
+        long lastModified = getLastModified(req);
+        maybeSetLastModified(resp, lastModified);
+        doHead(req, resp);
+
+    } else if (method.equals(METHOD_POST)) {
+        doPost(req, resp);
+
+    } else if (method.equals(METHOD_PUT)) {
+        doPut(req, resp);
+
+    } else if (method.equals(METHOD_DELETE)) {
+        doDelete(req, resp);
+
+    } else if (method.equals(METHOD_OPTIONS)) {
+        doOptions(req,resp);
+
+    } else if (method.equals(METHOD_TRACE)) {
+        doTrace(req,resp);
+
+    } else {
+        //
+        // Note that this means NO servlet supports whatever
+        // method was requested, anywhere on this server.
+        //
+
+        String errMsg = lStrings.getString("http.method_not_implemented");
+        Object[] errArgs = new Object[1];
+        errArgs[0] = method;
+        errMsg = MessageFormat.format(errMsg, errArgs);
+
+            resp.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED, errMsg);
+        }
+    }
+```
+
+自己写的Setvlet
+
+```java
+public class BBSServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("====================get===========");
+    }
+
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("====================post===========");
+    }
+}
+```
+
