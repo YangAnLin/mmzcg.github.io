@@ -257,15 +257,13 @@ mysql> select @@global.transaction_isolation,@@transaction_isolation;
 1. 条件：一条SQL语句的查询结果做为另一条查询语句的条件或查询结果
 2. 嵌套：多条SQL语句嵌套使用，内部的SQL查询语句称为子查询。
 
-## mysql中 in 和 exists 区别
+## Mysql中 in 和 exists 区别
 
 mysql中的in语句是把外表和内表作hash 连接，而exists语句是对外表作loop循环，每次loop循环再对内表进行查询。一直大家都认为exists比in语句的效率要高，这种说法其实是不准确的。这个是要区分环境的。
 
 1. 如果查询的两个表大小相当，那么用in和exists差别不大。
 2. 如果两个表中一个较小，一个是大表，则子查询表大的用exists，子查询表小的用in。
 3. not in 和not exists：如果查询语句使用了not in，那么内外表都进行全表扫描，没有用到索引；而not extsts的子查询依然能用到表上的索引。所以无论那个表大，用not exists都比not in要快。
-
-
 
 # 数据类型
 
@@ -359,11 +357,21 @@ ENUM在内部存储时，其实存的是整数。
 
 ## 日期和事件类型
 
-尽量使用timestamp，空间效率高于datetime，
-
 用整数保存时间戳通常不方便处理。
 
 如果需要存储微妙，可以使用bigint存储。
+
+切记不要用字符串存储日期
+
+* 字符串占用的空间更大！
+
+* 字符串存储的日期比较效率比较低（逐个字符进行比对），无法用日期相关的 API 进行计算和比较。
+
+|      | DateTime | Timestamp            |
+| ---- | -------- | -------------------- |
+| 空间 | 8个字节  | 4 个字节             |
+| 时区 | 没有时区 | 随便时区的变化而变化 |
+| 效率 | 低       | 高                   |
 
 # 索引
 
@@ -371,9 +379,9 @@ ENUM在内部存储时，其实存的是整数。
 
 索引是一种特殊的文件(InnoDB数据表上的索引是表空间的一个组成部分)，它们包含着对数据表里所有记录的引用指针。它是要占据物理空间的。
 
-索引是一种数据结构。数据库索引，是数据库管理系统中一个排序的数据结构。索引的实现通常使用B树及其变种B+树。
+索引是一种数据结构。数据库索引，是数据库管理系统中一个`排序`的数据结构。索引的实现通常使用B树及其变种B+树。
 
-## 索引有哪些优缺点
+## 索引优缺点
 
 索引的优点
 
@@ -384,6 +392,77 @@ ENUM在内部存储时，其实存的是整数。
 
 - 时间方面：创建索引和维护索引要耗费时间，具体地，当对表中的数据进行增加、删除和修改的时候，索引也要动态的维护，会降低增/改/删的执行效率；
 - 空间方面：索引需要占物理空间。
+
+## 创建索引
+
+```sql
+-- 建表
+CREATE TABLE user_index2 (
+	id INT auto_increment PRIMARY KEY,
+	first_name VARCHAR (16),
+	last_name VARCHAR (16),
+	id_card VARCHAR (18),
+	information text,
+	KEY name (first_name, last_name),
+	FULLTEXT KEY (information),
+	UNIQUE KEY (id_card)
+);
+
+
+-- ALTER TABLE用来创建普通索引、UNIQUE索引    或        PRIMARY KEY索引
+ALTER TABLE table_name ADD INDEX index_name (column_list);
+
+-- CREATE INDEX可对表增加普通索引或UNIQUE索引,但是,不能创建PRIMARY KEY索引
+CREATE INDEX index_name ON table_name (column_list);
+```
+
+## 创建索引原则
+
+* 最左前缀匹配原则，组合索引非常重要的原则，mysql会一直向右匹配直到遇到范围查询(>、<、between、like)就停止匹配，比如a = 1 and b = 2 and c > 3 and d = 4 如果建立(a,b,c,d)顺序的索引，d是用不到索引的，如果建立(a,b,d,c)的索引则都可以用到，a,b,d的顺序可以任意调整。
+* 较频繁作为查询条件的字段才去创建索引
+* 更新频繁字段不适合创建索引
+* 若是不能有效区分数据的列不适合做索引列(如性别，男女未知，最多也就三种，区分度实在太低)
+* 尽量的扩展索引，不要新建索引。比如表中已经有a的索引，现在要加(a,b)的索引，那么只需要修改原来的索引即可。
+* 定义有外键的数据列一定要建立索引
+* 对于那些查询中很少涉及的列，重复值比较多的列不要建立索引。
+* 对于定义为text、image和bit的数据类型的列不要建立索引。
+* 适合索引的列是出现在where子句中的列，或者连接子句中指定的列
+* 基数较小的类，索引效果较差，没有必要在此列建立索引
+* 使用短索引，如果对长字符串列进行索引，应该指定一个前缀长度，这样能够节省大量索引空间
+* 不要过度索引。索引需要额外的磁盘空间，并降低写操作的性能。在修改表内容的时候，索引会进行更新甚至重构，索引列越多，这个时间就会越长。所以只保持需要的索引有利于查询即可。
+* 非空字段：应该指定列为NOT NULL，除非你想存储NULL。在mysql中，含有空值的列很难进行查询优化，因为它们使得索引、索引的统计信息以及比较运算更加复杂。你应该用0、一个特殊的值或者一个空串代替空值；
+* 取值离散大的字段：（变量各个取值之间的差异程度）的列放到联合索引的前面，可以通过count()函数查看字段的差异值，返回值越大说明字段的唯一值越多字段的离散程度高；
+* 索引字段越小越好：数据库的数据存储以页为单位一页存储的数据越多一次IO操作获取的数据越大效率越高
+
+## 删除索引
+
+```sql
+-- 删除普通索引
+alter table table_name drop KEY name;
+alter table table_name drop KEY id_card;
+alter table table_name drop KEY information;
+
+-- 删除主键索引,如果主键自增长，那么不能直接执行此操作（自增长依赖于主键索引),需要取消自增长再行删除
+alter table 表名 drop primary key
+```
+
+## 索引类型
+
+**主键索引:** 数据列不允许重复，不允许为NULL，一个表只能有一个主键。
+
+**唯一索引:** 数据列不允许重复，允许为NULL值，一个表允许多个列创建唯一索引。
+
+- `ALTER TABLE table_name ADD UNIQUE (column);` 创建唯一索引
+- `ALTER TABLE table_name ADD UNIQUE (column1,column2);` 创建唯一组合索引
+
+**普通索引:** 基本的索引类型，没有唯一性的限制，允许为NULL值。
+
+- `ALTER TABLE table_name ADD INDEX index_name (column);`创建普通索引
+- `ALTER TABLE table_name ADD INDEX index_name(column1, column2, column3);`创建组合索引
+
+**全文索引：** 是目前搜索引擎使用的一种关键技术。
+
+- 可以通过`ALTER TABLE table_name ADD FULLTEXT (column);`创建全文索引
 
 ## 索引使用场景
 
@@ -406,24 +485,6 @@ ENUM在内部存储时，其实存的是整数。
 如果要查询的字段都建立过索引，那么引擎会直接在索引表中查询而不会访问原始数据（否则只要有一个字段没有建立索引就会做全表扫描），这叫索引覆盖。因此我们需要尽可能的在`select`后只写必要的查询字段，以增加索引覆盖的几率。
 
 这里值得注意的是不要想着为每个字段建立索引，因为优先使用索引的优势就在于其体积小。
-
-## 索引有哪几种类型
-
-**主键索引:** 数据列不允许重复，不允许为NULL，一个表只能有一个主键。
-
-**唯一索引:** 数据列不允许重复，允许为NULL值，一个表允许多个列创建唯一索引。
-
-- 可以通过 `ALTER TABLE table_name ADD UNIQUE (column);` 创建唯一索引
-- 可以通过 `ALTER TABLE table_name ADD UNIQUE (column1,column2);` 创建唯一组合索引
-
-**普通索引:** 基本的索引类型，没有唯一性的限制，允许为NULL值。
-
-- 可以通过`ALTER TABLE table_name ADD INDEX index_name (column);`创建普通索引
-- 可以通过`ALTER TABLE table_name ADD INDEX index_name(column1, column2, column3);`创建组合索引
-
-**全文索引：** 是目前搜索引擎使用的一种关键技术。
-
-- 可以通过`ALTER TABLE table_name ADD FULLTEXT (column);`创建全文索引
 
 ## 索引的数据结构
 
@@ -482,92 +543,6 @@ BTree是最常用的mysql数据库索引算法，也是mysql默认的算法。�
 
 Hash Hash索引只能用于对等比较，例如=,<=>（相当于=）操作符。由于是一次定位数据，不像BTree索引需要从根节点到枝节点，最后才能访问到页节点这样多次IO访问，所以检索效率远高于BTree索引
 
-## 索引设计的原则
-
-1. 适合索引的列是出现在where子句中的列，或者连接子句中指定的列
-2. 基数较小的类，索引效果较差，没有必要在此列建立索引
-3. 使用短索引，如果对长字符串列进行索引，应该指定一个前缀长度，这样能够节省大量索引空间
-4. 不要过度索引。索引需要额外的磁盘空间，并降低写操作的性能。在修改表内容的时候，索引会进行更新甚至重构，索引列越多，这个时间就会越长。所以只保持需要的索引有利于查询即可。
-
-## 创建索引的原则
-
-索引虽好，但也不是无限制的使用，最好符合一下几个原则
-
-* 最左前缀匹配原则，组合索引非常重要的原则，mysql会一直向右匹配直到遇到范围查询(>、<、between、like)就停止匹配，比如a = 1 and b = 2 and c > 3 and d = 4 如果建立(a,b,c,d)顺序的索引，d是用不到索引的，如果建立(a,b,d,c)的索引则都可以用到，a,b,d的顺序可以任意调整。
-
-* 较频繁作为查询条件的字段才去创建索引
-
-* 更新频繁字段不适合创建索引
-
-* 若是不能有效区分数据的列不适合做索引列(如性别，男女未知，最多也就三种，区分度实在太低)
-
-* 尽量的扩展索引，不要新建索引。比如表中已经有a的索引，现在要加(a,b)的索引，那么只需要修改原来的索引即可。
-
-* 定义有外键的数据列一定要建立索引。
-
-* 对于那些查询中很少涉及的列，重复值比较多的列不要建立索引。
-
-* 对于定义为text、image和bit的数据类型的列不要建立索引。
-
-## 创建索引的三种方式，删除索引
-
-### 第一种方式
-
-```sql
-CREATE TABLE user_index2 (
-	id INT auto_increment PRIMARY KEY,
-	first_name VARCHAR (16),
-	last_name VARCHAR (16),
-	id_card VARCHAR (18),
-	information text,
-	KEY name (first_name, last_name),
-	FULLTEXT KEY (information),
-	UNIQUE KEY (id_card)
-);
-```
-
-### 第二种方式：
-
-使用`ALTER TABLE`命令去增加索引
-
-```sql
-ALTER TABLE table_name ADD INDEX index_name (column_list);
-```
-
-ALTER TABLE用来创建普通索引、UNIQUE索引或PRIMARY KEY索引。
-
-### 第三种方式：
-
-使用`CREATE INDEX`命令创建
-
-```sql
-CREATE INDEX index_name ON table_name (column_list);
-```
-
-CREATE INDEX可对表增加普通索引或UNIQUE索引。（但是，不能创建PRIMARY KEY索引）
-
-### 删除索引
-
-```sql
-alter table user_index drop KEY name;
-alter table user_index drop KEY id_card;
-alter table user_index drop KEY information;
-```
-
-user_index 是表名
-
-### 删除主键索引
-
-`alter table 表名 drop primary key`（因为主键只有一个）
-
-这里值得注意的是，如果主键自增长，那么不能直接执行此操作（自增长依赖于主键索引),需要取消自增长再行删除
-
-## 创建索引时需要注意
-
-- 非空字段：应该指定列为NOT NULL，除非你想存储NULL。在mysql中，含有空值的列很难进行查询优化，因为它们使得索引、索引的统计信息以及比较运算更加复杂。你应该用0、一个特殊的值或者一个空串代替空值；
-- 取值离散大的字段：（变量各个取值之间的差异程度）的列放到联合索引的前面，可以通过count()函数查看字段的差异值，返回值越大说明字段的唯一值越多字段的离散程度高；
-- 索引字段越小越好：数据库的数据存储以页为单位一页存储的数据越多一次IO操作获取的数据越大效率越高。
-
 ## 使用索引查询一定能提高查询的性能吗
 
 通常，通过索引查询数据比全表扫描要快。但是我们也必须注意到它的代价。
@@ -594,12 +569,6 @@ user_index 是表名
 实操的难度：在于前缀截取的长度。
 
 我们可以利用`select count(*)/count(distinct left(password,prefixLen));`，通过从调整`prefixLen`的值（从1自增）查看不同前缀长度的一个平均匹配度，接近1时就可以了（表示一个密码的前`prefixLen`个字符几乎能确定唯一一条记录）
-
-## 什么是最左前缀原则？什么是最左匹配原则
-
-* 最左优先，在创建多列索引时，要根据业务需求，where子句中使用最频繁的一列放在最左边
-* =和in可以乱序，比如a = 1 and b = 2 and c = 3 建立(a,b,c)索引可以任意顺序，mysql的查询优化器会帮你优化成索引可以识别的形式
-* 最左前缀匹配原则，非常重要的原则，mysql会一直向右匹配直到遇到范围查询(>、<、between、like)就停止匹配，比如a = 1 and b = 2 and c > 3 and d = 4 如果建立(a,b,c,d)顺序的索引，d是用不到索引的，如果建立(a,b,d,c)的索引则都可以用到，a,b,d的顺序可以任意调整。
 
 ## B树和B+树的区别
 
@@ -667,16 +636,6 @@ B树只适合随机检索，而B+树同时支持随机检索和顺序检索；
 
 举个简单的例子，假设我们在员工表的年龄上建立了索引，那么当进行`select age from employee where age < 20`的查询时，在索引的叶子节点上，已经包含了age信息，不会再次进行回表查询。
 
-## 联合索引是什么？为什么需要注意联合索引中的顺序
-
-MySQL可以使用多个字段同时建立一个索引，叫做联合索引。在联合索引中，如果想要命中索引，需要按照建立索引时的字段顺序挨个使用，否则无法命中索引。
-
-具体原因为:
-
-MySQL使用索引时需要索引有序，假设现在建立了"name，age，school"的联合索引，那么索引的排序为: 先按照name排序，如果name相同，则按照age排序，如果age的值也相等，则按照school进行排序。
-
-当进行查询时，此时索引仅仅按照name严格有序，因此必须首先使用name字段进行等值查询，之后对于匹配到的列而言，其按照age字段严格有序，此时可以使用age字段用做索引查找，以此类推。因此在建立联合索引的时候应该注意索引列的顺序，一般情况下，将查询需求频繁或者字段选择性高的列放在前面。此外可以根据特例的查询或者表结构进行单独的调整。
-
 # 事务
 
 ## 事物的四大特性(ACID)
@@ -718,31 +677,117 @@ InnoDB 存储引擎在 **分布式事务** 的情况下一般会用到**SERIALIZ
 
 # 日志
 
-## MySQL的binlog有有几种录入格式？分别有什么区别？
+## 日志文件(顺序IO)
+
+因为日志文件是新增的,不会存在浪费空间
+
+随机IO,不会浪费空间,所以适合做增删改查
+
+## 二进制日志（bin log）
+
+```sql
+mysql> show variables like 'log_%';
++----------------------------------------+---------------------+
+| Variable_name                          | Value               |
++----------------------------------------+---------------------+
+| log_bin                                | OFF                 | (错误日志关闭了,默认是关闭)
+| log_bin_basename                       |                     |
+| log_bin_index                          |                     |
+| log_bin_trust_function_creators        | OFF                 |
+| log_bin_use_v1_row_events              | OFF                 |
+| log_error                              | /var/log/mysqld.log |
+| log_output                             | FILE                |
+| log_queries_not_using_indexes          | OFF                 |
+| log_slave_updates                      | OFF                 |
+| log_slow_admin_statements              | OFF                 |
+| log_slow_slave_statements              | OFF                 |
+| log_throttle_queries_not_using_indexes | 0                   |
+| log_warnings                           | 1                   |
++----------------------------------------+---------------------+
+13 rows in set (0.01 sec)
+```
+
+需要配置my.cnf开启
+
+```properties
+log-bin=mysql-bin
+```
+
+```sql
+mysql> show variables like 'log_%';
++----------------------------------------+--------------------------------+
+| Variable_name                          | Value                          |
++----------------------------------------+--------------------------------+
+| log_bin                                | ON                             |
+| log_bin_basename                       | /var/lib/mysql/mysql-bin       |
+| log_bin_index                          | /var/lib/mysql/mysql-bin.index |
+| log_bin_trust_function_creators        | OFF                            |
+| log_bin_use_v1_row_events              | OFF                            |
+| log_error                              | /var/log/mysqld.log            |
+| log_output                             | FILE                           |
+| log_queries_not_using_indexes          | OFF                            |
+| log_slave_updates                      | OFF                            |
+| log_slow_admin_statements              | OFF                            |
+| log_slow_slave_statements              | OFF                            |
+| log_throttle_queries_not_using_indexes | 0                              |
+| log_warnings                           | 1                              |
++----------------------------------------+--------------------------------+
+13 rows in set (0.00 sec)
+```
+
+其中mysql-bin是binlog日志文件的basename，binlog日志文件的完整名称： mysql-bin-000001.log
+
+binlog记录了数据库所有的ddl语句和dml语句，但不包括select语句内容，语句以事件的形式保存，描述了数据的
+变更顺序，binlog还包括了每个更新语句的执行时间信息。如果是DDL语句，则直接记录到binlog日志，而DML语
+句，必须通过事务提交才能记录到binlog日志中。
+
+binlog主要用于实现mysql主从复制、数据备份、数据恢复。
+
+## 通用查询日志（general query log）
+
+默认情况下通用查询日志是关闭的。
+
+由于通用查询日志会记录用户的所有操作，其中还包含增删查改等信息，在并发操作大的环境下会产生大量的信息从
+而导致不必要的磁盘IO，会影响mysql的性能的。**如若不是为了调试数据库的目的建议生产环境不要开启查询日志**。
+
+```sql
+mysql> show global variables like 'general_log';
+```
+
+开启方式：
+
+```properties
+#启动开关
+general_log={ON|OFF}
+#日志文件变量，而general_log_file如果没有指定，默认名是host_name.log
+general_log_file=/PATH/TO/file 
+#记录类型
+log_output={TABLE|FILE|NONE}
+注： 文件位置在mysql下，否则没有权限创建文件
+```
+
+## 慢日志查询（slow query log）
+
+默认是关闭的。
+需要通过以下设置进行开启：
+
+```properties
+#开启慢查询日志
+slow_query_log=ON
+#慢查询的阈值
+long_query_time=3
+#日志记录文件如果没有给出file_name值， 默认为主机名，后缀为-slow.log。如果给出了文件名，但不是绝对路径
+名，文件则写入数据目录。
+slow_query_log_file=file_name
+```
+
+记录执行时间超过long_query_time秒的所有查询，便于收集查询时间比较长的SQL语句
+
+## MySQL的binlog格式
 
 - statement模式下，每一条会修改数据的sql都会记录在binlog中。不需要记录每一行的变化，减少了binlog日志量，节约了IO，提高性能。由于sql的执行是有上下文的，因此在保存的时候需要保存相关的信息，同时还有一些使用了函数之类的语句无法被记录复制。
 - row级别下，不记录sql语句上下文相关信息，仅保存哪条记录被修改。记录单元为每一行的改动，基本是可以全部记下来但是由于很多操作，会导致大量行的改动(比如alter table)，因此这种模式的文件保存的信息太多，日志量太大。
 - mixed，一种折中的方案，普通操作使用statement记录，当无法使用statement的时候使用row。
-
-## 慢查询日志
-
-开启慢查询日志
-
-配置项：`slow_query_log`
-
-可以使用`show variables like ‘slov_query_log’`查看是否开启，如果状态值为`OFF`，可以使用`set GLOBAL slow_query_log = on`来开启，它会在`datadir`下产生一个`xxx-slow.log`的文件。
-
-设置临界时间
-
-配置项：`long_query_time`
-
-查看：`show VARIABLES like 'long_query_time'`，单位秒
-
-设置：`set long_query_time=0.5`
-
-实操时应该从长时间设置到短的时间，即将最慢的SQL优化掉
-
-查看日志，一旦SQL超过了我们设置的临界时间就会被记录到`xxx-slow.log`中
 
 ## 关心过业务系统里面的sql耗时吗？统计过慢查询吗？对慢查询都怎么优化过？
 
@@ -813,20 +858,6 @@ mysql> commit;
 
 InnoDB行级锁只是通过索引条件检索数据,才能使用行级锁,否则使用的是表锁
 
-
-
-# 使用mysql的注意事项
-
-1.起mysql字段名字,避开类似关键字的名字,说不定可能就会报错了
-
-2.Mysql中DataTime 和 timestamp的区别
-
-* 前者8字节,后者4字节
-* 都是显示的是年月日时分秒
-* 前者就是年月日时分秒,后者在转成Date对象,会存在时区,所以要看业务选择
-
-
-
 # 存储引擎
 
 ## MySQL存储引擎MyISAM与InnoDB区别
@@ -855,165 +886,24 @@ MySQL中的数据、索引以及其他对象是如何存储的，是一套文件
 | 索引的实现方式                                               | B+树索引，myisam 是堆表                                      | B+树索引，Innodb 是索引组织表                                |
 | 哈希索引                                                     | 不支持                                                       | 支持                                                         |
 | 全文索引                                                     | 支持                                                         | 不支持                                                       |
+| 索引                                                         | 非聚簇索引                                                   | 聚簇索引                                                     |
 
-## MyISAM索引与InnoDB索引的区别
-
-- InnoDB索引是聚簇索引，MyISAM索引是非聚簇索引。
-- InnoDB的主键索引的叶子节点存储着行数据，因此主键索引非常高效。
-- MyISAM索引的叶子节点存储的是行数据地址，需要再寻址一次才能得到数据。
-- InnoDB非主键索引的叶子节点存储的是主键和其他带索引的列数据，因此查询时做到覆盖索引会非常高效。
-
-### InnoDB引擎的4大特性
+## InnoDB引擎的4大特性
 
 - 插入缓冲（insert buffer)
 - 二次写(double write)
 - 自适应哈希索引(ahi)
 - 预读(read ahead)
 
-## 简化执行流程图
-
-
-
-## 物理结构
-
-
-
-访问控制模块  判断有没有增删改查的权限
-
-用户模块,判断有没有访问表的权限
-
-### 日志文件(顺序IO)
-
-
-
-因为日志文件是新增的,不会存在浪费空间
-
-随机IO,不会浪费空间,所以适合做增删改查
-
-
-
-### 错误日志
-
-
-
-### 二进制日志（bin log）
-```sql
-mysql> show variables like 'log_%';
-+----------------------------------------+---------------------+
-| Variable_name                          | Value               |
-+----------------------------------------+---------------------+
-| log_bin                                | OFF                 | (错误日志关闭了,默认是关闭)
-| log_bin_basename                       |                     |
-| log_bin_index                          |                     |
-| log_bin_trust_function_creators        | OFF                 |
-| log_bin_use_v1_row_events              | OFF                 |
-| log_error                              | /var/log/mysqld.log |
-| log_output                             | FILE                |
-| log_queries_not_using_indexes          | OFF                 |
-| log_slave_updates                      | OFF                 |
-| log_slow_admin_statements              | OFF                 |
-| log_slow_slave_statements              | OFF                 |
-| log_throttle_queries_not_using_indexes | 0                   |
-| log_warnings                           | 1                   |
-+----------------------------------------+---------------------+
-13 rows in set (0.01 sec)
-```
-
-需要配置my.cnf开启
-```properties
-log-bin=mysql-bin
-```
-
-```sql
-mysql> show variables like 'log_%';
-+----------------------------------------+--------------------------------+
-| Variable_name                          | Value                          |
-+----------------------------------------+--------------------------------+
-| log_bin                                | ON                             |
-| log_bin_basename                       | /var/lib/mysql/mysql-bin       |
-| log_bin_index                          | /var/lib/mysql/mysql-bin.index |
-| log_bin_trust_function_creators        | OFF                            |
-| log_bin_use_v1_row_events              | OFF                            |
-| log_error                              | /var/log/mysqld.log            |
-| log_output                             | FILE                           |
-| log_queries_not_using_indexes          | OFF                            |
-| log_slave_updates                      | OFF                            |
-| log_slow_admin_statements              | OFF                            |
-| log_slow_slave_statements              | OFF                            |
-| log_throttle_queries_not_using_indexes | 0                              |
-| log_warnings                           | 1                              |
-+----------------------------------------+--------------------------------+
-13 rows in set (0.00 sec)
-```
-
-其中mysql-bin是binlog日志文件的basename，binlog日志文件的完整名称： mysql-bin-000001.log
-
-binlog记录了数据库所有的ddl语句和dml语句，但不包括select语句内容，语句以事件的形式保存，描述了数据的
-变更顺序，binlog还包括了每个更新语句的执行时间信息。如果是DDL语句，则直接记录到binlog日志，而DML语
-句，必须通过事务提交才能记录到binlog日志中。
-
-binlog主要用于实现mysql主从复制、数据备份、数据恢复。
-
-### 通用查询日志（general query log）
-
-默认情况下通用查询日志是关闭的。
-
-由于通用查询日志会记录用户的所有操作，其中还包含增删查改等信息，在并发操作大的环境下会产生大量的信息从
-而导致不必要的磁盘IO，会影响mysql的性能的。**如若不是为了调试数据库的目的建议生产环境不要开启查询日志**。
-
-```sql
-mysql> show global variables like 'general_log';
-```
-
-开启方式：
-
-```properties
-#启动开关
-general_log={ON|OFF}
-#日志文件变量，而general_log_file如果没有指定，默认名是host_name.log
-general_log_file=/PATH/TO/file 
-#记录类型
-log_output={TABLE|FILE|NONE}
-注： 文件位置在mysql下，否则没有权限创建文件
-```
-
-
-
-### 慢日志查询（slow query log）
-
-默认是关闭的。
-需要通过以下设置进行开启：
-
-```properties
-#开启慢查询日志
-slow_query_log=ON
-#慢查询的阈值
-long_query_time=3
-#日志记录文件如果没有给出file_name值， 默认为主机名，后缀为-slow.log。如果给出了文件名，但不是绝对路径
-名，文件则写入数据目录。
-slow_query_log_file=file_name
-```
-
-记录执行时间超过long_query_time秒的所有查询，便于收集查询时间比较长的SQL语句
-
-
-
-慢查询日志（slow query log）
-默认是关闭的。
-需要通过以下设置进行开启：
-记录执行时间超过long_query_time秒的所有查询，便于收集查询时间比较长的SQL语句
-
-### 数据IO(随机IO)
-
 # 锁
 
-### 对MySQL的锁了解吗
+## 对MySQL的锁了解吗
 
 当数据库有并发事务的时候，可能会产生数据的不一致，这时候需要一些机制来保证访问的次序，锁机制就是这样的一个机制。
 
 就像酒店的房间，如果大家随意进出，就会出现多人抢夺同一个房间的情况，而在房间上装上锁，申请到钥匙的人才可以入住并且将房间锁起来，其他人只有等他使用完毕才可以再次使用。
 
-### 隔离级别与锁的关系
+## 隔离级别与锁的关系
 
 在Read Uncommitted级别下，读取数据不需要加共享锁，这样就不会跟被修改的数据上的排他锁冲突
 
@@ -1023,7 +913,7 @@ slow_query_log_file=file_name
 
 SERIALIZABLE 是限制性最强的隔离级别，因为该级别**锁定整个范围的键**，并一直持有锁，直到事务完成。
 
-### 按照锁的粒度分数据库锁有哪些？锁机制与InnoDB锁算法
+## 按照锁的粒度分数据库锁有哪些？锁机制与InnoDB锁算法
 
 在关系型数据库中，可以**按照锁的粒度把数据库锁分**为行级锁(INNODB引擎)、表级锁(MYISAM引擎)和页级锁(BDB引擎 )。
 
@@ -1046,7 +936,7 @@ SERIALIZABLE 是限制性最强的隔离级别，因为该级别**锁定整个�
 
 特点：开销和加锁时间界于表锁和行锁之间；会出现死锁；锁定粒度界于表锁和行锁之间，并发度一般
 
-### 从锁的类别上分MySQL都有哪些锁呢？像上面那样子进行锁定岂不是有点阻碍并发效率了
+## 从锁的类别上分MySQL都有哪些锁呢？像上面那样子进行锁定岂不是有点阻碍并发效率了
 
 **从锁的类别上来讲**，有共享锁和排他锁。
 
@@ -1060,7 +950,7 @@ SERIALIZABLE 是限制性最强的隔离级别，因为该级别**锁定整个�
 
 他们的加锁开销从大到小，并发能力也是从大到小。
 
-### MySQL中InnoDB引擎的行锁是怎么实现的？
+## MySQL中InnoDB引擎的行锁是怎么实现的？
 
 答：InnoDB是基于索引来完成行锁
 
@@ -1187,9 +1077,7 @@ for update 可以根据条件来完成行锁锁定，并且 id 是有索引键�
 3） range 对索引进行范围检索。 
 反例：explain表的结果，type=index，索引物理文件全扫描，速度非常慢，这个index级别比较range还低，与全表扫描是小巫见大巫。
 
-# SQL优化
-
-## SQL的生命周期
+# SQL的生命周期
 
 1. 应用服务器与数据库服务器建立一个连接
 2. 数据库进程拿到请求sql
@@ -1199,6 +1087,65 @@ for update 可以根据条件来完成行锁锁定，并且 id 是有索引键�
 6. 关掉连接，释放资源
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200310170936478.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1RoaW5rV29u,size_16,color_FFFFFF,t_70)
+
+![img](https://raw.githubusercontent.com/YangAnLin/images/master/20200824203057.webp)
+
+## 查询流程
+
+Server层
+
+1. 连接器： 身份认证和权限相关(登录 MySQL 的时候)。
+
+2. 查询缓存: 执行查询语句的时候，会先查询缓存（MySQL 8.0 版本后移除，因为这个功能不太实用）。
+
+3. 分析器: 没有命中缓存的话，SQL 语句就会经过分析器，分析器说白了就是要先看你的 SQL 语句要干嘛，再检查你的 SQL 语句语法是否正确。
+
+4. 优化器： 按照 MySQL 认为最优的方案去执行。
+5. 执行器: 执行语句，然后从存储引擎返回数据。
+
+存储引擎
+
+## 连接器
+
+你会先连接到这个数据库上，这时候接待你的就是连接器
+
+* 长连接是指连接成功后，如果客户端持续有请求，则一直使用同一个连接。,尽量减少建立连接的动作，也就是尽量使用长连接。
+* 短连接则是指每次执行完很少的几次查询就断开连接，下次查询再重新建立一个。
+
+全部使用长连接后，你可能会发现，有些时候 MySQL 占用内存涨得特别快，这是因为 MySQL 在执行过程中临时使用的内存是管理在连接对象里面的。这些资源会在连接断开的时候才释放。所以如果长连接累积下来，可能导致内存占用太大，被系统强行杀掉（OOM），从现象看就是 MySQL 异常重启了。
+
+解决方法:
+
+1. 定期断开长连接。使用一段时间，或者程序里面判断执行过一个占用内存的大查询后，断开连接，之后要查询再重连。
+2. 如果你用的是 MySQL 5.7 或更新版本，可以在每次执行一个比较大的操作后，通过执行 mysql_reset_connection 来重新初始化连接资源。这个过程不需要重连和重新做权限验证，但是会将连接恢复到刚刚创建完时的状态
+
+## 分析器
+
+### 词法分析
+
+MySQL 从你输入的"select"这个关键字识别出来，这是一个查询语句。它也要把字符串“T”识别成“表名 T”，把字符串“ID”识别成“列 ID”。
+
+### 语法分析
+
+做完了这些识别以后，就要做“语法分析”。根据词法分析的结果，语法分析器会根据语法规则，判断你输入的这个 SQL 语句是否满足 MySQL 语法。
+
+一般语法错误会提示第一个出现错误的位置，所以你要关注的是紧接“use near”的内容
+
+## 优化器
+
+优化器是在表里面有多个索引的时候，决定使用哪个索引；
+
+或者在一个语句有多表关联（join）的时候，决定各个表的连接顺序。
+
+## 执行器
+
+先查询有没有权限
+
+```sql
+ERROR 1142 (42000): SELECT command denied to user 'b'@'localhost' for table 'T'
+```
+
+# Sql优化
 
 ## 大表数据查询，怎么优化
 

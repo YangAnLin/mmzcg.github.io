@@ -3,8 +3,32 @@
 
 ## Linux
 
+## Centos8
+
+### Cockpit
+
+```shell
+Activate the web console with: systemctl enable --now cockpit.socke
+```
+
+Cockpit介绍自己是一个Web端的系统管理工具，只用鼠标点点就能管理系统，事实上也确实如此，我实际使用来说，启动Cockpit服务之后，只需要鼠标点点点就能完成系统很多基础操作，比如查看系统信息，启动/停止服务，新增或者更改账户，系统更新，Web终端及查看网络流量等功能。
+
+```shell
+systemctl start cockpit.socket   # 运行Cockpit服务
+
+systemctl enable –now cockpit.socket  # 启动该服务，随系统启动一同启动
+
+systemctl status cockpit.socket
+```
+
+然后在另一台电脑上用浏览器登录 https://IP:9090
+
+
+
+
 
 ### 修改时区
+
 ```shell
 # 查询当前时间
 date -R  

@@ -6,6 +6,8 @@
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/2020031416414486.jpeg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1RoaW5rV29u,size_16,color_FFFFFF,t_70)
 
+![img](https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/2019-3Java%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA%E5%9F%9FJDK1.8.png)
+
 JVM包含两个子系统和两个组件
 
 * 两个子系统
@@ -16,14 +18,20 @@ JVM包含两个子系统和两个组件
   * Runtime data area(运行时数据区)
     * 程序计数器（Program Counter Register）
       * 当前线程所执行的字节码的行号指示器，字节码解析器的工作是通过改变这个计数器的值，来选取下一条需要执行的字节码指令，分支、循环、跳转、异常处理、线程恢复等基础功能，都需要依赖这个计数器来完成；
+      * 程序计数器是唯一一个不会出现 `OutOfMemoryError` 的内存区域，它的生命周期随着线程的创建而创建，随着线程的结束而死亡
     * Java 虚拟机栈（Java Virtual Machine Stacks）
-      * 用于存储局部变量表、操作数栈、动态链接、方法出口等信息；
+      * Java 虚拟机栈是由一个个栈帧组成，而每个栈帧中都拥有：局部变量表、操作数栈、动态链接、方法出口信息
+      * **Java 虚拟机栈会出现两种错误**
+        * **`StackOverFlowError`** : 若 Java 虚拟机栈的内存大小不允许动态扩展，那么当线程请求栈的深度超过当前 Java 虚拟机栈的最大深度的时候，就抛出 StackOverFlowError 错误
+        * **`OutOfMemoryError`**:若 Java 虚拟机堆中没有空闲内存，并且垃圾回收器也无法提供更多内存的话。就会抛出 OutOfMemoryError 错误
     * 本地方法栈（Native Method Stack）
       * 与虚拟机栈的作用是一样的，只不过虚拟机栈是服务 Java 方法的，而本地方法栈是为虚拟机调用 Native 方法服务的；
     * Java 堆（Java Heap）
       * Java 虚拟机中内存最大的一块，是被所有线程共享的，几乎所有的对象实例都在这里分配内存；
     * 方法区（Methed Area）
       * 用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译后的代码等数据。
+      * 方法区也被称为永久代
+      * **Non-Heap（非堆）**
 
 - Class loader(类装载)：根据给定的全限定名类名(如：java.lang.Object)来装载class文件到Runtime data area中的method area。
 - Execution engine（执行引擎）：执行classes中的指令。
@@ -59,6 +67,21 @@ JVM包含两个子系统和两个组件
 | 操作的方式 | 队列是在队尾入队，队头出队，即两边都可操作 | 进栈和出栈都是在栈顶进行的，无法对栈底直接进行操作 |
 | 操作的方法 | 队列是先进先出（FIFO）                     | 栈为后进先出（LIFO）                               |
 
+# 堆
+
+1. 新生代内存(Young Generation)
+2. 老生代(Old Generation)
+3. 永生代(Permanent Generation)
+
+![JVM堆内存结构-JDK8](https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/JVM%E5%A0%86%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84-jdk8.png)
+
+**示的 Eden 区、两个 Survivor 区都属于新生代（为了区分，这两个 Survivor 区域按照顺序被命名为 from 和 to），中间一层属于老年代。**
+
+堆这里最容易出现的就是 OutOfMemoryError 错误，并且出现这种错误之后的表现形式还会有几种，比如：
+
+1. **`OutOfMemoryError: GC Overhead Limit Exceeded`** ： 当JVM花太多时间执行垃圾回收并且只能回收很少的堆空间时，就会发生此错误。
+2. **`java.lang.OutOfMemoryError: Java heap space`** :假如在创建新的对象时, 堆内存中的空间不足以存放新创建的对象, 就会引发`java.lang.OutOfMemoryError: Java heap space` 错误。(和本机物理内存无关，和你配置的内存大小有关！)
+
 # 内存溢出异常
 
 ## Java会存在内存泄漏吗
@@ -91,62 +114,60 @@ GC 是垃圾收集的意思（Gabage Collection）,内存处理是编程人员�
 
 通常，GC采用有向图的方式记录和管理堆(heap)中的所有对象。通过这种方式确定哪些对象是"可达的"，哪些对象是"不可达的"。当GC确定一些对象为"不可达"时，GC就有责任回收这些内存空间。
 
+# HotSpot虚拟机对象
 
+## 对象的创建
 
+![Java创建对象的过程](https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/Java%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%BF%87%E7%A8%8B.png)
 
+### Step1:类加载检查
 
+虚拟机遇到一条 new 指令时，首先将去检查这个指令的参数是否能在常量池中定位到这个类的符号引用，并且检查这个符号引用代表的类是否已被加载过、解析和初始化过。如果没有，那必须先执行相应的类加载过程。
 
+### Step2:分配内存
 
+在**类加载检查**通过后，接下来虚拟机将为新生对象**分配内存**。
 
+对象所需的内存大小在类加载完成后便可确定，为对象分配空间的任务等同于把一块确定大小的内存从 Java 堆中划分出来。
 
+**分配方式**有 **“指针碰撞”** 和 **“空闲列表”** 两种，**选择哪种分配方式由 Java 堆是否规整决定，而 Java 堆是否规整又由所采用的垃圾收集器是否带有压缩整理功能决定**。
 
+选择以上两种方式中的哪一种，取决于 Java 堆内存是否规整。而 Java 堆内存是否规整，取决于 GC 收集器的算法是"标记-清除"，还是"标记-整理"（也称作"标记-压缩"），值得注意的是，复制算法内存也是规整的
 
+![image-20200824194144806](https://raw.githubusercontent.com/YangAnLin/images/master/20200824194149.png)
 
+**内存分配并发问题**
 
+在创建对象的时候有一个很重要的问题，就是线程安全，因为在实际开发过程中，创建对象是很频繁的事情，作为虚拟机来说，必须要保证线程是安全的，通常来讲，虚拟机采用两种方式来保证线程安全：
 
+- **CAS+失败重试：** CAS 是乐观锁的一种实现方式。所谓乐观锁就是，每次不加锁而是假设没有冲突而去完成某项操作，如果因为冲突失败就重试，直到成功为止。**虚拟机采用 CAS 配上失败重试的方式保证更新操作的原子性。**
+- **TLAB：** 为每一个线程预先在 Eden 区分配一块儿内存，JVM 在给线程中的对象分配内存时，首先在 TLAB 分配，当对象大于 TLAB 中的剩余内存或 TLAB 的内存已用尽时，再采用上述的 CAS 进行内存分配
 
+### Step3:初始化零值
 
+内存分配完成后，虚拟机需要将分配到的内存空间都初始化为零值（不包括对象头），这一步操作保证了对象的实例字段在 Java 代码中可以不赋初始值就直接使用，程序能访问到这些字段的数据类型所对应的零值。
 
-```java
-public class Demo {
-    public static void main(String[] args) {
-        System.out.print("Hello world");
-    }
-}
-```
+### Step4:设置对象头
 
-Java栈报错`java.lang.StackOverflowError`
-打印的结果是最后一次调用
+初始化零值完成之后，**虚拟机要对对象进行必要的设置**，例如这个对象是哪个类的实例、如何才能找到类的元数据信息、对象的哈希码、对象的 GC 分代年龄等信息。 **这些信息存放在对象头中。** 另外，根据虚拟机当前运行状态的不同，如是否启用偏向锁等，对象头会有不同的设置方式。
 
-```java
-public class Demo2 {
-    private static int length = 0;
+### Step5:执行 init 方法
 
-    public static void recursion() {
-        length++;
-        recursion();
-    }
+在上面工作都完成之后，从虚拟机的视角来看，一个新的对象已经产生了，但从 Java 程序的视角来看，对象创建才刚开始，`<init>` 方法还没有执行，所有的字段都还为零。所以一般来说，执行 new 指令之后会接着执行 `<init>` 方法，把对象按照程序员的意愿进行初始化，这样一个真正可用的对象才算完全产生出来。
 
-    public static void main(String[] args) {
-        try {
-            recursion();
-        } catch (Throwable ex) {
-            ex.printStackTrace();
-            System.out.println(length);
-        }
-    }
-}
-```
+## 对象的访问定位
 
-### 忘记是啥功能了
+建立对象就是为了使用对象，我们的 Java 程序通过栈上的 reference 数据来操作堆上的具体对象。对象的访问方式由虚拟机实现而定，目前主流的访问方式有**①使用句柄**和**②直接指针**两种：
 
-```shell
-ps -mp pid -o THREAD,tid,time
-```
+**句柄：** 如果使用句柄的话，那么 Java 堆中将会划分出一块内存来作为句柄池，reference 中存储的就是对象的句柄地址，而句柄中包含了对象实例数据与类型数据各自的具体地址信息
 
-### CPU占用率高查看
+**直接指针：** 如果使用直接指针访问，那么 Java 堆对象的布局中就必须考虑如何放置访问类型数据的相关信息，而 reference 中存储的直接就是对象的地址。
 
-#### 第一种方法
+![image-20200824194559886](https://raw.githubusercontent.com/YangAnLin/images/master/20200824194601.png)
+
+# CPU占用率高查看
+
+## 第一种方法
 
 ```shell
 # 1.查看java的pid
@@ -161,7 +182,7 @@ printf "%x\n" 子pid
 jstack pid |grep tid(第3步出来的) -A 30
 ```
 
-#### 第二种方法:show-busy-java-threads
+## 第二种方法:show-busy-java-threads
 
 https://github.com/oldratlee/useful-scripts/blob/dev-2.x/bin/show-busy-java-threads
 
@@ -170,6 +191,3 @@ https://github.com/oldratlee/useful-scripts/blob/dev-2.x/bin/show-busy-java-thre
 ```shell
 sh show-busy-java-threads.sh -p pid
 ```
-
-
-
