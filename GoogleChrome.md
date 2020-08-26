@@ -10,7 +10,7 @@ chrome://flags/#tab-groups
 
 ## **标签悬停卡**
 
-![你现在应该启用的10个超棒的Chrome功能](https://p3-tt.byteimg.com/origin/pgc-image/e6aa1c19f2f648a083b400aa4336dd64?from=pc)
+![你现在应该启用的10个超棒的Chrome功能](https://raw.githubusercontent.com/YangAnLin/images/master/20200826193826.gif)
 
 chrome://flags/#tab-hover-cards **&** chrome://flags/#tab-hover-card-images
 
