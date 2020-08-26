@@ -23,7 +23,7 @@
 http://localhost:8000
 ```
 
-![image-20200820141844196](https://image.yanganlin.com/20200820162650.png)
+![image-20200820141844196](https://raw.githubusercontent.com/YangAnLin/images/master/20200825204236.png)
 
 ## 文件目录结构
 
@@ -50,7 +50,7 @@ http://localhost:8000
 
 ## 下载
 
-![image-20200820142736709](https://image.yanganlin.com/20200820162657.png)
+![image-20200820142736709](https://raw.githubusercontent.com/YangAnLin/images/master/20200825204247.png)
 
 ## 安装
 

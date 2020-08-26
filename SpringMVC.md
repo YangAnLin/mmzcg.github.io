@@ -156,3 +156,93 @@ protected void initStrategies(ApplicationContext context) {
 }
 ```
 
+# 临时用的
+
+https://zhuanlan.zhihu.com/p/62562499
+
+## 设置属性
+
+```java
+// 1. 设置属性
+// Make web application context available
+request.setAttribute(WEB_APPLICATION_CONTEXT_ATTRIBUTE, getWebApplicationContext());
+
+// Make locale resolver available
+request.setAttribute(LOCALE_RESOLVER_ATTRIBUTE, this.localeResolver);
+
+// Make theme resolver available
+request.setAttribute(THEME_RESOLVER_ATTRIBUTE, this.themeResolver);
+```
+
+## 根据 Request 请求的 URL 得到对应的 handler 执行链，其实就是拦截器和 Controller 代理对象。
+
+```java
+// 2. 找 handler 返回执行链
+HandlerExecutionChain mappedHandler = getHandler(request);
+```
+
+## 得到 handler 的适配器
+
+```java
+// This will throw an exception if no adapter is found
+// 3. 返回 handler 的适配器
+HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
+```
+
+## 循环执行 handler 的 pre 拦截器
+
+```java
+// 4. 循环执行 handler 的 pre 拦截器
+for (int i = 0; i < mappedHandler.getInterceptors().length; i++) {
+    HandlerInterceptor interceptor = mappedHandler.getInterceptors()[i];
+    // pre 拦截器
+    if (!interceptor.preHandle(request, response, mappedHandler.getHandler())) {
+        return;
+    }
+}
+```
+
+## 执行真正的 handler，并返回 ModelAndView(Handler 是个代理对象，可能会执行 AOP )
+
+```java
+// 5. 执行真正的 handler，并返回  ModelAndView(Handler 是个代理对象，可能会执行 AOP )
+ModelAndView mv = ha.handle(request, response, mappedHandler.getHandler());
+```
+
+## 循环执行 handler 的 post 拦截器
+
+```java
+// 6. 循环执行 handler 的 post 拦截器
+for (int i = mappedHandler.getInterceptors().length - 1; i >=0 ; i--) {
+    HandlerInterceptor interceptor = mappedHandler.getInterceptors()[i];
+    // post 拦截器
+    interceptor.postHandle(request, response, mappedHandler.getHandler());
+}
+
+# 根据 ModelAndView 信息得到 View 实例
+  View view = null;
+if (mv.isReference()) {
+    // We need to resolve this view name
+    // 7. 根据 ModelAndView 信息得到 View 实例
+    view = this.viewResolver.resolveViewName(mv.getViewName(), locale);
+}
+
+
+# 渲染 View 返回
+// 8. 渲染 View 返回
+view.render(mv.getModel(), request, response);
+```
+
+其实理解这些才是最重要的。
+
+1. 用户发送请求至前端控制器DispatcherServlet
+2. DispatcherServlet收到请求调用HandlerMapping处理器映射器。
+3. 处理器映射器根据请求url找到具体的处理器，生成处理器对象及处理器拦截器(如果有则生成)一并返回给DispatcherServlet。
+4. DispatcherServlet通过HandlerAdapter处理器适配器调用处理器
+5. HandlerAdapter执行处理器(handler，也叫后端控制器)。
+6. Controller执行完成返回ModelAndView
+7. HandlerAdapter将handler执行结果ModelAndView返回给DispatcherServlet
+8. DispatcherServlet将ModelAndView传给ViewReslover视图解析器
+9. ViewReslover解析后返回具体View对象
+10. DispatcherServlet对View进行渲染视图（即将模型数据填充至视图中）。
+11. DispatcherServlet响应用户

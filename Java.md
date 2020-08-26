@@ -616,3 +616,307 @@ JVM在执行某个类的时候，必须经过加载、连接、初始化，而�
 
 
 
+# 并发
+
+## Java 中用到的线程调度算法是什么
+
+JAVA 虚拟机的一项任务就是负责线程的调度，线程调度是指按照特定机制为多个线程分配 CPU 的使用权。
+
+有两种调度模型：`分时调度模型`和`抢占式调度模型`
+
+分时调度模型是指让所有的线程轮流获得 cpu 的使用权，并且平均分配每个线程占用的 CPU 的时间片这个也比较好理解。
+
+Java虚拟机采用抢占式调度模型，是指优先让可运行池中优先级高的线程占用CPU，如果可运行池中的线程优先级相同，那么就随机选择一个线程，使其占用CPU。处于运行状态的线程会一直运行，直至它不得不放弃 CPU。
+
+## runnable 和 callable 有什么区别
+
+- Runnable 接口 run 方法无返回值；Callable 接口 call 方法有返回值，是个泛型，和Future、FutureTask配合可以用来获取异步执行的结果
+- Runnable 接口 run 方法只能抛出运行时异常，且无法捕获处理；Callable 接口 call 方法允许抛出异常，可以获取异常信息
+
+**注**：Callalbe接口支持返回执行结果，需要调用FutureTask.get()得到，此方法会阻塞主进程的继续往下执行，如果不调用不会阻塞。
+
+## 线程的 run()和 start()有什么区别
+
+## start() 方法时会执行 run() 方法
+
+new 一个 Thread，线程进入了新建状态。调用 start() 方法，会启动一个线程并使线程进入了就绪状态，当分配到时间片后就可以开始运行了。 start() 会执行线程的相应准备工作，然后自动执行 run() 方法的内容，这是真正的多线程工作。
+
+而直接执行 run() 方法，会把 run 方法当成一个 main 线程下的普通方法去执行，并不会在某个线程中执行它，所以这并不是多线程工作。
+
+总结： 调用 start 方法方可启动线程并使线程进入就绪状态，而 run 方法只是 thread 的一个普通方法调用，还是在主线程里执行。
+
+## 什么是 FutureTask
+
+FutureTask 表示一个异步运算的任务。FutureTask 里面可以传入一个 Callable 的具体实现类，可以对这个异步运算的任务的结果进行等待获取、判断是否已经完成、取消任务等操作。只有当运算完成的时候结果才能取回，如果运算尚未完成 get 方法将会阻塞。一个 FutureTask 对象可以对调用了 Callable 和 Runnable 的对象进行包装，由于 FutureTask 也是Runnable 接口的实现类，所以 FutureTask 也可以放入线程池中。
+
+## 线程的 sleep()方法和 yield()方法有什么区别？
+
+（1） sleep()方法给其他线程运行机会时不考虑线程的优先级，因此会给低优先级的线程以运行的机会；yield()方法只会给相同优先级或更高优先级的线程以运行的机会；
+
+（2） 线程执行 sleep()方法后转入阻塞（blocked）状态，而执行 yield()方法后转入就绪（ready）状态；
+
+（3）sleep()方法声明抛出 InterruptedException，而 yield()方法没有声明任何异常；
+
+（4）sleep()方法比 yield()方法（跟操作系统 CPU 调度相关）具有更好的可移植性，通常不建议使用yield()方法来控制并发线程的执行。
+
+## 如何停止一个正在运行的线程？
+
+1. 使用退出标志，使线程正常退出，也就是当run方法完成后线程终止。
+2. 使用stop方法强行终止，但是不推荐这个方法，因为stop和suspend及resume一样都是过期作废的方法。
+3. 使用interrupt方法中断线程。
+
+## 如果你提交任务时，线程池队列已满，这时会发生什么
+
+这里区分一下：
+
+（1）如果使用的是无界队列 LinkedBlockingQueue，也就是无界队列的话，没关系，继续添加任务到阻塞队列中等待执行，因为 LinkedBlockingQueue 可以近乎认为是一个无穷大的队列，可以无限存放任务
+
+（2）如果使用的是有界队列比如 ArrayBlockingQueue，任务首先会被添加到ArrayBlockingQueue 中，ArrayBlockingQueue 满了，会根据maximumPoolSize 的值增加线程数量，如果增加了线程数量还是处理不过来，ArrayBlockingQueue 继续满，那么则会使用拒绝策略RejectedExecutionHandler 处理满了的任务，默认是 AbortPolicy
+
+## 什么叫线程安全？servlet 是线程安全吗?
+
+线程安全是编程中的术语，指某个方法在多线程环境中被调用时，能够正确地处理多个线程之间的共享变量，使程序功能正确完成。
+
+Servlet 不是线程安全的，servlet 是单实例多线程的，当多个线程同时访问同一个方法，是不能保证共享变量的线程安全性的。
+
+Struts2 的 action 是多实例多线程的，是线程安全的，每个请求过来都会 new 一个新的 action 分配给这个请求，请求完成后销毁。
+
+SpringMVC 的 Controller 是线程安全的吗？不是的，和 Servlet 类似的处理流程。
+
+Struts2 好处是不用考虑线程安全问题；Servlet 和 SpringMVC 需要考虑线程安全问题，但是性能可以提升不用处理太多的 gc，可以使用 ThreadLocal 来处理多线程的问题。
+
+## 线程类的构造方法、静态块是被哪个线程调用的
+
+线程类的构造方法、静态块是被 new这个线程类所在的线程所调用的，而 run 方法里面的代码才是被线程自身所调用的。
+
+举个例子，假设 Thread2 中 new 了Thread1，main 函数中 new 了 Thread2，那么：
+
+（1）Thread2 的构造方法、静态块是 main 线程调用的，Thread2 的 run()方法是Thread2 自己调用的
+
+（2）Thread1 的构造方法、静态块是 Thread2 调用的，Thread1 的 run()方法是Thread1 自己调用的
+
+## 为什么代码会重排序？
+
+在执行程序时，为了提供性能，处理器和编译器常常会对指令进行重排序，但是不能随意重排序，不是你想怎么排序就怎么排序，它需要满足以下两个条件：
+
+- 在单线程环境下不能改变程序运行的结果；
+- 存在数据依赖关系的不允许重排序
+
+需要注意的是：重排序不会影响单线程环境的执行结果，但是会破坏多线程的执行语义。
+
+## ThreadLocal
+
+### ThreadLocal 是什么？有哪些使用场景？
+
+ThreadLocal 是一个本地线程副本变量工具类，在每个线程中都创建了一个 ThreadLocalMap 对象，简单说 ThreadLocal 就是一种以空间换时间的做法，每个线程可以访问自己内部 ThreadLocalMap 对象内的 value。通过这种方式，避免资源在多线程间共享。
+
+原理：线程局部变量是局限于线程内部的变量，属于线程自身所有，不在多个线程间共享。Java提供ThreadLocal类来支持线程局部变量，是一种实现线程安全的方式。但是在管理环境下（如 web 服务器）使用线程局部变量的时候要特别小心，在这种情况下，工作线程的生命周期比任何应用变量的生命周期都要长。任何线程局部变量一旦在工作完成后没有释放，Java 应用就存在内存泄露的风险。
+
+经典的使用场景是为每个线程分配一个 JDBC 连接 Connection。这样就可以保证每个线程的都在各自的 Connection 上进行数据库的操作，不会出现 A 线程关了 B线程正在使用的 Connection； 还有 Session 管理 等问题。
+
+### ThreadLocal造成内存泄漏的原因？
+
+`ThreadLocalMap` 中使用的 key 为 `ThreadLocal` 的弱引用,而 value 是强引用。所以，如果 `ThreadLocal` 没有被外部强引用的情况下，在垃圾回收的时候，key 会被清理掉，而 value 不会被清理掉。这样一来，`ThreadLocalMap` 中就会出现key为null的Entry。假如我们不做任何措施的话，value 永远无法被GC 回收，这个时候就可能会产生内存泄露。ThreadLocalMap实现中已经考虑了这种情况，在调用 `set()`、`get()`、`remove()` 方法的时候，会清理掉 key 为 null 的记录
+
+### ThreadLocal内存泄漏解决方案？
+
+- 每次使用完ThreadLocal，都调用它的remove()方法，清除数据。
+- 在使用线程池的情况下，没有及时清理ThreadLocal，不仅是内存泄漏的问题，更严重的是可能导致业务逻辑出现问题
+
+##  BlockingQueue
+
+### 什么是阻塞队列
+
+阻塞队列（BlockingQueue）是一个支持两个附加操作的队列。
+
+这两个附加的操作是：
+
+* 在队列为空时，获取元素的线程会等待队列变为非空。
+
+* 当队列满时，存储元素的线程会等待队列可用。
+
+阻塞队列常用于生产者和消费者的场景，生产者是往队列里添加元素的线程，消费者是从队列里拿元素的线程。阻塞队列就是生产者存放元素的容器，而消费者也只从容器里拿元素。
+
+BlockingQueue 接口是 Queue 的子接口，它的主要用途并不是作为容器，而是作为线程同步的的工具
+
+JDK7 提供了 7 个阻塞队列。分别是：
+
+ArrayBlockingQueue ：一个由数组结构组成的有界阻塞队列。
+
+LinkedBlockingQueue ：一个由链表结构组成的有界阻塞队列。
+
+PriorityBlockingQueue ：一个支持优先级排序的无界阻塞队列。
+
+DelayQueue：一个使用优先级队列实现的无界阻塞队列。
+
+SynchronousQueue：一个不存储元素的阻塞队列。
+
+LinkedTransferQueue：一个由链表结构组成的无界阻塞队列。
+
+LinkedBlockingDeque：一个由链表结构组成的双向阻塞队列。
+
+### ConcurrentLinkedQueue详解
+
+### ArrayBlockingQueue详解
+
+### LinkedBlockingQueue详解
+
+## 线程池
+
+### 创建线程池
+
+线程池顾名思义就是事先创建若干个可执行的线程放入一个池（容器）中，需要的时候从池中获取线程不用自行创建，使用完毕不需要销毁线程而是放回池中，从而减少创建和销毁线程对象的开销
+
+（1）**newSingleThreadExecutor**：创建一个单线程的线程池。这个线程池只有一个线程在工作，也就是相当于单线程串行执行所有任务。如果这个唯一的线程因为异常结束，那么会有一个新的线程来替代它。此线程池保证所有任务的执行顺序按照任务的提交顺序执行。
+
+（2）**newFixedThreadPool**：创建固定大小的线程池。每次提交一个任务就创建一个线程，直到线程达到线程池的最大大小。线程池的大小一旦达到最大值就会保持不变，如果某个线程因为执行异常而结束，那么线程池会补充一个新线程。如果希望在服务器上使用线程池，建议使用 newFixedThreadPool方法来创建线程池，这样能获得更好的性能。
+
+（3） newCachedThreadPool：创建一个可缓存的线程池。如果线程池的大小超过了处理任务所需要的线程，那么就会回收部分空闲（60 秒不执行任务）的线程，当任务数增加时，此线程池又可以智能的添加新线程来处理任务。此线程池不会对线程池大小做限制，线程池大小完全依赖于操作系统（或者说 JVM）能够创建的最大线程大小。
+
+（4）newScheduledThreadPool：创建一个大小无限的线程池。此线程池支持定时以及周期性执行任务的需求。
+
+### 线程池都有哪些状态
+
+- RUNNING：这是最正常的状态，接受新的任务，处理等待队列中的任务。
+- SHUTDOWN：不接受新的任务提交，但是会继续处理等待队列中的任务。
+- STOP：不接受新的任务提交，不再处理等待队列中的任务，中断正在执行任务的线程。
+- TIDYING：所有的任务都销毁了，workCount 为 0，线程池的状态在转换为 TIDYING 状态时，会执行钩子方法 terminated()。
+- TERMINATED：terminated()方法结束后，线程池的状态就会变成这个
+
+### Executor 框架
+
+Executor 框架是一个根据一组执行策略调用，调度，执行和控制的异步任务的框架。
+
+每次执行任务创建线程 new Thread()比较消耗性能，创建一个线程是比较耗时、耗资源的，而且无限制的创建线程会引起应用程序内存溢出。
+
+所以创建一个线程池是个更好的的解决方案，因为可以限制线程的数量并且可以回收再利用这些线程。利用Executors 框架可以非常方便的创建一个线程池。
+
+### Executor 和 Executors 的区别
+
+- Executors 工具类的不同方法按照我们的需求创建了不同的线程池，来满足业务的需求。
+- Executor 接口对象能执行我们的线程任务。
+- ExecutorService 接口继承了 Executor 接口并进行了扩展，提供了更多的方法我们能获得任务执行的状态并且可以获取任务的返回值。
+- 使用 ThreadPoolExecutor 可以创建自定义线程池。
+- Future 表示异步计算的结果，他提供了检查计算是否完成的方法，以等待计算的完成，并可以使用 get()方法获取计算的结果
+
+### 线程池中 submit() 和 execute()
+
+接收参数：execute()只能执行 Runnable 类型的任务。submit()可以执行 Runnable 和 Callable 类型的任务。
+
+返回值：submit()方法可以返回持有计算结果的 Future 对象，而execute()没有
+
+异常处理：submit()方便Exception处理
+
+### ThreadPoolExecutor详解
+
+![图解线程池实现原理](https://imgconvert.csdnimg.cn/aHR0cHM6Ly91c2VyLWdvbGQtY2RuLnhpdHUuaW8vMjAxOS8xMS8yNS8xNmVhMDQ3NjEyOTVlNzY2?x-oss-process=image/format,png)
+
+#### Executors和ThreaPoolExecutor创建线程池的区别
+
+《阿里巴巴Java开发手册》中强制线程池不允许使用 Executors 去创建，而是通过 ThreadPoolExecutor 的方式，这样的处理方式让写的同学更加明确线程池的运行规则，规避资源耗尽的风险
+
+Executors 各个方法的弊端：
+
+- newFixedThreadPool 和 newSingleThreadExecutor:
+  主要问题是堆积的请求处理队列可能会耗费非常大的内存，甚至 OOM。
+- newCachedThreadPool 和 newScheduledThreadPool:
+  主要问题是线程数最大数是 Integer.MAX_VALUE，可能会创建数量非常多的线程，甚至 OOM。
+
+ThreaPoolExecutor创建线程池方式只有一种，就是走它的构造函数，参数自己指定
+
+#### ThreadPoolExecutor构造函数重要参数分析
+
+**`ThreadPoolExecutor`** **3 个最重要的参数：**
+
+- **`corePoolSize`** ：核心线程数，线程数定义了最小可以同时运行的线程数量。
+- **`maximumPoolSize`** ：线程池中允许存在的工作线程的最大数量
+- **`workQueue`**：可以用前面的阻塞队列,当新任务来的时候会先判断当前运行的线程数量是否达到核心线程数，如果达到的话，任务就会被存放在队列中。
+
+`ThreadPoolExecutor`其他常见参数:
+
+1. **`keepAliveTime`**：线程池中的线程数量大于 `corePoolSize` 的时候，如果这时没有新的任务提交，核心线程外的线程不会立即销毁，而是会等待，直到等待的时间超过了 `keepAliveTime`才会被回收销毁；
+2. **`unit`** ：`keepAliveTime` 参数的时间单位。
+3. **`threadFactory`**：为线程池提供创建新线程的线程工厂
+4. **`handler`** ：线程池任务队列超过 maxinumPoolSize 之后的拒绝策略
+
+#### ThreadPoolExecutor饱和策略
+
+**`ThreadPoolExecutor`** **饱和策略定义:**
+
+如果当前同时运行的线程数量达到最大线程数量并且队列也已经被放满了任时，`ThreadPoolTaskExecutor` 定义一些策略:
+
+- **`ThreadPoolExecutor.AbortPolicy`**：抛出 `RejectedExecutionException`来拒绝新任务的处理。
+- **`ThreadPoolExecutor.CallerRunsPolicy`**：调用执行自己的线程运行任务。您不会任务请求。但是这种策略会降低对于新任务提交速度，影响程序的整体性能。另外，这个策略喜欢增加队列容量。如果您的应用程序可以承受此延迟并且你不能任务丢弃任何一个任务请求的话，你可以选择这个策略。
+- **`ThreadPoolExecutor.DiscardPolicy`**：不处理新任务，直接丢弃掉。
+- **`ThreadPoolExecutor.DiscardOldestPolicy`**： 此策略将丢弃最早的未处理的任务请求。
+
+举个例子： Spring 通过 `ThreadPoolTaskExecutor` 或者我们直接通过 `ThreadPoolExecutor` 的构造函数创建线程池的时候，当我们不指定 `RejectedExecutionHandler` 饱和策略的话来配置线程池的时候默认使用的是 `ThreadPoolExecutor.AbortPolicy`。
+
+在默认情况下，`ThreadPoolExecutor` 将抛出 `RejectedExecutionException` 来拒绝新来的任务 ，这代表你将丢失对这个任务的处理。
+
+对于可伸缩的应用程序，建议使用 `ThreadPoolExecutor.CallerRunsPolicy`。当最大池被填满时，此策略为我们提供可伸缩队列。
+
+### ScheduledThreadPoolExecutor详解
+
+### ScheduledThreadPoolExecutor详解(没有)
+
+### FutureTask详解(没有)
+
+### 原子操作类
+
+原子操作（atomic operation）意为”不可被中断的一个或一系列操作” 。
+
+int++并不是一个原子操作，所以当一个线程读取它的值并加 1 时，另外一个线程有可能会读到之前的值，这就会引发错误。
+
+java.util.concurrent 这个包里面提供了一组原子类。其基本的特性就是在多线程环境下，当有多个线程同时执行这些类的实例包含的方法时，具有排他性，即当某个线程进入方法，执行其中的指令时，不会被其他线程打断，而别的线程就像自旋锁一样，一直等到该方法执行完成，才由 JVM 从等待队列中选择另一个线程进入，这只是一种逻辑上的理解。
+
+原子类：AtomicBoolean，AtomicInteger，AtomicLong，AtomicReference
+
+原子数组：AtomicIntegerArray，AtomicLongArray，AtomicReferenceArray
+
+原子属性更新器：AtomicLongFieldUpdater，AtomicIntegerFieldUpdater，AtomicReferenceFieldUpdater
+
+解决 ABA 问题的原子类：AtomicMarkableReference（通过引入一个 boolean来反映中间有没有变过），AtomicStampedReference（通过引入一个 int 来累加来反映中间有没有变过）
+
+#### Atomic 的原理 
+
+Atomic包中的类基本的特性就是在多线程环境下，当有多个线程同时对单个（包括基本类型及引用类型）变量进行操作时，具有排他性，即当多个线程同时对该变量的值进行更新时，仅有一个线程能成功，而未成功的线程可以向自旋锁一样，继续尝试，一直等到执行成功。
+
+```java
+// setup to use Unsafe.compareAndSwapInt for updates（更新操作时提供“比较并替换”的作用）
+private static final Unsafe unsafe = Unsafe.getUnsafe();
+private static final long valueOffset;
+
+static {
+	try {
+		valueOffset = unsafe.objectFieldOffset
+		(AtomicInteger.class.getDeclaredField("value"));
+	} catch (Exception ex) { throw new Error(ex); }
+}
+
+private volatile int value;
+```
+
+AtomicInteger 类主要利用 CAS (compare and swap) + volatile 和 native 方法来保证原子操作，从而避免 synchronized 的高开销，执行效率大为提升。
+
+CAS的原理是拿期望的值和原本的一个值作比较，如果相同则更新成新的值。UnSafe 类的 objectFieldOffset() 方法是一个本地方法，这个方法是用来拿到“原来的值”的内存地址，返回值是 valueOffset。另外 value 是一个volatile变量，在内存中可见，因此 JVM 可以保证任何时刻任何线程总能拿到该变量的最新值。
+
+## 并发工具
+
+### CountDownLatch与CyclicBarrier
+
+CountDownLatch与CyclicBarrier都是用于控制并发的工具类，都可以理解成维护的就是一个计数器，但是这两者还是各有不同侧重点的：
+
+- CountDownLatch一般用于某个线程A等待若干个其他线程执行完任务之后，它才执行；
+- CyclicBarrier一般用于一组线程互相等待至某个状态，然后这一组线程再同时执行；
+- CountDownLatch强调一个线程等多个线程完成某件事情。
+- CyclicBarrier是多个线程互等，等大家都完成，再携手共进。
+- 调用CountDownLatch的countDown方法后，当前线程并不会阻塞，会继续往下执行；
+- 调用CyclicBarrier的await方法，会阻塞当前线程，直到CyclicBarrier指定的线程全部都到达了指定点的时候，才能继续往下执行；
+- CountDownLatch方法比较少，操作比较简单，
+- CyclicBarrier提供的方法更多，比如能够通过getNumberWaiting()，isBroken()这些方法获取当前多个线程的状态，并且CyclicBarrier的构造方法可以传入barrierAction，指定当所有线程都到达时执行的业务功能；
+- CountDownLatch是不能复用的
+- CyclicLatch是可以复用的。
+
+### Semaphore与Exchanger
+
