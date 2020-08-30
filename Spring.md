@@ -69,6 +69,14 @@ Spring的XML配置文件中的配置与`<bean>`元素是一一对应的。
 | **initialization method**    | bean被创建的时候,初始化的的方法                              |
 | destruction method           | 销毁指定的方法                                               |
 
+## Spring Bean 生命周期
+
+
+
+## Spring Bean 循环依赖
+
+
+
 # Spring AOP
 
 ## 一、AOP是什么？
