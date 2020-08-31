@@ -1041,7 +1041,7 @@ MySQL 从你输入的"select"这个关键字识别出来，这是一个查询语
 
 ### 语法分析
 
-做完了这些识别以后，就要做“语法分析”。根据词法分析的结果，语法分析器会根据语法规则，判断你输入的这个 SQL 语句是否满足 MySQL 语法。
+根据词法分析的结果，语法分析器会根据语法规则，判断你输入的这个 SQL 语句是否满足 MySQL 语法。
 
 一般语法错误会提示第一个出现错误的位置，所以你要关注的是紧接“use near”的内容
 
@@ -1311,7 +1311,11 @@ xtrabackup 属于物理备份，直接拷贝表空间文件，同时不断扫描
 - 2）打开命令行方式，然后进入到mysql的/bin目录。
 - 3）执行myisamchk –recover 数据库所在路径/*.MYI
 
-使用repair table 或者 OPTIMIZE table命令来修复，REPAIR TABLE table_name 修复表 OPTIMIZE TABLE table_name 优化表 REPAIR TABLE 用于修复被破坏的表。 OPTIMIZE TABLE 用于回收闲置的数据库空间，当表上的数据行被删除时，所占据的磁盘空间并没有立即被回收，使用了OPTIMIZE TABLE命令后这些空间将被回收，并且对磁盘上的数据行进行重排（注意：是磁盘上，而非数据库）
+使用repair table 或者 OPTIMIZE table命令来修复
+
+REPAIR TABLE table_name 修复表 OPTIMIZE TABLE table_name 优化表 REPAIR TABLE 用于修复被破坏的表。 
+
+OPTIMIZE TABLE 用于回收闲置的数据库空间，当表上的数据行被删除时，所占据的磁盘空间并没有立即被回收，使用了OPTIMIZE TABLE命令后这些空间将被回收，并且对磁盘上的数据行进行重排（注意：是磁盘上，而非数据库）
 
 # 文档翻译
 

@@ -20,7 +20,7 @@ sudo yum install -y yum-utils  device-mapper-persistent-data  lvm2
 sudo yum-config-manager --add-repo  https://mirrors.ustc.edu.cn/docker-ce/linux/centos/docker-ce.repo
     
 # 安装
-yum makecache fast
+yum -y install https://download.docker.com/linux/fedora/30/x86_64/stable/Packages/containerd.io-1.2.6-3.3.fc30.x86_64.rpm
 yum -y install docker-ce
 
 启动

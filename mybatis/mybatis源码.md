@@ -772,4 +772,79 @@ public Object execute(SqlSession sqlSession, Object[] args) {
 }
 ```
 
-## 
+# 面试题
+
+## 流程
+
+1. 定义接口 Mapper 和方法，用来调用数据库操作。Mapper 接口操作数据库需要通过代理类。
+2. 定义配置类对象 Configuration。
+3. 定义应用层的 API SqlSession。它有一个 getMapper()方法，我们会从配置类Configuration 里面使用 Proxy.newProxyInatance()拿到一个代理对象MapperProxy。
+4. 有了代理对象 MapperProxy 之后，我们调用接口的任意方法，就是调用代理对象的 invoke()方法。
+5. 代理对象 MapperProxy 的 invoke()方法调用了 SqlSession 的 selectOne()。
+6. SqlSession 只是一个 API，还不是真正的 SQL 执行者，所以接下来会调用执行器 Executor 的 query()方法。
+
+## PrepareStatement 和 Statement 的区别
+
+```
+两个都是接口,PrepareStatement 是继承自 Statement 的；
+Statement 处理静态 SQL，PreparedStatement 主要用于执行带参数的语句；
+PreparedStatement 的 addBatch()方法一次性发送多个查询给数据库；
+PS 相似 SQL 只编译一次（对语句进行了缓存，相当于一个函数），减少编译次数；
+PS 可以防止 SQL 注入；
+MyBatis 默认值：PREPARED 也就是PreparedStatement
+```
+
+## MyBatis 编程式开发中的核心对象及其作用？
+
+```
+SqlSessionFactoryBuilder 创建工厂类
+SqlSessionFactory 创建会话
+SqlSession 提供操作接口
+MapperProxy 代理 Mapper 接口后，用于找到 SQL 执行
+```
+
+## Java 类型和数据库类型怎么实现相互映射？
+
+通过 TypeHandler，例如 Java 类型中的 String 要保存成 varchar，就会自动调用相应的 Handler。如果没有系统自带的 TypeHandler，也可以自定义--比如之前文章中写的json转对象的操作。
+
+## MyBatis 翻页的几种方式和区别？
+
+逻辑翻页：通过 RowBounds 对象。
+物理翻页：通过改写 SQL 语句，可用插件拦截 Executor 实现。
+
+## 解析全局配置文件的时候，做了什么？
+
+```
+创建 Configuration，设置 Configuration
+解析 Mapper.xml，设置 MappedStatement
+```
+
+## 没有实现类，MyBatis 的方法是怎么执行的？
+
+MapperProxy 代理，代理类的 invoke()方法中调用了 SqlSession.selectOne()
+
+## 接口方法和映射器的 statement id 是怎么绑定起来的？
+
+MappedStatement 对象中存储了 statement 和 SQL 的映射关系
+
+## MyBatis 插件怎么编写和使用？原理是什么?
+
+```
+使用：继承 Interceptor 接口，加上注解，在 mybatis-config.xml 中配置
+原理：动态代理，责任链模式，使用 Plugin 创建代理对象
+在被拦截对象的方法调用的时候，先走到 Plugin 的 invoke()方法，再走到Interceptor 实现类的 intercept()方法，
+最后通过 Invocation.proceed()方法调用被拦截对象的原方法
+```
+
+## DefaulSqlSession 和 SqlSessionTemplate 的区别是什么？
+
+```
+一个线程安全一个线程不安全
+1）为什么 SqlSessionTemplate 是线程安全的？
+其内部类 SqlSessionInterceptor 的 invoke()方法中的 getSqlSession()方法：如果当前线程已经有存在的 
+SqlSession 对象，会在 ThreadLocal 的容器中拿到SqlSessionHolder，获取 DefaultSqlSession。
+如果没有，则会 new 一个 SqlSession，并且绑定到 SqlSessionHolder，放到ThreadLocal 中。SqlSessionTemplate 
+中在同一个事务中使用同一个 SqlSession。调用 closeSqlSession()关闭会话时，如果存在事务，减少 holder 的引用计数。否则直接关闭 SqlSession。
+2) 在编程式的开发中，有什么方法保证 SqlSession 的线程安全？
+SqlSessionManager 同时实现了 SqlSessionFactory、SqlSession 接口，通过ThreadLocal 容器维护 SqlSession。
+```
