@@ -1094,7 +1094,6 @@ requests.post(url=url,timeout=2,auth=('anthony','123456'))
 ```python
 # 先编码 再解码
 r.text.encode('utf-8').decode(unicode_escape)
-
 ```
 
 
@@ -1113,6 +1112,25 @@ pip install pytest-html
 # 生成allure报告
 pip install allure-pytest
 ```
+
+## 命令
+
+```shell
+# -s 打印print
+pytest -s  test_auth.py
+
+# 只测试这一个文件
+pytest -q -s  test_auth.py
+
+# -x
+-x 遇到错误时停止测试
+```
+
+
+
+## Pycharm识别pytest
+
+![image-20200902120934492](https://raw.githubusercontent.com/YangAnLin/images/master/20200902120935.png)
 
 ## 规范
 
@@ -1141,10 +1159,10 @@ pip install allure-pytest
 ## 生成allure报告
 
 ```python
-pytest.main(['../test_case/','--alluredir','../report/reportallure/'])
+pytest.main(['../test_case/','--alluredir','../report/allure_raw/'])
 
 # 在report的文件夹执行
-allure generate ./reportallure/ -o ./reporthtml/ --clean
+./allure serve /myitem/autotest/report/allure_raw
 ```
 
 

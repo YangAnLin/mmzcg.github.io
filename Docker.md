@@ -320,15 +320,14 @@ docker restart es
 ```shell
 docker volume create portainer_data
 
-docker run -d 
+docker run -d \
 		   -p 9000:9000 \
-		   # 这个是必须的
-		   -v /var/run/docker.sock:/var/run/docker.sock  \
+		   -v /var/run/docker.sock:/var/run/docker.sock \
 		   -v portainer_data:/data portainer/portainer \
 		   --restart=always
 ```
 
-添加docker node
+## 添加docker node
 
 https://blog.csdn.net/bj_chengrong/article/details/90300972
 

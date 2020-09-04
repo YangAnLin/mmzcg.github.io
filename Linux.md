@@ -1,11 +1,8 @@
 [toc]
 
+# Centos8
 
-## Linux
-
-## Centos8
-
-### Cockpit
+## Cockpit
 
 ```shell
 Activate the web console with: systemctl enable --now cockpit.socke
@@ -23,11 +20,23 @@ systemctl status cockpit.socket
 
 然后在另一台电脑上用浏览器登录 https://IP:9090
 
+## 固定IP
+
+```shell
+vim /etc/sysconfig/network-scripts/ifcfg-eth0
+
+BOOTPROTO="static" #dhcp改为static 
+ONBOOT="yes" #开机启用本配置
+IPADDR=10.14.2.50 #静态IP
+GATEWAY=10.14.2.11 #默认网关
+NETMASK=255.255.255.0 #子网掩码
+```
+
+![image-20200901190431314](https://raw.githubusercontent.com/YangAnLin/images/master/20200901190432.png)
 
 
 
-
-### 修改时区
+## 修改时区
 
 ```shell
 # 查询当前时间
@@ -41,14 +50,14 @@ cp /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime
 ```
 
 
-### sudo 命令执行的很慢，很久才出现密码输入
+## sudo 命令执行的很慢，很久才出现密码输入
 ```shell
 （1）获取你的主机名：hostname
 （2）vi /etc/hosts
 在里面加一个：127.0.0.1     主机名
 ```
 
-### 安装ssh
+## 安装ssh
 ```shell
 1.判断Ubuntu是否安装了ssh服务,检查有没有可以看到“sshd”
 ps -e | grep ssh
@@ -56,31 +65,31 @@ ps -e | grep ssh
 3.启动服务:#/etc/init.d/ssh start 
 ```
 
-### grep管道
+## grep管道
 ```shell
 cat hive-default.xml | grep hive.cli.print
 ```
-### 安装vm tool
+## 安装vm tool
 ```shell
 运行 ./vmware-install.pl
 一直按yes,按完一段之后就会有暂时的停顿
 运行命令 reboot
 ```
 
-### 系统升级
+## 系统升级
 ```shell
 yum -y update(centos)
 apt-get update(ubuntu 软件包的列表 )
 sudo apt-get dist-upgrade （进入列新你系统和系统里安装的软件）
 ```
 
-### 查看前几行
+## 查看前几行
 
 ```shell
 ifconfig | head -n 100
 ```
 
-### yum无法使用
+## yum无法使用
 ```shell
 [root@localhost network-scripts]# cd /etc/sysconfig/network-scripts
 [root@localhost network-scripts]# ls
@@ -109,7 +118,7 @@ DEVICE=enp0s3
 ONBOOT=yes
 ```
 
-### ssh连不上的问题
+## ssh连不上的问题
 ```shell
 λ ssh root@10.19.44.12
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -134,13 +143,13 @@ C:\Users\Owner\Desktop
 λ vi  C:\\Users\\Owner/.ssh/known_hosts
 ```
 
-### 查看命令打印出来的前几行
+## 查看命令打印出来的前几行
 
 ```shell
 别的命令 | head -n 1000
 ```
 
-### Centos 7 firewalld
+## Centos 7 firewalld
 
 ```shell
 启动：systemctl start firewalld
@@ -149,7 +158,7 @@ C:\Users\Owner\Desktop
 禁用：systemctl stop firewalld
 ```
 
-### 添加用户
+## 添加用户
 ```shell
 root下面添加用户 adduser hadoop
 删除用户 userdel hadoop
@@ -157,12 +166,12 @@ root下面添加用户 adduser hadoop
 把用户加入到用户组: vi  /etc/sudoers
 ```
 
-### 修改用户权限
+## 修改用户权限
 ```shell
 root修改用户权限: vim /etc/sudousers
 ```
 
-### 修改主机名字
+## 修改主机名字
 ```shell
 1.修改名字:sudo  vim /etc/sysconfig/network
 2.编辑: HOSTNAME=weekend100
@@ -173,38 +182,38 @@ vim /etc/hostname
 需要重启
 ```
 
-### ll文件大小按MB显示
+## ll文件大小按MB显示
 ```shell
 ls -lh
 ll -lh
 ```
 
-### 配置Java环境变量
+## 配置Java环境变量
 ```shell
 export JAVA_HOME=/home/anthony/soft/jdk1.8.0_19
 export PATH=$JAVA_HOME/bin:$PATH
 export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
 ```
 
-### 配置Maven环境变量
+## 配置Maven环境变量
 ```shell
 export M2_HOME=/usr/local/software/apache-maven-3.6.1
 export PATH=${M2_HOME}/bin:$PATH
 ```
 
 
-### Centos安装wget
+## Centos安装wget
 ```shell
 yum -y install wget
 ```
 
-### 立即关机和重启
+## 立即关机和重启
 ```shell
 shutdown -h now 现在立即关机
 shutdown -r now 现在立即重启
 ```
 
-### 查看端口
+## 查看端口
 
 ```shell
 lsof -i:端口号查看某个端口是否被占用 
@@ -212,7 +221,7 @@ lsof -i:端口号查看某个端口是否被占用
 netstat -anp|grep 80 
 ```
 
-### 获取远程服务器上的文件
+## 获取远程服务器上的文件
 
 ```shell
 scp -P 2222 root@www.vpser.net:/root/lnmp0.4.tar.gz /home/lnmp0.4.tar.gz
@@ -224,7 +233,7 @@ scp -P 2222 root@www.vpser.net:/root/lnmp0.4.tar.gz /home/lnmp0.4.tar.gz
 * `:/root/lnmp0.4.tar.gz` 表示远程服务器上的文件，最后面的/home/lnmp0.4.tar.gz表示保存在本地上的路径和文件名。还可能会用到p参数保持目录文件的权限访问时间等。
 
 
-### 获取远程服务器上的目录
+## 获取远程服务器上的目录
 
 ```shell
 scp -P 2222 -r root@www.vpser.net:/root/lnmp0.4/ /home/lnmp0.4/
@@ -235,7 +244,7 @@ scp -P 2222 -r root@www.vpser.net:/root/lnmp0.4/ /home/lnmp0.4/
 * root@www.vpser.net 表示使用root用户登录远程服务器www.vpser.net，
 * `:/root/lnmp0.4/` 表示远程服务器上的目录，最后面的/home/lnmp0.4/表示保存在本地上的路径。
 
-### 将本地文件上传到服务器上
+## 将本地文件上传到服务器上
 
 ```shell
 scp -P 2222 /home/lnmp0.4.tar.gz* *root@www.vpser.net:/root/lnmp0.4.tar.gz
@@ -246,7 +255,7 @@ scp -P 2222 /home/lnmp0.4.tar.gz* *root@www.vpser.net:/root/lnmp0.4.tar.gz
 * root@www.vpser.net 表示使用root用户登录远程服务器www.vpser.net，
 * `:/root/lnmp0.4.tar.gz` 表示保存在远程服务器上目录和文件名。
 
-### 将本地目录上传到服务器上
+## 将本地目录上传到服务器上
 
 ```shell
 scp -P 2222 -r /home/lnmp0.4/* *root@www.vpser.net:/root/lnmp0.4/
@@ -257,20 +266,20 @@ scp -P 2222 -r /home/lnmp0.4/* *root@www.vpser.net:/root/lnmp0.4/
 * /home/lnmp0.4/表示准备要上传的目录，root@www.vpser.net 表示使用root用户登录远程服务器www.vpser.net，
 * `:/root/lnmp0.4/`表示保存在远程服务器上的目录位置。
 
-### 历史命令
+## 历史命令
 
 ```shell
 # 历史命令
 history -3
 ```
 
-### 定时器
+## 定时器
 
 ```shell
 crontab -e
 ```
 
-### Shell脚本
+## Shell脚本
 
 ```shell
 each输出
@@ -281,31 +290,31 @@ each输出
 
 ```
 
-### data
+## data
 
 ```shell
 data
 ```
 
-### Vim行号
+## Vim行号
 
 ```shell
 set nu
 ```
 
-### 查看系统版本
+## 查看系统版本
 
 ```shell
 cat /etc/os-release
 ```
 
-### 开放端口
+## 开放端口
 
 ```shell
 sudo ufw allow 80
 ```
 
-### 查看端口
+## 查看端口
 
 ```shell
 # 查看所有的服务端口
@@ -316,7 +325,7 @@ netstat -a
 lsof -i:8888
 ```
 
-### 安装Wget
+## 安装Wget
 
 最开始的Centos7 感觉什么都没有`wget`也没有
 ```shell
@@ -329,13 +338,13 @@ lsof -i:8888
  yum -y install wget
 ```
 
-### 切换用户
+## 切换用户
 
 ```
 su anthony
 ```
 
-### Ubuntu-Nginx
+## Ubuntu-Nginx
 
 ```shell
 ubuntu安装nginx时提示error: the HTTP rewrite module requires the PCRE library 
@@ -358,7 +367,7 @@ cd ../nginx/sbin
 
 ```
 
-### Centos mini 的网络配置
+## Centos mini 的网络配置
 修改配置文件
 ```shell
 vi /etc/sysconfig/network-script/ifcfg-eth0
@@ -373,7 +382,7 @@ BOOTPROTO=dhcp
 service network restart
 ```
 
-### ubuntu右上角网络图标消失并且上不了网
+## ubuntu右上角网络图标消失并且上不了网
 
 ```shell
 sudo service network-manager stop
@@ -386,7 +395,7 @@ sudo gedit /etc/NetworkManager/nm-system-settings.conf
 sudo service network-manager restart
 ```
 
-### 过滤注释
+## 过滤注释
 
 ```shell
  cat redis.conf |grep -v '#' |grep -v '^$' >redis-6237.conf
@@ -394,7 +403,7 @@ sudo service network-manager restart
 
 ## 教程
 
-### Mysql
+## Mysql
 开启远程授权
 ```shell
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'password' WITH GRANT OPTION;
@@ -414,22 +423,22 @@ ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';
 FLUSH PRIVILEGES; 
 ```
 
-#### 简单的操作
+### 简单的操作
 ```导入sql文件
 source /root/20151010.sql
 ```
 
 
-#### 显示所有的表
+### 显示所有的表
 ```shell
 show database
 ```
 
-### Nginx
+## Nginx
 
 查看进行有两个进行,一个是master,主进程(用来管理子进行的),一个工作进行,
 
-### docker启动nginx
+## docker启动nginx
 ```shell
 
 docker run -d \
@@ -442,7 +451,7 @@ docker run -d \
            nginx
 ```
 
-#### nginx 配置模板
+### nginx 配置模板
 ```shell
  
 #user  nobody;
@@ -584,7 +593,7 @@ http {
 
 ```
 
-#### 安装nginx
+### 安装nginx
 > 参考:https://www.cnblogs.com/liujuncm5/p/6713784.html
 
 ```shell
@@ -606,7 +615,7 @@ make install
 
 ```
 
-#### nginx转发websocket
+### nginx转发websocket
 ```shell
 server{                                                    
      listen 8081;                                           
@@ -625,7 +634,7 @@ server{
 ```
 
 
-#### 信号量
+### 信号量
 
 重启和关闭,使用信号量
 
@@ -649,7 +658,7 @@ kill -int pid(master线程)
 
 
 
-#### 虚拟主机的管理
+### 虚拟主机的管理
 
 work_processes 1;一般设置成cpu*核数
 
@@ -674,7 +683,7 @@ worker_connection是 1024; 一个核 最大允许多少个链接
 
 
 
-#### 日志管理
+### 日志管理
 
 ```shell
 #access_log  logs/access.log  main;
@@ -704,7 +713,7 @@ worker_connection是 1024; 一个核 最大允许多少个链接
 
 
 
-#### location匹配
+### location匹配
 
 =          精准匹配
 
@@ -718,7 +727,7 @@ worker_connection是 1024; 一个核 最大允许多少个链接
 
 ## 知识点
 
-### Mybatis源码
+## Mybatis源码
 
 sqlSessionFactorybuilder 有个build方法,读取mybatis-confi.xml,根据配置封装Configuration对象,
 build创建DefaultSqlSessionFactory(实现类) 返回的是SqlSessionFactory(接口)
@@ -737,7 +746,7 @@ SqlSession中的Executor对象再执行update.insert等操作,MappedStatement,�
 
 
 
-### mysql事务
+## mysql事务
 
 隔离级别
 
@@ -766,7 +775,7 @@ not_spport 非事务执行,有就挂起
 
 
 
-### JVM
+## JVM
 
 PermanentSpace(持久代,放静态文件，比如java类、方法等)和HeapSpace(老年代+年轻代(1个Eden区，2个Survivor区))
 
