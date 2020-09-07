@@ -1,10 +1,6 @@
-**服务端Handler实现:**
-
-<img src="img/clipboard-1576726409209.png" alt="img" style="zoom: 200%;" />
+服务端Handler实现:
 
 ChannelHandler是所有接口的父接口
-
-<img src="img/clipboard-1576726437082.png" alt="img" style="zoom: 200%;" />
 
 ```java
 import io.netty.buffer.ByteBuf;

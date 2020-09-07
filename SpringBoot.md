@@ -23,7 +23,6 @@ public class BISFrontFileUtil {
     public void setCCBIPPORT(int cCBIPPORT) {
         CCBIPPORT = cCBIPPORT;
     }
-
 }
 ```
 注意:

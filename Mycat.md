@@ -85,14 +85,14 @@ docker network ls
 # extnetwork 是网络模式的名字
 # 172.20.0.1 是网关
 docker network create --subnet=172.20.0.0/16 extnetwork
-
-# 指定网络模式和ip地址
---net extnetwork --ip 172.20.0.2
 ```
 
 ## mysql,mycat指定网路,重建容器
 
 ```shell
+# 指定网络模式和ip地址
+--net extnetwork --ip 172.20.0.2
+
 docker run -itd \
             --name mysql-master \
             -p 3306:3306 \
@@ -187,16 +187,16 @@ Empty set
 # 创建用户名为slave1
 # 172.20.0.3从库ip  
 # 123456 密码
-CREATE USER 'slave1'@'172.20.0.3' IDENTIFIED BY '123456'
+CREATE USER 'slave1'@'172.20.0.3' IDENTIFIED BY '123456';
 
 # 语法:GRANT privileges ON databasename.tablename TO 'username'@'host'
 # 172.20.0.3 从库
 # 两个权限:REPLICATION和SLAVE
 # *.* 所有的库和表
-GRANT REPLICATION SLAVE ON *.* TO 'slave1'@'172.20.0.3'
+GRANT REPLICATION SLAVE ON *.* TO 'slave1'@'172.20.0.3';
 
 # 刷新权限
-FLUSH PRIVILEGES
+FLUSH PRIVILEGES;
 ```
 
 在slave执行
@@ -295,7 +295,7 @@ show slave status;
 1.在mysql添加中添加
 
 ```shell
-log-slave-update
+log-slave-update=1
 auto-increment-increment=2
 auto-increment-offset=1
 ```

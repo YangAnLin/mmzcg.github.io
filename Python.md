@@ -562,6 +562,7 @@ print(tom)
 ```python
 class Cat:
 
+    # 构造方法
     def __init__(self,name):
         print("初始化方法")
         self.name=name
@@ -1100,7 +1101,7 @@ r.text.encode('utf-8').decode(unicode_escape)
 
 # Pytest
 
-## 安装
+## 安装和命令
 
 ```shell
 # 安装pytest
@@ -1111,19 +1112,12 @@ pip install pytest-html
 
 # 生成allure报告
 pip install allure-pytest
-```
 
-## 命令
-
-```shell
 # -s 打印print
 pytest -s  test_auth.py
 
 # 只测试这一个文件
 pytest -q -s  test_auth.py
-
-# -x
--x 遇到错误时停止测试
 ```
 
 
@@ -1154,18 +1148,10 @@ pytest -q -s  test_auth.py
 # 生成allure报告
 '--alluredir','../report/reportallure'
 
-```
-
-## 生成allure报告
-
-```python
+# 生成allure报告,在report的文件夹执行
 pytest.main(['../test_case/','--alluredir','../report/allure_raw/'])
-
-# 在report的文件夹执行
 ./allure serve /myitem/autotest/report/allure_raw
 ```
-
-
 
 # Locust
 
@@ -1179,7 +1165,36 @@ ln -s /usr/local/bin/python3/bin/locust /usr/bin/locust
 locust --version
 ```
 
+## 快速入门
 
+新建一个redis.py
+
+```python
+class QuickstartUser(HttpUser):
+    wait_time = between(1, 10)
+
+    @task
+    def index_page(self):
+        self.client.get("/hello")
+        self.client.get("/world")
+
+    @task(3)
+    def view_item(self):
+        for item_id in range(10):
+            self.client.get(f"/item?id={item_id}", name="/item")
+            time.sleep(1)
+
+    def on_start(self):
+        self.client.post("/login", json={"username": "foo", "password": "bar"})
+```
+
+在文件目录,执行
+
+```shell
+locust -f redis.py
+
+# 启动成功后,访问 http://localhost:8089
+```
 
 # Django
 
@@ -1197,8 +1212,6 @@ python manage.py migrate
 
 
 # 这个环境呀,我要吐了
-
-
 
 ## pymssql
 
