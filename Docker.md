@@ -258,8 +258,6 @@ RUN apk --update add fontconfig ttf-dejavu
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
 ```
 
-
-
 ## 安装Jenkins
 
 ```shell
