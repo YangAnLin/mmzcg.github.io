@@ -242,7 +242,7 @@ java.lang.NullPointerException
     at com.liferay.portal.captcha.CaptchaPortletAction.serveResource(CaptchaPortletAction.java:42)
 ```
 
-原本的dockerfile
+原本的dockerfile 
 ```
 FROM openjdk:8-jdk-alpine
 VOLUME /tmp
