@@ -1576,7 +1576,7 @@ margin的语法跟padding用法一样
   </body>
   ```
 
-### 绝对定位 absolute
+### 绝对定位`absolute`
 
 元素在移动位置的时候,是相对于它祖先元素来说的
 
@@ -1646,7 +1646,7 @@ margin的语法跟padding用法一样
 
   * 祖先元素有定位(相对,绝对,固定定位),都可以作为参考点,并且是以最进一级的有定位i元素,如果爸爸没有定位,爷爷有定位,就以爷爷的为参考点
 
-  * 绝对定位,像浮动一样,不占有原来的位置
+  * 绝对定位,像浮动一样,`不占有原来的位置`
 
   * ```html
     <head>
@@ -1799,7 +1799,9 @@ background-position
 
 # 好玩的
 
-## 1
+## 1.
+
+![image-20200916094553973](https://raw.githubusercontent.com/YangAnLin/images/master/20200916094555.png)
 
 ```html
 <!DOCTYPE html>
