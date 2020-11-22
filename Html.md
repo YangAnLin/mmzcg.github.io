@@ -2154,13 +2154,7 @@ v-bind绑定元素里的属性,可以简写成`属性:value`
 </body>
 ```
 
-
-
-
-
-
-
-# element-ui
+# Element-ui
 
 ## 级联选择器
 新版本props的使用
@@ -2201,7 +2195,7 @@ n stable
 # 有时候需要sudo权限,或者安装好了之后要开启一个新的shell才能用到新的版本
 ```
 
-
+https://www.bilibili.com/video/BV1vE411871g?p=120
 
   
 
