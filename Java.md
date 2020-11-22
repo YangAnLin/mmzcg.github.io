@@ -1,3 +1,584 @@
+# 0.Maven
+
+这个是要从aliyun仓库里下载包
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.0.3.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>com.lzkj.server</groupId>
+    <artifactId>agent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>agent</name>
+    <description>总控后台管理</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <swagger.version>2.7.0</swagger.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>alibaba</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>5.3.1.Final</version>
+        </dependency>
+    </dependencies>
+
+</project>
+```
+
+```xml
+<mirrors>
+    <mirror>
+      <id>alimaven</id>
+      <name>aliyun maven</name>
+      <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+      <mirrorOf>central</mirrorOf>        
+    </mirror>
+</mirrors>
+```
+
+# 1.POI
+
+读
+
+```java
+public static void importFromExcel(InputStream is) throws IOException {
+    HSSFWorkbook wb = new HSSFWorkbook(is);  //就代表一个 Excel 文件
+    HSSFSheet sheet = wb.getSheetAt(0);//注意表格索引从 0 开始！
+
+    for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+        // HSSFRow 代表一行数据
+        HSSFRow row = sheet.getRow(rowIndex);
+        if (row == null) {
+            continue;
+        }
+
+        HSSFCell 厂商uuid = row.getCell(0);// 姓名列
+        HSSFCell skuUUID = row.getCell(1); // 性别列
+        HSSFCell 厂商 = row.getCell(2); // 年龄列
+        HSSFCell 产品名称 = row.getCell(3); // 体重列
+        HSSFCell 产品SKU = row.getCell(4); // 收入列
+        HSSFCell 价格 = row.getCell(5);// 姓名列
+
+        StringBuilder employeeInfoBuilder = new StringBuilder();
+        employeeInfoBuilder.append("厂商uuid:"+厂商uuid)
+                .append(", skuUUID : "+skuUUID)
+                .append(" , 厂商 : "+厂商)
+                .append(" , 产品名称 : "+产品名称)
+                .append(" , 产品SKU : "+产品SKU)
+                .append(" , 价格 : " +价格);
+        System.out.println(employeeInfoBuilder.toString());
+    }
+}
+```
+
+写
+
+```java
+//统计的
+    @GetMapping("/statistics")
+    public void statistics(HttpServletResponse response) throws IOException {
+
+        OutputStream os = response.getOutputStream();
+        response.reset();
+        response.setHeader("Content-disposition", "attachment; filename=" + new String("在线报考.xls".getBytes("GB2312"), "ISO8859-1"));
+        response.setContentType("application/msexcel");
+
+        String[] title = new String[]{
+                "序号", "姓名", "身份证号", "电话", "方向",
+                "准考证号", "缴费金额(元)", "支付方式", "订单号", "支付订单号",
+                "支付时间", "考区", "报考专业",
+                "报考课程一", "报考课程二", "报考课程三", "报考课程四", "报考课程五",
+                "报考课程六", "报考课程七", "报考课程八", "报考课程九", "报考课程十",
+                "报考课程十一", "报考课程十二", "报考课程十三", "报考课程十四"};
+
+        HSSFWorkbook sheets = new HSSFWorkbook();
+        HSSFSheet sheet = sheets.createSheet("demo");   //一个表
+        HSSFRow row = sheet.createRow(0);   //第一行
+
+        for (int i = 0; i < title.length; i++) {
+            row.createCell(i).setCellValue(title[i]);   //序号
+        }
+
+        //查出已经购买的人
+        List<String> ids = userMapper.selectAlreadyBuy();
+
+        Long num = 1l;
+
+        //查出每个人查出他们的订单号,
+        for (String id : ids) {
+
+            //一个用户有多个订单
+            List<Orders> orders = userMapper.selectOrdersSnById(id);
+
+            //查出所有的订单号,一个订单号就是一条数据
+            for (Orders orders1 : orders) {
+
+                //查出每个用户所有购买的课程
+                List<ProductBuy> buys = userMapper.selectProductBuy(orders1.getOrderSn());
+
+                String level = buys.get(0).getStatus().substring(6);//(平面)
+                String zhuanye = buys.get(0).getStatus().substring(0, 6);// 报考专业
+
+                HSSFRow nrow = sheet.createRow(num.intValue());    //第二......三.............行
+                nrow.createCell(0).setCellValue(num);   //序号
+                nrow.createCell(1).setCellValue(orders1.getMemberName());   //姓名
+                nrow.createCell(2).setCellValue(orders1.getMemberIdcard());   //身份证号
+                nrow.createCell(3).setCellValue(orders1.getMemberPhone());   //电话
+                nrow.createCell(4).setCellValue(level);   //方向
+                nrow.createCell(5).setCellValue(orders1.getOkCard());   //准考证号
+                nrow.createCell(6).setCellValue(orders1.getActAmount().toString());   //缴费金额
+                nrow.createCell(7).setCellValue(orders1.getPayStatus().equals("1") ? "支付宝" : "微信");   ////支付方式
+                nrow.createCell(8).setCellValue(orders1.getOrderSn());   //订单号
+                nrow.createCell(9).setCellValue(orders1.getPayOrgSn());   //支付订单号
+                nrow.createCell(10).setCellValue(DateUtil.getDayMonthYearYYYYmmdd1(orders1.getUpdateTime()));   //支付时间
+                nrow.createCell(11).setCellValue(orders1.getCity());   //考区
+                nrow.createCell(12).setCellValue(zhuanye);   //报考专业
+
+
+                for (int i = 0; i < buys.size(); i++) {
+                    switch (buys.get(i).getProductName()) {
+                        case "(专科)10351平面构成(一)":
+                            nrow.createCell(13).setCellValue(buys.get(i).getProductName());
+                            break;
+                        default:
+                            System.out.println("没有匹配到=======>"+buys.get(i).getProductName());
+                            break;
+                    }
+                }
+                num++;
+            }
+        }
+
+        sheets.write(os);
+        sheets.close();
+    }
+```
+
+# 2.FTP
+
+```xml
+<dependency>
+    <groupId>commons-net</groupId>
+    <artifactId>commons-net</artifactId>
+    <version>3.6</version>
+</dependency>
+```
+
+```java
+@Slf4j
+public class FtpUtil {
+
+    /**
+     * Description: 向FTP服务器上传文件
+     *
+     * @param host     FTP服务器hostname
+     * @param port     FTP服务器端口
+     * @param username FTP登录账号
+     * @param password FTP登录密码
+     * @param basePath FTP服务器基础目录
+     * @param filePath FTP服务器文件存放路径。例如分日期存放：/2015/01/01。文件的路径为basePath+filePath
+     * @param filename 上传到FTP服务器上的文件名
+     * @param input    输入流
+     * @return 成功返回true，否则返回false
+     */
+    public static boolean uploadFile(String host, int port, String username, String password, String basePath,
+                                     String filePath, String filename, InputStream input) {
+        boolean result = false;
+        FTPClient ftp = new FTPClient();
+        ftp.setControlEncoding("GBK");
+        log.info("filePath:{},filename:{}", filePath, filename);
+        try {
+            int reply;
+            ftp.connect(host, port);// 连接FTP服务器
+            // 如果采用默认端口，可以使用ftp.connect(host)的方式直接连接FTP服务器
+            ftp.login(username, password);// 登录
+            reply = ftp.getReplyCode();
+            if (!FTPReply.isPositiveCompletion(reply)) {
+                ftp.disconnect();
+                return result;
+            }
+            //切换到上传目录
+            if (!ftp.changeWorkingDirectory(basePath + filePath)) {
+                //如果目录不存在创建目录
+                String[] dirs = filePath.split("/");
+
+                for (String dir : dirs) {
+                    if (null == dir || "".equals(dir)) continue;
+                    basePath += "/" + dir;
+                    if (!ftp.changeWorkingDirectory(basePath)) {
+                        if (!ftp.makeDirectory(basePath)) {
+                            return result;
+                        } else {
+                            ftp.changeWorkingDirectory(basePath);
+                        }
+                    }
+                }
+            }
+            //设置上传文件的类型为二进制类型
+            ftp.setFileType(FTP.BINARY_FILE_TYPE);
+            //上传文件
+            ftp.enterLocalPassiveMode();//重要 外网服务器的时候必加这句
+            if (!ftp.storeFile(filename, input)) {
+                return result;
+            }
+            input.close();
+            ftp.logout();
+            result = true;
+        } catch (IOException e) {
+            log.error("上传文件异常：{}", e);
+        } finally {
+            if (ftp.isConnected()) {
+                try {
+                    ftp.disconnect();
+                } catch (IOException ioe) {
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Description: 从FTP服务器下载文件
+     *
+     * @param host       FTP服务器hostname
+     * @param port       FTP服务器端口
+     * @param username   FTP登录账号
+     * @param password   FTP登录密码
+     * @param remotePath FTP服务器上的相对路径
+     * @param fileName   要下载的文件名
+     * @param localPath  下载后保存到本地的路径
+     * @return
+     */
+    public static boolean downloadFile(String host, int port, String username, String password, String remotePath,
+                                       String fileName, String localPath) {
+        boolean result = false;
+        FTPClient ftp = new FTPClient();
+        try {
+            int reply;
+            ftp.connect(host, port);
+            // 如果采用默认端口，可以使用ftp.connect(host)的方式直接连接FTP服务器
+            ftp.login(username, password);// 登录
+            reply = ftp.getReplyCode();
+            if (!FTPReply.isPositiveCompletion(reply)) {
+                ftp.disconnect();
+                return result;
+            }
+            ftp.changeWorkingDirectory(remotePath);// 转移到FTP服务器目录
+            FTPFile[] fs = ftp.listFiles();
+            for (FTPFile ff : fs) {
+                if (ff.getName().equals(fileName)) {
+                    File localFile = new File(localPath + "/" + ff.getName());
+
+                    OutputStream is = new FileOutputStream(localFile);
+                    ftp.retrieveFile(ff.getName(), is);
+                    is.close();
+                }
+            }
+
+            ftp.logout();
+            result = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (ftp.isConnected()) {
+                try {
+                    ftp.disconnect();
+                } catch (IOException ioe) {
+                }
+            }
+        }
+        return result;
+    }
+
+}
+```
+
+# 3.阿里云OSS
+
+```xml
+<dependency>
+    <groupId>com.aliyun.oss</groupId>
+    <artifactId>aliyun-sdk-oss</artifactId>
+    <version>2.8.3</version>
+</dependency>
+```
+
+```java
+public static void uploadFile(AliOssVO aliOssVO,
+      InputStream inputStream) {
+   log.info("AliyunOssUpload>>>>>>>uploadFile参数aliOssVO:{}", aliOssVO);
+   // 创建OSSClient实例。
+   OSSClient ossClient = new OSSClient(aliOssVO.getEndpoint(), aliOssVO.getAccessKeyId(), aliOssVO.getAccessKeySecret());
+   // 上传文件流。
+   // InputStream inputStream = new FileInputStream("<yourlocalFile>")
+   ossClient.putObject(aliOssVO.getBucketName(), aliOssVO.getFileName(), inputStream);
+
+   // 关闭OSSClient。
+   ossClient.shutdown();
+}
+
+public static void main(String[] args) {
+   
+   // Endpoint以杭州为例，其它Region请按实际情况填写。
+   String endpoint = "http://oss-cn-hongkong.aliyuncs.com";
+   // 云账号AccessKey有所有API访问权限，建议遵循阿里云安全最佳实践，创建并使用RAM子账号进行API访问或日常运维，请登录 https://ram.console.aliyun.com 创建。
+   String accessKeyId = "LTAIkp4F2t1Hp6DV";
+   String accessKeySecret = "YuPbNIxxwkG2AeIDOUqosrYW4je5ZN";
+   AliOssVO aliOssVO = new AliOssVO(endpoint, accessKeyId, accessKeySecret);
+   aliOssVO.setBucketName("app007");
+   aliOssVO.setFileName("aaa.jpg");
+   
+   //AliyunOssUpload alioss = new AliyunOssUpload()
+   try {
+      File file = new File("C:\\img\\a.jpg");
+      InputStream inputStream = new FileInputStream(file);
+      AliyunOssUpload.uploadFile(aliOssVO, (FileInputStream) inputStream);
+   } catch (FileNotFoundException e) {
+      log.info("上传异常：{}",e);
+   }
+}
+```
+
+# 4.生成验证码
+
+```java
+/**
+ *
+ * @Title: generateCode
+ * @Description: (生成验证码)
+ * @param request
+ * @param response
+ * @throws IOException void
+ */
+@ApiOperation(value = "生成验证码")
+@GetMapping("/generateCode")
+public void generateCode(@RequestParam("account") String account
+        , @RequestParam("stationMark") String stationMark
+        , @RequestParam("flag") String flag
+        , HttpServletRequest request
+        , HttpServletResponse response) throws IOException {
+    // 生成验证码
+    BufferedImage bi = new BufferedImage(68, 22, BufferedImage.TYPE_INT_BGR);
+    Graphics g = bi.getGraphics();
+    Color c = new Color(234, 219, 160);
+    g.setColor(c);
+    g.fillRect(0, 0, 68, 22);
+    //验证码style，可以随意变动你想要的风格
+    Font font = new Font("Fixedsys", Font.BOLD, 15);
+    g.setFont(font);
+
+    String[] str = {"+", "-"};
+    int result = 0;
+    Random r = new Random();
+    StringBuilder sb = new StringBuilder();
+    //查询全局参数获取厅主代理后台选择的验证码生成规则
+    GlobeResponse<TbGlobal> tbGlobal = commonService.getGlobalByStationMark(stationMark);
+    //默认验证码字符集合
+    char[] ch = "ABCDEFHJKMNPRSTUVWXY345678".toCharArray();
+    //验证码不为空就拿当前验证码字符串，为空就用默认的
+    if(StringUtils.isNotBlank(tbGlobal.getData().getValidateCode())){
+        ch = tbGlobal.getData().getValidateCode().toCharArray();
+    }
+    //根据验证码类型生成验证码图形
+    if("3".equals(tbGlobal.getData().getValidateType())){// 3 加减法
+        // 创建集合存放生成的两个数字
+        List list = new ArrayList ();
+        for (int i = 0; i < 2; i++) {
+            String rand = String.valueOf(ch[r.nextInt(ch.length)]);
+            list.add(rand);
+        }
+        if(StringUtils.equals("+", str[new Random().nextInt(2)])){
+            // 先取出来两个数字的和,然后再给list集合添加“+”和“=”以便组成加法算式
+            result = Integer.parseInt((String)list.get(0)) + Integer.parseInt((String)list.get(1));
+            log.debug("生成的验证码为:" + list.get(0) + "+" + list.get(1) + "=");
+            list.add(1, "+");
+        }else {
+            if(Integer.parseInt((String)list.get(0)) > Integer.parseInt((String)list.get(1))){
+                result = Integer.parseInt((String)list.get(0)) - Integer.parseInt((String)list.get(1));
+                log.debug("生成的验证码为:" + list.get(0) + "-" + list.get(1) + "=");
+                list.add(1, "-");
+            }else{
+                result = Integer.parseInt((String)list.get(0)) + Integer.parseInt((String)list.get(1));
+                log.debug("生成的验证码为:" + list.get(0) + "+" + list.get(1) + "=");
+                list.add(1, "+");
+            }
+        }
+        // 遍历集合list将加法算是生成图片
+        for (int j = 0; j < list.size(); j++) {
+            g.setColor(new Color(r.nextInt(88), r.nextInt(188), r.nextInt(255)));
+            g.drawString(list.get(j) + "", (j * 15) + 3, 18);
+            sb.append(list.get(j) + "");
+        }
+
+    }else {
+        int len = ch.length;
+        int index;
+        for (int k = 0; k < 4; ++k) {
+            index = r.nextInt(len);
+            //设置验证码字符随机颜色
+            g.setColor(new Color(r.nextInt(88), r.nextInt(188), r.nextInt(255)));
+            //画出对应随机的验证码字符
+            g.drawString(ch[index] + "", (k * 15) + 3, 18);
+            sb.append(ch[index]);
+        }
+    }
+    //把验证码字符串放入Session
+    request.getSession().setAttribute("piccode", sb.toString());
+    //在HttpServletResponse中写入验证码图片信息
+    response.setContentType("image/jpeg");
+    response.setHeader("Pragma", "no-cache");
+    response.setHeader("Cache-Control", "no-cache");
+    response.setDateHeader("Expires", 0);
+    OutputStream outputStream = response.getOutputStream();
+    ImageIO.write(bi, "JPG", outputStream);
+    outputStream.flush();
+    outputStream.close();
+    // 存入redis
+    String key = RedisKeyPrefix.VERIFICATION_CODE + stationMark + ":";
+    if("0".equals(flag)) {
+        if(!"3".equals(tbGlobal.getData().getValidateType())){
+            redisTemplate.opsForValue().set(key + account, sb.toString(), 5, TimeUnit.MINUTES);
+        }else{
+            redisTemplate.opsForValue().set(key + account, result + "", 5, TimeUnit.MINUTES);
+        }
+    }else{
+        if(!"3".equals(tbGlobal.getData().getValidateType())){
+            redisTemplate.opsForValue().set(key + flag, sb.toString(), 5, TimeUnit.MINUTES);
+        }else{
+            redisTemplate.opsForValue().set(key + flag, result + "", 5, TimeUnit.MINUTES);
+        }
+    }
+}
+```
+
+
+
+# 5.HttpServletResponse 中获取到输出流
+
+```java
+@RequestMapping(value = "/no_checkCodeServlet3", method = RequestMethod.GET)
+public void checkCodeServlet(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+        throws ServletException, IOException {
+    response.setHeader("Pragma", "No-cache");
+    response.setHeader("Cache-Control", "no-cache");
+    response.setDateHeader("Expires", 0);
+    response.setContentType("image/jpeg");
+    String textCode = ValidateCode.generateTextCode(ValidateCode.TYPE_NUM_ONLY, 4, null);
+    redisTemplate.opsForValue().set(RedisKeyConstant.USER_VERIFY_CODE + session.getId(), textCode, 30L,TimeUnit.MINUTES);
+    BufferedImage image = ValidateCode.generateImageCode(textCode, 260, 80, 5, true, new Color(187, 255, 255), null,
+            null);
+    response.setContentType("image/jpeg");
+    OutputStream outputStream = response.getOutputStream();
+    ImageIO.write(image, "jpg", outputStream);
+    outputStream.close();
+
+}
+```
+
+
+
+# 6.Calendar日历类
+
+```java
+Calendar calendar=Calendar.getInstance();
+calendar.setTime(new Date());
+
+//改变时间,把今天的时分秒改成0点,0分,0秒,0毫秒
+calendar.set(Calendar.HOUR, 0);  //小时
+calendar.set(Calendar.MINUTE, 0); //分钟
+calendar.set(Calendar.SECOND, 0); //秒
+calendar.set(Calendar.MILLISECOND, 0);//毫秒
+
+//打印今天的 0点,0分,0秒,0毫秒 的时间戳
+System.out.println("指定时间的最后一秒的时间戳:"+calendar.getTimeInMillis());
+System.out.println("指定时间的最后一秒:"+new SimpleDateFormat("yy:MM:dd hh:mm:ss").format(calendar.getTimeInMillis()));
+
+System.out.println("--------------------------------------------------");
+//打印今天的最后一秒前的时间
+calendar.set(Calendar.HOUR, 23);  //小时
+calendar.set(Calendar.MINUTE, 59); //分钟
+calendar.set(Calendar.SECOND, 59); //秒
+System.out.println("指定时间的最后一秒的时间戳:"+calendar.getTimeInMillis());
+System.out.println("指定时间的最后一秒:"+new SimpleDateFormat("yy:MM:dd hh:mm:ss").format(calendar.getTimeInMillis()));
+
+System.out.println("--------------------------------------------------");
+
+System.out.println("获取修改过的今天日期:"+calendar.get(Calendar.DAY_OF_MONTH));//今天的日期
+
+//第一个参数是要加的年份,月份,还是日期,第二个参数是更改的数字
+calendar.set(Calendar.DAY_OF_MONTH,calendar.get(Calendar.DAY_OF_MONTH)+1);//让日期加1
+System.out.println("获取修改过的今天日期+1的时间:"+calendar.get(Calendar.DATE));//加1之后的日期Top
+```
+
+```java
+public static void main(String[] args) {
+    Date date = new Date();
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh-mm:ss ");
+    System.out.println(sdf.format(date));
+
+	//long time = date.getTime();
+    Calendar instance = Calendar.getInstance();
+    instance.setTime(date);
+    instance.set(Calendar.SECOND, 0);
+    instance.set(Calendar.MILLISECOND,0);
+    Date time = instance.getTime();
+    System.out.println(sdf.format(time));
+}
+```
+
+# 7.BigDecimal的应用
+
+进一法
+
+```java
+double time1 = queryTotal.getTime()-new Date().getTime();
+double time2 = 86400000;
+if(time1 - time2 >0){
+    BigDecimal bigDecimal = new BigDecimal(time1);
+    BigDecimal bigDecima2 = new BigDecimal(time2);
+    queryTotal.setTime(bigDecimal.divide(bigDecima2, BigDecimal.ROUND_UP).longValue());
+}else{
+    queryTotal.setTime(0l);
+}
+```
+
+判断大小
+
+```java
+## BigDecimal判断大小
+BigDecimal bigDecimal = new BigDecimal("1");
+BigDecimal bigDecimal2 = new BigDecimal("2");
+ 
+// -1 是小于
+System.out.println(bigDecimal.compareTo(bigDecimal2));
+// -1 是大于
+System.out.println(bigDecimal2.compareTo(bigDecimal));
+// 0是相等
+System.out.println(bigDecimal.compareTo(bigDecimal));
+```
+
 # 1.Continue 和 Break
 
 
@@ -928,3 +1509,196 @@ CountDownLatch与CyclicBarrier都是用于控制并发的工具类，都可以�
 
 ### Semaphore与Exchanger
 
+# Java内存区域
+
+### JVM 的主要组成部分及其作用
+
+![img](https://img-blog.csdnimg.cn/20200103213149526.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly90aGlua3dvbi5ibG9nLmNzZG4ubmV0,size_16,color_FFFFFF,t_70)
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/2020031416414486.jpeg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1RoaW5rV29u,size_16,color_FFFFFF,t_70)
+
+![img](https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/2019-3Java%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA%E5%9F%9FJDK1.8.png)
+
+JVM包含两个子系统和两个组件
+
+* 两个子系统
+  * Class loader(类装载器)
+  * Execution engine(执行引擎)
+* 两个组件
+  * Native Interface(本地接口)
+  * Runtime data area(运行时数据区)
+    * 程序计数器（Program Counter Register）
+      * 当前线程所执行的字节码的行号指示器，字节码解析器的工作是通过改变这个计数器的值，来选取下一条需要执行的字节码指令，分支、循环、跳转、异常处理、线程恢复等基础功能，都需要依赖这个计数器来完成；
+      * 程序计数器是唯一一个不会出现 `OutOfMemoryError` 的内存区域，它的生命周期随着线程的创建而创建，随着线程的结束而死亡
+    * Java 虚拟机栈（Java Virtual Machine Stacks）
+      * Java 虚拟机栈是由一个个栈帧组成，而每个栈帧中都拥有：局部变量表、操作数栈、动态链接、方法出口信息
+      * **Java 虚拟机栈会出现两种错误**
+        * **`StackOverFlowError`** : 若 Java 虚拟机栈的内存大小不允许动态扩展，那么当线程请求栈的深度超过当前 Java 虚拟机栈的最大深度的时候，就抛出 StackOverFlowError 错误
+        * **`OutOfMemoryError`**:若 Java 虚拟机堆中没有空闲内存，并且垃圾回收器也无法提供更多内存的话。就会抛出 OutOfMemoryError 错误
+    * 本地方法栈（Native Method Stack）
+      * 与虚拟机栈的作用是一样的，只不过虚拟机栈是服务 Java 方法的，而本地方法栈是为虚拟机调用 Native 方法服务的；
+    * Java 堆（Java Heap）
+      * Java 虚拟机中内存最大的一块，是被所有线程共享的，几乎所有的对象实例都在这里分配内存；
+    * 方法区（Methed Area）
+      * 用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译后的代码等数据。
+      * 方法区也被称为永久代
+      * **Non-Heap（非堆）**
+
+- Class loader(类装载)：根据给定的全限定名类名(如：java.lang.Object)来装载class文件到Runtime data area中的method area。
+- Execution engine（执行引擎）：执行classes中的指令。
+- Native Interface(本地接口)：与native libraries交互，是其它编程语言交互的接口。
+- Runtime data area(运行时数据区域)：这就是我们常说的JVM的内存。
+
+**作用** ：首先通过编译器把 Java 代码转换成字节码，类加载器（ClassLoader）再把字节码加载到内存中，将其放在运行时数据区（Runtime data area）的方法区内，而字节码文件只是 JVM 的一套指令集规范，并不能直接交给底层操作系统去执行，因此需要特定的命令解析器执行引擎（Execution Engine），将字节码翻译成底层系统指令，再交由 CPU 去执行，而这个过程中需要调用其他语言的本地库接口（Native Interface）来实现整个程序的功能。
+
+### 深拷贝和浅拷贝
+
+浅拷贝（shallowCopy）只是增加了一个指针指向已存在的内存地址，
+
+深拷贝（deepCopy）是增加了一个指针并且申请了一个新的内存，使这个增加的指针指向这个新的内存，
+
+使用深拷贝的情况下，释放内存的时候不会因为出现浅拷贝时释放同一个内存的错误。
+
+浅复制：仅仅是指向被复制的内存地址，如果原地址发生改变，那么浅复制出来的对象也会相应的改变。
+
+深复制：在计算机中开辟一块**新的内存地址**用于存放复制的对象。
+
+### 说一下堆栈的区别
+
+|              | 堆                                                           | 栈                                                           |
+| ------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 物理地址     | 堆的物理地址分配对对象是不连续的。因此性能慢些。在GC的时候也要考虑到不连续的分配，所以有各种算法。比如，标记-消除，复制，标记-压缩，分代（即新生代使用复制算法，老年代使用标记——压缩） | 数据结构中的栈，先进后出的原则，物理地址分配是连续的。所以性能快。 |
+| 内存分别     | 为是不连续的，所以分配的内存是在`运行期`确认的，因此大小不固定。一般堆大小远远大于栈 | 栈是连续的，所以分配的内存大小要在`编译期`就确认，大小是固定的。 |
+| 存放的内容   | 存放的是对象的实例和数组。因此该区更关注的是数据的存储       | 存放：局部变量，操作数栈，返回结果。该区更关注的是程序方法的执行。 |
+| 程序的可见度 | 堆对于整个应用程序都是共享、可见的                           | 栈只对于线程是可见的。所以也是线程私有。他的生命周期和线程相同。 |
+
+|            | 队列                                       | 栈                                                 |
+| ---------- | ------------------------------------------ | -------------------------------------------------- |
+| 操作的名称 | 队列的插入称为入队，队列的删除称为出队     | 栈的插入称为进栈，栈的删除称为出栈                 |
+| 操作的方式 | 队列是在队尾入队，队头出队，即两边都可操作 | 进栈和出栈都是在栈顶进行的，无法对栈底直接进行操作 |
+| 操作的方法 | 队列是先进先出（FIFO）                     | 栈为后进先出（LIFO）                               |
+
+# 堆
+
+1. 新生代内存(Young Generation)
+2. 老生代(Old Generation)
+3. 永生代(Permanent Generation)
+
+![JVM堆内存结构-JDK8](https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/JVM%E5%A0%86%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84-jdk8.png)
+
+**示的 Eden 区、两个 Survivor 区都属于新生代（为了区分，这两个 Survivor 区域按照顺序被命名为 from 和 to），中间一层属于老年代。**
+
+堆这里最容易出现的就是 OutOfMemoryError 错误，并且出现这种错误之后的表现形式还会有几种，比如：
+
+1. **`OutOfMemoryError: GC Overhead Limit Exceeded`** ： 当JVM花太多时间执行垃圾回收并且只能回收很少的堆空间时，就会发生此错误。
+2. **`java.lang.OutOfMemoryError: Java heap space`** :假如在创建新的对象时, 堆内存中的空间不足以存放新创建的对象, 就会引发`java.lang.OutOfMemoryError: Java heap space` 错误。(和本机物理内存无关，和你配置的内存大小有关！)
+
+# 内存溢出异常
+
+## Java会存在内存泄漏吗
+
+内存泄漏是指不再被使用的对象或者变量一直被占据在内存中。理论上来说，Java是有GC垃圾回收机制的，也就是说，不再被使用的对象，会被GC自动回收掉，自动从内存中清除。
+
+但是，即使这样，Java也还是存在着内存泄漏的情况，java导致内存泄露的原因很明确：长生命周期的对象持有短生命周期对象的引用就很可能发生内存泄露，尽管短生命周期对象已经不再需要，但是因为长生命周期对象持有它的引用而导致不能被回收，这就是java中内存泄露的发生场景。
+
+# 垃圾收集器
+
+### 简述Java垃圾回收
+
+在java中，程序员是不需要显示的去释放一个对象的内存的，而是由虚拟机自行执行。在JVM中，有一个垃圾回收线程，它是低优先级的，在正常情况下是不会执行的，只有在虚拟机空闲或者当前堆内存不足时，才会触发执行，扫面那些没有被任何引用的对象，并将它们添加到要回收的集合中，进行回收。
+
+### GC
+
+GC 是垃圾收集的意思（Gabage Collection）,内存处理是编程人员容易出现问题的地方，忘记或者错误的内存
+
+回收会导致程序或系统的不稳定甚至崩溃，Java 提供的 GC 功能可以自动监测对象是否超过作用域从而达到自动
+
+回收内存的目的，Java 语言没有提供释放已分配内存的显示操作方法。
+
+### 原理
+
+垃圾回收器通常作为一个单独的低级别的线程运行，在不可预知的情况下对内存堆中已经死亡的或很长时间没有用过的对象进行清除和回收。
+
+垃圾回收有分代复制垃圾回收、标记垃圾回收、增量垃圾回收。
+
+对于GC来说，创建对象时，GC就开始监控这个对象的地址、大小以及使用情况。
+
+通常，GC采用有向图的方式记录和管理堆(heap)中的所有对象。通过这种方式确定哪些对象是"可达的"，哪些对象是"不可达的"。当GC确定一些对象为"不可达"时，GC就有责任回收这些内存空间。
+
+# HotSpot虚拟机对象
+
+## 对象的创建
+
+![Java创建对象的过程](https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/Java%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%BF%87%E7%A8%8B.png)
+
+### Step1:类加载检查
+
+虚拟机遇到一条 new 指令时，首先将去检查这个指令的参数是否能在常量池中定位到这个类的符号引用，并且检查这个符号引用代表的类是否已被加载过、解析和初始化过。如果没有，那必须先执行相应的类加载过程。
+
+### Step2:分配内存
+
+在**类加载检查**通过后，接下来虚拟机将为新生对象**分配内存**。
+
+对象所需的内存大小在类加载完成后便可确定，为对象分配空间的任务等同于把一块确定大小的内存从 Java 堆中划分出来。
+
+**分配方式**有 **“指针碰撞”** 和 **“空闲列表”** 两种，**选择哪种分配方式由 Java 堆是否规整决定，而 Java 堆是否规整又由所采用的垃圾收集器是否带有压缩整理功能决定**。
+
+选择以上两种方式中的哪一种，取决于 Java 堆内存是否规整。而 Java 堆内存是否规整，取决于 GC 收集器的算法是"标记-清除"，还是"标记-整理"（也称作"标记-压缩"），值得注意的是，复制算法内存也是规整的
+
+![image-20200824194144806](https://raw.githubusercontent.com/YangAnLin/images/master/20200824194149.png)
+
+**内存分配并发问题**
+
+在创建对象的时候有一个很重要的问题，就是线程安全，因为在实际开发过程中，创建对象是很频繁的事情，作为虚拟机来说，必须要保证线程是安全的，通常来讲，虚拟机采用两种方式来保证线程安全：
+
+- **CAS+失败重试：** CAS 是乐观锁的一种实现方式。所谓乐观锁就是，每次不加锁而是假设没有冲突而去完成某项操作，如果因为冲突失败就重试，直到成功为止。**虚拟机采用 CAS 配上失败重试的方式保证更新操作的原子性。**
+- **TLAB：** 为每一个线程预先在 Eden 区分配一块儿内存，JVM 在给线程中的对象分配内存时，首先在 TLAB 分配，当对象大于 TLAB 中的剩余内存或 TLAB 的内存已用尽时，再采用上述的 CAS 进行内存分配
+
+### Step3:初始化零值
+
+内存分配完成后，虚拟机需要将分配到的内存空间都初始化为零值（不包括对象头），这一步操作保证了对象的实例字段在 Java 代码中可以不赋初始值就直接使用，程序能访问到这些字段的数据类型所对应的零值。
+
+### Step4:设置对象头
+
+初始化零值完成之后，**虚拟机要对对象进行必要的设置**，例如这个对象是哪个类的实例、如何才能找到类的元数据信息、对象的哈希码、对象的 GC 分代年龄等信息。 **这些信息存放在对象头中。** 另外，根据虚拟机当前运行状态的不同，如是否启用偏向锁等，对象头会有不同的设置方式。
+
+### Step5:执行 init 方法
+
+在上面工作都完成之后，从虚拟机的视角来看，一个新的对象已经产生了，但从 Java 程序的视角来看，对象创建才刚开始，`<init>` 方法还没有执行，所有的字段都还为零。所以一般来说，执行 new 指令之后会接着执行 `<init>` 方法，把对象按照程序员的意愿进行初始化，这样一个真正可用的对象才算完全产生出来。
+
+## 对象的访问定位
+
+建立对象就是为了使用对象，我们的 Java 程序通过栈上的 reference 数据来操作堆上的具体对象。对象的访问方式由虚拟机实现而定，目前主流的访问方式有**①使用句柄**和**②直接指针**两种：
+
+**句柄：** 如果使用句柄的话，那么 Java 堆中将会划分出一块内存来作为句柄池，reference 中存储的就是对象的句柄地址，而句柄中包含了对象实例数据与类型数据各自的具体地址信息
+
+**直接指针：** 如果使用直接指针访问，那么 Java 堆对象的布局中就必须考虑如何放置访问类型数据的相关信息，而 reference 中存储的直接就是对象的地址。
+
+![image-20200824194559886](https://raw.githubusercontent.com/YangAnLin/images/master/20200824194601.png)
+
+# CPU占用率高查看
+
+## 第一种方法
+
+```shell
+# 1.查看java的pid
+jps
+
+# 2.查看各个子进程
+top -H -p pid
+
+# 3.显示16进制
+printf "%x\n" 子pid
+
+jstack pid |grep tid(第3步出来的) -A 30
+```
+
+## 第二种方法:show-busy-java-threads
+
+https://github.com/oldratlee/useful-scripts/blob/dev-2.x/bin/show-busy-java-threads
+
+使用的命令:
+
+```shell
+sh show-busy-java-threads.sh -p pid
+```
