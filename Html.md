@@ -1862,11 +1862,344 @@ background-position
 </html>
 ```
 
+# Vue2.x教程
+
+### v-text
+
+设置标签里的内容,默认会替换全部内容
+
+如果只是想替换部分内容,使用``{{message}}``
+
+支持表达式
+
+```html
+<body>
+    <div id="app" v-for>
+        <h1 v-text="message">深圳</h1>
+        <h1 v-text="message">{{message}}深圳</h1>
+    </div>
+
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                message: 'Hello'
+            }
+        })
+    </script>
+</body>
+```
+
+### v-html
+
+设置标签里的innerHTML
+
+内容有html结构会被解析成标签,而`v-text`会解析成文本
+
+```html
+<body>
+    <div id="app" v-for>
+        <h1 v-text="message"></h1>
+        <h1 v-html="message">{{message}}</h1>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                message: '<p2>黑马程序猿</p2>'
+            }
+        })
+    </script>
+</body>
+```
+
+### v-on事件绑定
+
+`v-on:click` ==> `@click`
+
+绑定按键事件,Vue还是有问题的,获取不到焦点,得手动去搞
+
+`<input value="事件绑定" @keyup.enter="mydo">`
+
+```html
+<body>
+    <div id="app">
+        <input type="button" value="事件绑定" v-on:click="mydo">
+        <input type="button" value="事件绑定缩写" @click="mydo">
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            methods: {
+                mydo:function(){
+                    alert("点击事件")
+                }
+            },
+        })
+    </script>
+</body>
+```
+
+例子:
+
+这里如果还没有学属性绑定,所以{{number}} 不能用input标签展示
+
+```html
+<body>
+    <div id="app">
+        <input type="button" value="-" @click="less">
+        {{number}}
+        <input type="button" value="+" v-on:click="add">
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data:{
+                number:0
+            },
+            methods: {
+                add:function(){
+                    this.number++
+                },
+                less:function(){
+                    this.number--
+                }
+            },
+        })
+    </script>
+</body>
+```
+
+### v-show和v-if
+
+v-show指令的作用:根据真假切换元素的显示状态,原理就是修改``display`
+
+v-if 操作的dom树,如果隐藏了,就把节点删掉
+
+```html
+<body>
+    <div id="app">
+        <input type="button" value="v-show 切换" @click="mychange">
+        <p v-show="show">xxx</p>
+        <hr>
+        <input type="button" value="v-if 切换" @click="mychange">
+        <p v-if="show">xxx</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data:{
+                show:true
+            },
+            methods: {
+                mychange:function(){
+                    this.show = !this.show
+                
+                }
+            },
+        })
+    </script>
+</body>
+```
+
+### v-bind 绑定元素属性
+
+v-bind绑定元素里的属性,可以简写成`属性:value`
+
+```html
+<body>
+    <div id="app">
+        <input type="button" value="-" @click="less">
+        <input type="text" v-bind:value="number">
+        <input type="text" :value="number">
+        <input type="button" value="+" v-on:click="add">
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data:{
+                number:0
+            },
+            methods: {
+                add:function(){
+                    this.number++
+                },
+                less:function(){
+                    this.number--
+                }
+            },
+        })
+    </script>
+</body>
+```
+
+例子:
+
+```html
+<body>
+    <div id="app" style="background-color: bisque;">
+        <img :src="imgArr[index]">
+        <br>
+
+        <!-- 第一种实现方法 -->
+        <button @click="prev" v-show="index != 0">上一张</button>
+        <button @click="next" v-show="index != imgArr.length-1">下一张</button>
+
+        <br>
+        
+        <!-- 第二种实现方法 -->
+        <button @click="prev" :disabled="index == 0">上一张</button>
+        <button @click="next" :disabled="index == imgArr.length-1">下一张</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data:{
+                imgArr:["1.png","2.png","3.png"],
+                index :0
+            },
+            methods: {
+                prev:function(){
+                    this.index--
+                },
+                next:function(){
+                    this.index++
+                }
+            },
+        })
+    </script>
+</body> 
+```
+
+### v-for
+
+```html
+<body>
+    <div id="app" style="background-color: bisque;">
+       <ul>
+           <li v-for="(img,index) in imgArr">
+               {{img}}-{{index}}
+           </li>
+       </ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data:{
+                imgArr:["1.png","2.png","3.png"],
+            },
+            methods: {
+                prev:function(){
+                    this.index--
+                },
+                next:function(){
+                    this.index++
+                }
+            },
+        })
+    </script>
+</body>
+```
+
+
+
+### v-model
+
+```html
+<body>
+    <div id="app">
+        <input v-model:value="myvalue">
+        {{ myvalue }}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data:{
+                myvalue:"1"
+            },
+            methods: {
+                mydo:function(){
+                    alert("点击事件")
+                }
+            },
+        })
+    </script>
+</body>
+```
 
 
 
 
 
+
+
+# element-ui
+
+## 级联选择器
+新版本props的使用
+级联选择器太高可以在全局样式里给.el-cascader-panel设置高度为200px
+:props="{ expandTrigger: 'hover', value: 'cat_id', label: 'cat_name', children: 'children' }"
+
+
+
+# Node.js
+
+npm和node.js更换版本
+
+```shell
+# npm更换
+npm install npm@6.10.1 -g 
+
+# node更换
+sudo npm install n -g
+sudo n 版本号
+n # 选择版本号
+```
+
+node.js升级
+
+```shell
+# 更新npm
+npm install -g npm
+
+# 清空npm缓存
+npm cache clean -f
+
+# 安装n模块
+npm install -g n
+
+# 升级node.js到最新稳定版
+n stable
+
+# 有时候需要sudo权限,或者安装好了之后要开启一个新的shell才能用到新的版本
+```
 
 
 
