@@ -2154,12 +2154,63 @@ v-bind绑定元素里的属性,可以简写成`属性:value`
 </body>
 ```
 
+
+
+## 先记着
+
+Vue同一个dom元素绑定多个点击事件如何绑定
+
+```html
+<el-button @click="dialogVisible = false;clearTempData()">取 消</el-button>
+```
+
+模板获取值
+
+```html
+<template slot-scope="scope">
+    <el-tag type="warning" v-for="ids in scope.row.typeID.split(',')">{{getGameType(ids)}}</el-tag>
+</template>
+```
+
+
+
+Store 数据
+
+```js
+agentId: _this.$store.getters.name.agentId,
+```
+
+
+
 # Element-ui
 
 ## 级联选择器
 新版本props的使用
 级联选择器太高可以在全局样式里给.el-cascader-panel设置高度为200px
 :props="{ expandTrigger: 'hover', value: 'cat_id', label: 'cat_name', children: 'children' }"
+
+多选框
+
+```html
+<div>
+    <el-checkbox-group v-model="checkboxGroup1">
+        <el-checkbox-button v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox-button>
+    </el-checkbox-group>
+</div>
+
+
+const cityOptions = ['上海', '北京', '广州', '深圳'];
+  export default {
+    data () {
+      return {
+        checkboxGroup1: ['上海'],
+        checkboxGroup2: ['上海'],
+        checkboxGroup3: ['上海'],
+        checkboxGroup4: ['上海'],
+        cities: cityOptions
+      };
+    }
+```
 
 
 
@@ -2197,9 +2248,39 @@ n stable
 
 https://www.bilibili.com/video/BV1vE411871g?p=120
 
-  
+  # ES6 & JS
 
-  
+字符串转数字
+
+https://blog.fundebug.com/2018/07/07/string-to-number/
+
+遍历
+
+  JavaScript for...in 语句
+
+遍历2
+
+https://segmentfault.com/a/1190000010203337
+
+排序
+
+https://segmentfault.com/a/1190000015961859
+
+https://blog.csdn.net/weixin_46146313/article/details/104198636
+
+join方法
+
+https://www.w3school.com.cn/jsref/jsref_join.asp
+
+foreach
+
+```javascript
+row.typeID.split(",").forEach(id=>{this.gameTypes.push(parseInt(id))})
+```
+
+
+
+
 
   
 
