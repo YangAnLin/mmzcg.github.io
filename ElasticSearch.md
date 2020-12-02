@@ -13,8 +13,11 @@ network.host: 0.0.0.0 #设置成外网也可以访问
 ```
 
 ```properties
-vi config/sysctl.conf
+vi /etc/sysctl.conf
 vm.max_map_count=262144 # 修改系统环境该变量,修改完需要重启才能生效
+
+# 加载参数
+sysctl -p
 ```
 
 ```properties

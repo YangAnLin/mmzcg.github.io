@@ -2,6 +2,129 @@
 
 # Centos8
 
+## SSH
+
+### 安装ssh
+```shell
+1.判断Ubuntu是否安装了ssh服务,检查有没有可以看到“sshd”
+ps -e | grep ssh
+2.安装ssh服务，输入命令：#sudo apt-get install openssh-server 
+3.启动服务:#/etc/init.d/ssh start 
+```
+
+### SSH连接,key失效
+
+问题:
+
+```shell
+λ ssh root@10.19.44.12
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+It is also possible that a host key has just been changed.
+The fingerprint for the ECDSA key sent by the remote host is
+SHA256:RIqSp3Pd94k4PPQcDtKAzK0sQbf4VWffKGwy/nvO8Kw.
+Please contact your system administrator.
+Add correct host key in C:\\Users\\Owner/.ssh/known_hosts to get rid of this message.
+Offending ECDSA key in C:\\Users\\Owner/.ssh/known_hosts:12
+ECDSA host key for 10.19.44.12 has changed and you have requested strict checking.
+Host key verification failed.
+```
+
+解决方法:找到.ssh文件下的known_hosts,删除相关ip的行
+
+## 安装软件
+
+### 安装vm tool
+```shell
+运行 ./vmware-install.pl
+一直按yes,按完一段之后就会有暂时的停顿
+运行命令 reboot
+```
+
+### 安装Wget
+
+最开始的Centos7 感觉什么都没有`wget`也没有
+```shell
+ #远程下载的工具
+ yum -y install wget
+ 
+ #bash: make: command not found 是因为缺少这些工具
+ yum -y install gcc automake autoconf libtool make
+ 
+ yum -y install wget
+```
+
+## 系统命令
+
+### 历史命令
+
+```shell
+# 历史命令
+history -3
+```
+
+### grep管道
+```shell
+cat hive-default.xml | grep hive.cli.print
+```
+
+### 系统升级
+```shell
+yum -y update(centos)
+apt-get update(ubuntu 软件包的列表 )
+sudo apt-get dist-upgrade （进入列新你系统和系统里安装的软件）
+```
+
+### ll文件大小按MB显示
+```shell
+ls -lh
+ll -lh
+```
+
+### 查看系统版本
+
+```shell
+cat /etc/os-release
+```
+
+### 开放端口
+
+```shell
+sudo ufw allow 80
+```
+
+### 查看端口
+
+```shell
+# 查看所有的服务端口
+netstat -ap
+# 查看已经连接的服务端口
+netstat -a
+# 如查看8888端口，则在终端中输入：
+lsof -i:8888
+# lsof -i:端口号查看某个端口是否被占用 
+netstat -anp|grep 80 
+```
+
+### 立即关机和重启
+
+```shell
+shutdown -h now 现在立即关机
+shutdown -r now 现在立即重启
+```
+
+### 当前时间
+
+```shell
+data
+```
+
+
+
+
 ## Cockpit
 
 ```shell
@@ -57,31 +180,12 @@ cp /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime
 在里面加一个：127.0.0.1     主机名
 ```
 
-## 安装ssh
-```shell
-1.判断Ubuntu是否安装了ssh服务,检查有没有可以看到“sshd”
-ps -e | grep ssh
-2.安装ssh服务，输入命令：#sudo apt-get install openssh-server 
-3.启动服务:#/etc/init.d/ssh start 
-```
 
-## grep管道
-```shell
-cat hive-default.xml | grep hive.cli.print
-```
-## 安装vm tool
-```shell
-运行 ./vmware-install.pl
-一直按yes,按完一段之后就会有暂时的停顿
-运行命令 reboot
-```
 
-## 系统升级
-```shell
-yum -y update(centos)
-apt-get update(ubuntu 软件包的列表 )
-sudo apt-get dist-upgrade （进入列新你系统和系统里安装的软件）
-```
+
+
+
+
 
 ## 查看前几行
 
@@ -118,31 +222,6 @@ DEVICE=enp0s3
 ONBOOT=yes
 ```
 
-## ssh连不上的问题
-```shell
-λ ssh root@10.19.44.12
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
-Someone could be eavesdropping on you right now (man-in-the-middle attack)!
-It is also possible that a host key has just been changed.
-The fingerprint for the ECDSA key sent by the remote host is
-SHA256:RIqSp3Pd94k4PPQcDtKAzK0sQbf4VWffKGwy/nvO8Kw.
-Please contact your system administrator.
-Add correct host key in C:\\Users\\Owner/.ssh/known_hosts to get rid of this message.
-Offending ECDSA key in C:\\Users\\Owner/.ssh/known_hosts:12
-ECDSA host key for 10.19.44.12 has changed and you have requested strict checking.
-Host key verification failed.
-
-C:\Users\Owner\Desktop
-λ ssh-keygen -l -f ~/.ssh/known_hosts
-ssh-keygen: ~/.ssh/known_hosts: No such file or directory
-
-C:\Users\Owner\Desktop
-λ vi  C:\\Users\\Owner/.ssh/known_hosts
-```
-
 ## 查看命令打印出来的前几行
 
 ```shell
@@ -158,7 +237,16 @@ C:\Users\Owner\Desktop
 禁用：systemctl stop firewalld
 ```
 
-## 添加用户
+## 用户和用户组
+
+### 切换用户
+
+```shell
+su anthony
+```
+
+### 添加用户
+
 ```shell
 root下面添加用户 adduser hadoop
 删除用户 userdel hadoop
@@ -166,12 +254,12 @@ root下面添加用户 adduser hadoop
 把用户加入到用户组: vi  /etc/sudoers
 ```
 
-## 修改用户权限
+### 修改用户权限
 ```shell
 root修改用户权限: vim /etc/sudousers
 ```
 
-## 修改主机名字
+### 修改主机名字
 ```shell
 1.修改名字:sudo  vim /etc/sysconfig/network
 2.编辑: HOSTNAME=weekend100
@@ -182,46 +270,32 @@ vim /etc/hostname
 需要重启
 ```
 
-## ll文件大小按MB显示
-```shell
-ls -lh
-ll -lh
-```
+## JAVA环境变量
 
-## 配置Java环境变量
+### 配置Java环境变量
+
 ```shell
 export JAVA_HOME=/home/anthony/soft/jdk1.8.0_19
 export PATH=$JAVA_HOME/bin:$PATH
 export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
 ```
 
-## 配置Maven环境变量
+### 配置Maven环境变量
 ```shell
 export M2_HOME=/usr/local/software/apache-maven-3.6.1
 export PATH=${M2_HOME}/bin:$PATH
 ```
 
-
-## Centos安装wget
-```shell
-yum -y install wget
-```
-
-## 立即关机和重启
-```shell
-shutdown -h now 现在立即关机
-shutdown -r now 现在立即重启
-```
-
-## 查看端口
+### 卸载openjdk
 
 ```shell
-lsof -i:端口号查看某个端口是否被占用 
-
-netstat -anp|grep 80 
+# 卸载openJDK
+sudo apt-get remove openjdk*
 ```
 
-## 获取远程服务器上的文件
+## 文件传输
+
+### 获取远程服务器上的文件
 
 ```shell
 scp -P 2222 root@www.vpser.net:/root/lnmp0.4.tar.gz /home/lnmp0.4.tar.gz
@@ -233,7 +307,7 @@ scp -P 2222 root@www.vpser.net:/root/lnmp0.4.tar.gz /home/lnmp0.4.tar.gz
 * `:/root/lnmp0.4.tar.gz` 表示远程服务器上的文件，最后面的/home/lnmp0.4.tar.gz表示保存在本地上的路径和文件名。还可能会用到p参数保持目录文件的权限访问时间等。
 
 
-## 获取远程服务器上的目录
+### 获取远程服务器上的目录
 
 ```shell
 scp -P 2222 -r root@www.vpser.net:/root/lnmp0.4/ /home/lnmp0.4/
@@ -244,7 +318,7 @@ scp -P 2222 -r root@www.vpser.net:/root/lnmp0.4/ /home/lnmp0.4/
 * root@www.vpser.net 表示使用root用户登录远程服务器www.vpser.net，
 * `:/root/lnmp0.4/` 表示远程服务器上的目录，最后面的/home/lnmp0.4/表示保存在本地上的路径。
 
-## 将本地文件上传到服务器上
+### 将本地文件上传到服务器上
 
 ```shell
 scp -P 2222 /home/lnmp0.4.tar.gz* *root@www.vpser.net:/root/lnmp0.4.tar.gz
@@ -255,7 +329,7 @@ scp -P 2222 /home/lnmp0.4.tar.gz* *root@www.vpser.net:/root/lnmp0.4.tar.gz
 * root@www.vpser.net 表示使用root用户登录远程服务器www.vpser.net，
 * `:/root/lnmp0.4.tar.gz` 表示保存在远程服务器上目录和文件名。
 
-## 将本地目录上传到服务器上
+### 将本地目录上传到服务器上
 
 ```shell
 scp -P 2222 -r /home/lnmp0.4/* *root@www.vpser.net:/root/lnmp0.4/
@@ -266,12 +340,7 @@ scp -P 2222 -r /home/lnmp0.4/* *root@www.vpser.net:/root/lnmp0.4/
 * /home/lnmp0.4/表示准备要上传的目录，root@www.vpser.net 表示使用root用户登录远程服务器www.vpser.net，
 * `:/root/lnmp0.4/`表示保存在远程服务器上的目录位置。
 
-## 历史命令
 
-```shell
-# 历史命令
-history -3
-```
 
 ## 定时器
 
@@ -290,58 +359,14 @@ each输出
 
 ```
 
-## data
 
-```shell
-data
-```
+
+
 
 ## Vim行号
 
 ```shell
 set nu
-```
-
-## 查看系统版本
-
-```shell
-cat /etc/os-release
-```
-
-## 开放端口
-
-```shell
-sudo ufw allow 80
-```
-
-## 查看端口
-
-```shell
-# 查看所有的服务端口
-netstat -ap
-# 查看已经连接的服务端口
-netstat -a
-# 如查看8888端口，则在终端中输入：
-lsof -i:8888
-```
-
-## 安装Wget
-
-最开始的Centos7 感觉什么都没有`wget`也没有
-```shell
- #远程下载的工具
- yum -y install wget
- 
- #bash: make: command not found 是因为缺少这些工具
- yum -y install gcc automake autoconf libtool make
- 
- yum -y install wget
-```
-
-## 切换用户
-
-```
-su anthony
 ```
 
 ## Ubuntu-Nginx
