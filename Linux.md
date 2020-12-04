@@ -270,7 +270,7 @@ vim /etc/hostname
 需要重启
 ```
 
-## JAVA环境变量
+## 环境变量
 
 ### 配置Java环境变量
 
@@ -292,6 +292,15 @@ export PATH=${M2_HOME}/bin:$PATH
 # 卸载openJDK
 sudo apt-get remove openjdk*
 ```
+
+### 配置Scala
+
+```shell
+export SCALA_HOME=/usr/local/scala-2.13.4
+export PATH=$SCALA_HOME/bin:$PATH
+```
+
+
 
 ## 文件传输
 
@@ -358,10 +367,6 @@ each输出
 声明变量的后面要写等号
 
 ```
-
-
-
-
 
 ## Vim行号
 
@@ -745,78 +750,3 @@ worker_connection是 1024; 一个核 最大允许多少个链接
 不写    一般匹配
 
 ~          正则匹配
-
-
-
-## Vim
-
-## 知识点
-
-## Mybatis源码
-
-sqlSessionFactorybuilder 有个build方法,读取mybatis-confi.xml,根据配置封装Configuration对象,
-build创建DefaultSqlSessionFactory(实现类) 返回的是SqlSessionFactory(接口)
-DefaultSqlSessionFactory有些opensession的重载方法,有的设置是否自动提交,有的设置隔离级别,最后openSessionFromDataSource用来
-创建DefaultSqlSession实现类,并且返回SqlSession接口
-
-UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-
-DefaultSqlSession里的getMapper方法,调用MapperProxy代理类,有代码是判断是不是接口,如果是接口,就会生成MapperMethod对象,接着调用execute方法,把sqlSession和参数传进去
-感觉最重要的来了,execute里包含所有的insert.update.delete.flush,
-MapperMethod内里有个SqlCommand静态内部类,该内部类的作用是,根据配置文件封装成MappedStatement ,
-MappedStatement 包含了一条sql的所有特征,
-SqlSession中的Executor对象再执行update.insert等操作,MappedStatement,作为参数传进去,update操作再调用 子类SimpleExecutor的doUpdate方法
-该方法里面会返回封装一个StatementHandler ,在调用StatementHandler设置参数时候，需要ParameterHandler来设置相应的参数
-最后prestatmentHandler执行sql,并返回对象
-
-
-
-## mysql事务
-
-隔离级别
-
-|          | 脏读 | 不可重复读 | 幻读 |
-| -------- | ---- | ---------- | ---- |
-| 读未提交 | √    | √          | √    |
-| 读已提交 |      | √          | √    |
-| 可重复读 |      |            | √    |
-| 串行化   |      |            |      |
-
-
-
-
-脏读 :一个事务读取到另一事务未提交的更新数据
-不可重复读 : 这样就发生了在一个事务内两次读到的数据是不一样的，因此称为是不可重复读。
-幻读 :一个事务读到另一个事务已提交的insert数据
-
-传播行为
-not_spport  非事务运行,有就挂起
-never 有就报错
-mandatory 没有就报错
-require 有就有,没有就创建  | 一起成功 一起失败
-support 有就有,没有就没有
-require_new 新建事务，如果当前存在事务，把当前事务挂起，执行当前新建事务完成以后，上下文事务恢复再执行。
-not_spport 非事务执行,有就挂起
-
-
-
-## JVM
-
-PermanentSpace(持久代,放静态文件，比如java类、方法等)和HeapSpace(老年代+年轻代(1个Eden区，2个Survivor区))
-
-OOM（“OutofMemory”）异常一般主要有如下2种原因：
-1.年老代溢出，表现为：java.lang.OutOfMemoryError:Javaheapspace
-设置的内存参数Xmx过小或程序的内存泄露及使用不当问题。
-2.持久代溢出，表现为：java.lang.OutOfMemoryError:PermGenspace
-通常由于持久代设置过小，动态加载了大量Java类而导致溢出，解决办法唯有将参数-XX:MaxPermSize调大（一般256m能满足绝大多数应用程序需求）。
-
-GC:
-1.标记-清除,产生碎片
-3.标记-整理（Mark-Compact）
-2.复制,就是需要两倍内存空间
-4.分代收集算法
-
-Eden --> Minor GC
-Eden+sur+sur --> Yougn Gen(-Xmn)
-老年代 --->Major GC
-年轻代+老年代 -->JVM Heap(-Xms -Xmx)
