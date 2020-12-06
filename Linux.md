@@ -161,6 +161,9 @@ ONBOOT="yes" #开机启用本配置
 IPADDR=10.14.2.50 #静态IP
 GATEWAY=10.14.2.11 #默认网关
 NETMASK=255.255.255.0 #子网掩码
+
+# 重启网卡,或者重启电脑
+service network restart
 ```
 
 ## 修改时区
@@ -395,19 +398,11 @@ cd ../nginx/sbin
 
 ```
 
-## Centos mini 的网络配置
-修改配置文件
-```shell
-vi /etc/sysconfig/network-script/ifcfg-eth0
 
-ONBOOT=yes
-MM_Controlled=no
-BOOTPROTO=dhcp
-```
 
 重启网卡
 ```shell
-service network restart
+
 ```
 
 ## ubuntu右上角网络图标消失并且上不了网
