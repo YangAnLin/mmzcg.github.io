@@ -143,7 +143,15 @@ systemctl status cockpit.socket
 
 然后在另一台电脑上用浏览器登录 https://IP:9090
 
-## 固定IP
+## Vmware和Linux固定IP 
+配置完了,最好是重启下vmware和虚拟机,和禁用开启 win10上的vmare8网卡
+vmare配置
+![](https://raw.githubusercontent.com/YangAnLin/images/master/20201206171446.png)
+电脑配置
+![](https://raw.githubusercontent.com/YangAnLin/images/master/20201206171657.png)
+虚拟机配置
+![](https://raw.githubusercontent.com/YangAnLin/images/master/20201206171715.png)
+Linux配置
 
 ```shell
 vim /etc/sysconfig/network-scripts/ifcfg-eth0
@@ -154,10 +162,6 @@ IPADDR=10.14.2.50 #静态IP
 GATEWAY=10.14.2.11 #默认网关
 NETMASK=255.255.255.0 #子网掩码
 ```
-
-![image-20200901190431314](https://raw.githubusercontent.com/YangAnLin/images/master/20200901190432.png)
-
-
 
 ## 修改时区
 
@@ -179,12 +183,6 @@ cp /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime
 （2）vi /etc/hosts
 在里面加一个：127.0.0.1     主机名
 ```
-
-
-
-
-
-
 
 
 ## 查看前几行
