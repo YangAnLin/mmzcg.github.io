@@ -399,7 +399,7 @@ docker run -itd \
        docker.elastic.co/elasticsearch/elasticsearch:7.7.0
 ```
 
-# 安装Zookeeper
+## 安装Zookeeper
 
 ```shell
 docker run -d -p 2181:2181 --name some-zookeeper --restart=always zookeeper

@@ -28,8 +28,6 @@ ENV JAVA_HOME /home/jdk1.8.0_251
 ENV CLASSPATH $JAVA_HOME/dt.jar:$JAVA_HOME/lib/tools.jar
 ENV PATH $PATH:$JAVA_HOME/BIN:$CATALINA_HOME/lib:$CATALINA_HOME/bin
 
-
-
 # 暴露8066端口
 EXPOSE 8066
 CMD /home/mycat/bin/mycat console

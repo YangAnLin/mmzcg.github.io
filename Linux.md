@@ -1,7 +1,5 @@
 [toc]
 
-# Centos8
-
 ## SSH
 
 ### 安装ssh
@@ -16,7 +14,7 @@ ps -e | grep ssh
 
 问题:
 
-```shell
+```powershell
 λ ssh root@10.19.44.12
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
@@ -47,7 +45,7 @@ Host key verification failed.
 ### 安装Wget
 
 最开始的Centos7 感觉什么都没有`wget`也没有
-```shell
+```powershell
  #远程下载的工具
  yum -y install wget
  
@@ -72,7 +70,7 @@ cat hive-default.xml | grep hive.cli.print
 ```
 
 ### 系统升级
-```shell
+```powershell
 yum -y update(centos)
 apt-get update(ubuntu 软件包的列表 )
 sudo apt-get dist-upgrade （进入列新你系统和系统里安装的软件）
@@ -111,7 +109,7 @@ netstat -anp|grep 80
 
 ### 立即关机和重启
 
-```shell
+```powershell
 shutdown -h now 现在立即关机
 shutdown -r now 现在立即重启
 ```
@@ -127,7 +125,7 @@ data
 
 ## Cockpit
 
-```shell
+```powershell
 Activate the web console with: systemctl enable --now cockpit.socke
 ```
 
@@ -301,8 +299,6 @@ export SCALA_HOME=/usr/local/scala-2.13.4
 export PATH=$SCALA_HOME/bin:$PATH
 ```
 
-
-
 ## 文件传输
 
 ### 获取远程服务器上的文件
@@ -395,13 +391,6 @@ make && make install
 #启动
 cd ../nginx/sbin
 ./nginx
-
-```
-
-
-
-重启网卡
-```shell
 
 ```
 

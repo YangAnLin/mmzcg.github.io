@@ -1,4 +1,4 @@
-# 杀线程
+## 杀线程
 ```shell
 # 查找5091的端口
 netstat -aon | find "5091"
@@ -7,7 +7,7 @@ taskkill /f /pid 6880
 ```
 
 
-# 安装scoop包管理器
+## 安装scoop包管理器
 是windows的包管理器
 
 ```shell
@@ -18,7 +18,7 @@ set-executionpolicy remotesigned -s cu
 iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
 ```
 
-# 安装concfg,用来清空掉命令行和powershell的多配置文件
+## 安装concfg,用来清空掉命令行和powershell的多配置文件
 github仓库:`https://github.com/lukesampson/concfg`
 ```shell
 # 安装concfg软件
@@ -31,14 +31,14 @@ concfg clean
 concfg import solarized-dark
 ```
 
-# cmd和powershell的默认值和属性的区别
+## cmd和powershell的默认值和属性的区别
 默认值和属性的不同设置,从哪里启动有关系,比如用开始菜单的 和 从shift + 右键,加载的命令行不一样,还是安装好concfg软件,把多余的都删掉,只留一个
 
 如果你打开 PowerShell 快捷方式时不小心右键修改它的“属性”中的设置项的话，那么它的表现又会不同了。所以如果想一直保持一致，最好不要动任何一个控制台实例的“属性”。
 `https://www.zhihu.com/question/63867578/answer/220101109`
 
 
-# Vscode 安装图片上传插件
+## Vscode 安装图片上传插件
 1.在插件那搜索picgo,安装好插件在插件那里点设置
 2.配置阿里云oss,参考:`https://picgo.github.io/PicGo-Doc/`
 ```json
@@ -53,7 +53,7 @@ concfg import solarized-dark
 ```
 3.通过三个组合键，可以分别从：1.（Ctrl+alt+U）剪切板 2.（Ctrl+alt+E）文件夹 3.（Ctrl+alt+O）指定路径
 
-# 美化powershell教程
+## 美化powershell教程
 用的是这三个地址,等下回安装的时候再写的详细点
 ```
 https://zhuanlan.zhihu.com/p/51901035
@@ -61,7 +61,7 @@ https://blog.walterlv.com/post/beautify-powershell-like-zsh.html
 https://coolcode.org/2018/03/16/how-to-make-your-powershell-beautiful/
 ```
 
-# Docker和VMware的虚拟机冲突,把Windows自带的删除掉
+## Docker和VMware的虚拟机冲突,把Windows自带的删除掉
 ![Windows-2020-04-18-23-06-32](https://image.yanganlin.com/blog/Windows-2020-04-18-23-06-32.png)
 
 再用管理员的powershell执行
@@ -69,7 +69,24 @@ https://coolcode.org/2018/03/16/how-to-make-your-powershell-beautiful/
 
 
 
-# 把软件加入到自启动
+## 把软件加入到自启动
 
 在运行里输入`shell:startup`
 
+
+
+## WSL2安装
+
+1.开启
+
+![image-20201208140142680](https://raw.githubusercontent.com/YangAnLin/images/master/20201208140143.png)
+
+2.下载安装镜像
+
+![安装一个 Linux 发行版](https://blog.walterlv.com/static/posts/2019-07-05-08-31-34.png)
+
+![安装 Linux](https://blog.walterlv.com/static/posts/2019-07-05-09-26-03.png)
+
+3.设置wsl2
+
+![设置 WSL2](https://blog.walterlv.com/static/posts/2019-07-05-10-12-35.png)
