@@ -1,3 +1,33 @@
+# hutool
+
+```java
+     final JSONArray array = new JSONArray();
+
+        final JSONObject jsonObject = new JSONObject();
+        jsonObject.put("level", 0);
+        jsonObject.put("goldConfigId", 83);
+        jsonObject.put("goldConfigName", "1");
+
+        final JSONObject jsonObject2 = new JSONObject();
+        jsonObject2.put("level", 0);
+        jsonObject2.put("goldConfigId", 84);
+        jsonObject2.put("goldConfigName", "4");
+
+        array.add(jsonObject);
+        array.add(jsonObject2);
+
+        for (int i = 0; i < array.size(); i++) {
+            final JSONObject jsonObject3 = array.getJSONObject(i);
+            if (jsonObject3.getInt("goldConfigId") == 83) {
+                jsonObject3.put("goldConfigName", "5");
+            }
+        }
+
+        System.out.println(array);
+```
+
+
+
 # 0.Maven
 
 这个是要从aliyun仓库里下载包

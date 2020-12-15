@@ -4,15 +4,15 @@
 
 1.vmare配置
 
-![ ](https://cdn.jsdelivr.net/gh/YangAnLin/images/20201212204544.png)
+![ ](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201213150357.png)
 
 2.电脑配置
 
-![](https://raw.githubusercontent.com/YangAnLin/images/master/20201202103954.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201213150441.png)
 
 3.虚拟机配置
 
-![](https://raw.githubusercontent.com/YangAnLin/images/master/20201202103932.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201213150509.png)
 
 # Hadoop伪集群
 
@@ -98,15 +98,15 @@ export PATH=$PATH:$HADOOP_HOME/bin
 hadoop namenode -format
 ```
 
-![20/12/01  20/12/01  20/12/01  20/12/01  20/12/01  20/12/01  20/12/01  20/12/01  20/12/01  20/12/01  20/12/01  20/12/01  20/12/01  20/12/01  20/12/01  20/12/01  20 12 01  0/12/01  20/12/01  20/12/01  08:01  08:01  08:01  INFO  INFO  INFO  INFO  INFO  INFO  INFO  INFO  INFO  INFO  INFO  INFO  INFO  INFO  INFO  INFO  INFO  INFO  INFO  INFO  util .GSet: capacity  2A20 = 1048576 entries  namenode.NameNode: Caching file names occuring more than 1€ times  util .GSet: Computing capacity for map cachedBlocks  util.GSet: VM type  64 -bit  .GSet: €.25* max menory 889 MB = 2.2 MB  util .GSet: capacity  2A18 = 262144 entries  namenode.FSNamesystan: dfs .namenode.safanode.threshold-pct  namenode.FSNamesystan: dfs .namenode.safanode.min .datanodes  namenode.FSNamesystan: dfs.namenode.safanode.extension  namenode.FSNamesystan: Retry cache on namenode is enabled  €.999@@@€128746€33  namenode.FSNamesystan: Retry cache will use 0.03 of total heap and retry cache entry expiry time is millis  util .GSet: Computing capacity for map NameNodeRetryCache  util .GSet: VM type  64-bit  util.GSet: 6.029999999329447746% max menory 889 MB = 273.1 KB  util .GSet: capacity  2A15 = 32768 entries  namenode.AclConfigFlag: ACLs enabled? false  namenode.FS1ma e: Allocated new BlockP0011d: BP-1051719723-192.168.2.20€-1606827665076  common .Storage: Storage directory /home/anthony/hadoop-2 .4.1/data/dfs/name has been successfully fomatted.  nameno e.  o rag  en Ion anager:  Olng o r aln Images WI  util .ExitlJti1: Exiting with status €  namenode.NameNode: SHIJTDCM•Q MSG:  SHUTDOWN MSG: Shutting down NameNode at weekend110/192.168.2.200  [anthony@weekend110 hadoop-2.4.1]$ ](https://raw.githubusercontent.com/YangAnLin/images/master/20201202103056.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201213150541.png)
 
 8.启动hdfs
 
-![[anthony@weekend110 current]$ tart-dfs . sh  Java HotSpot(TM) 64-Bit Server  ou have loaded library /home/anthony/hadoop-2.4.1/lib/native/libhadoop.so.1.€.€ which might have disabled stack guard.  warning:  The VM will try to fix the stack guard now.  It's highly recommended that you fix the library with •execstack -c or link it with  -z noexecstack .  20/12/01 08:04:19 WAR•Q util .NativeCodeLoader: Unable to load native-hadoop library for your platfom...  using builtin-java classes where applicable  Starting namenodes on [weekend110]  The authenticity of host •weekend110 (192.168.2.2@€) can •t be established.  ECDSA key fingerprint is  Are you sure you want to continue connecting (yes/no/[fingerprint])? yes  weekend110: Warning: Permanently added •weekend11€.192.168.2.2@€• (ECDSA) to the list of known hosts.  anthonyueekend110's password:  weekend110: starting namenode, logging to /home/anthony/hadoop-2.4.1/logs/hadoop-anthony-namenode-weekend11€.out  weekend110: Java HotSpot(TM) 64-Bit Server VM warning: You have loaded library /home/anthony/hadoop-2.4.1/lib/native/libhadoop.so.1.€.€ which might have disabled  stack guard. The VM will try to fix the stack guard now.  weekend110: It •s highly recommended that you fix the library with •execstack -c or link it with  -z noexecstack .  The authenticity of host • localhost :1)• can't be established.  ECDSA key fingerprint is SHA256:8/HDFx8GnPxtvBfænixbUZbYbosc+0J+KMHnqGX9d  Are you sure you want to continue connecting (yes/no/[fingerprint])? yes  localhost: Warning: Pemanently added •localhost• (ECDSA) to the list of known hosts.  password:  localhost: starting datanode, logging to /home/anthony/hadoop-2.4.1/logs/hadoop-anthony-datanode-weekend11€.out  localhost: Java HotSpot(TM) 64-Bit Server VM warning: You have loaded library /home/anthony/hadoop-2.4.1/lib/native/libhadoop.so.1.€.€ which might have disabled s  tack guard. The VM will try to fix the stack guard now.  localhost: It's highly recommended that you fix the library with •execstack -c or link it with  -z noexecstack .  Starting secondary namenodes [0.0.0.0]  The authenticity of host '0.0.0.0 (0.0.0.0)' can't be established.  ECDSA key fingerprint is SHA256:8/HDFx8GnPxtvBfænixbUZbYbosc+0J+KMHnqGX9d  Are you sure you want to continue connecting (yes/no/[fingerprint])? yes  0.0.0.0: Warning: Permanently added '0.0.0.0' (ECDSA) to the list of known hosts.  anthony@€.0.0.0's password:  0.0.0.0: starting secondarynamenode, logging to /home/anthony/hadoop-2.4.1/logs/hadoop-anthony-secondarynamenode-weekend11€.out  0.0.0.0: Java HotSpot(TM) 64-Bit Server VM warning: You have loaded library /home/anthony/hadoop-2.4.1/lib/native/libhadoop.so.1.€.€ which might have disabled sta  Ck guard. The VM will try to fix the stack guard now.  0.0.0.0: It's highly recommended that you fix the library with •execstack -c or link it with  -z noexecstack• .  Java HotSpot(TM) 64-Bit Server VM warning: You have loaded library /home/anthony/hadoop-2.4.1/lib/native/libhadoop.so.1.0.0 which might have disabled stack guard.  The VM will try to fix the stack guard now.  It's highly recommended that you fix the library with •execstack -c or link it with  -z noexecstack .  20 12 01 08:04:53 WARN util .NativeCodeLoader: Unable to load native-hadoop library for your platfom...  using builtin-java classes where applicable  [anthony@weekend110 current]$ jps  1890 SecondaryNameNode  1734 DataNode  1614 NameNode ](https://raw.githubusercontent.com/YangAnLin/images/master/20201202102639.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201213150622.png)
 
 9.启动yarn
 
-![未命名图片](https://raw.githubusercontent.com/YangAnLin/images/master/20201202102942.png)
+![未命名图片](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201213150637.png)
 
 10.访问web界面
 
@@ -125,7 +125,7 @@ http://192.168.2.200:8088/cluster
 hadoop fs -put jdk-8u152-linux-x64.tar.gz hdfs://weekend110:9000/
 ```
 
-![lantnon  S naaoop  Ts -put  Linux-x  04. tar.gz  // LocaLnost:9  Java HotSpot(TM) 64-Bit Server VM warning: You have loaded library /home/anthony/hadoop-2.4.1/lib/native/libhadoop.so.1.€.€ which might have disabled stack guard.  The VM will try to fix the stack guard now.  It's highly recommended that you fix the library with •execstack -c or link it with  -z noexecstack .  20/12/01 08:11:23 WARN util .NativeCodeLoader: Unable to load native-hadoop library for your platfom...  using builtin-java classes where applicable  put: Cau From weekend110/192 .168.2.200 to failed on connection exception: java.net.ConnectException: Connection refused; For more details see:  ht ](https://raw.githubusercontent.com/YangAnLin/images/master/20201202103416.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201213150653.png)
 
 12.测试下载文件
 
