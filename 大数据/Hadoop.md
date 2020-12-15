@@ -4,7 +4,7 @@
 
 1.vmare配置
 
-![ ](https://raw.githubusercontent.com/YangAnLin/images/master/20201202103814.png)
+![ ](https://cdn.jsdelivr.net/gh/YangAnLin/images/20201212204544.png)
 
 2.电脑配置
 
