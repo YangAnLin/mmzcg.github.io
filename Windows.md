@@ -90,3 +90,15 @@ https://coolcode.org/2018/03/16/how-to-make-your-powershell-beautiful/
 3.设置wsl2
 
 ![设置 WSL2](https://blog.walterlv.com/static/posts/2019-07-05-10-12-35.png)
+
+```shell
+PS C:\Users\anthony> wsl -l -v
+  NAME            STATE           VERSION
+* Ubuntu-20.04    Stopped         2
+```
+
+
+
+## EverythingToolbar
+
+`https://github.com/stnkl/EverythingToolbar`
