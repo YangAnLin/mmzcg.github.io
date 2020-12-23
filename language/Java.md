@@ -639,6 +639,10 @@ public static void main(String[] args) {
 
 ## 运算符
 
+## 泛型
+
+
+
 
 
 
@@ -1543,7 +1547,7 @@ CountDownLatch与CyclicBarrier都是用于控制并发的工具类，都可以�
 
 ### JVM 的主要组成部分及其作用
 
-![img](https://img-blog.csdnimg.cn/20200103213149526.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly90aGlua3dvbi5ibG9nLmNzZG4ubmV0,size_16,color_FFFFFF,t_70)
+![img](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201222102708.png)
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/2020031416414486.jpeg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1RoaW5rV29u,size_16,color_FFFFFF,t_70)
 

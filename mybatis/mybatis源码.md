@@ -1,7 +1,3 @@
----
-typora-root-url: ..\img
----
-
 [toc]
 ## 1.最开始的
 ### 1.启动类
@@ -848,3 +844,4 @@ SqlSession 对象，会在 ThreadLocal 的容器中拿到SqlSessionHolder，获�
 2) 在编程式的开发中，有什么方法保证 SqlSession 的线程安全？
 SqlSessionManager 同时实现了 SqlSessionFactory、SqlSession 接口，通过ThreadLocal 容器维护 SqlSession。
 ```
+
