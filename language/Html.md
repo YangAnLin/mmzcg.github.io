@@ -853,7 +853,7 @@ target属性有_self为默认值,当前页面
 
 算了算了,我搞不定这,哈哈哈,我算知道就差不多了
 
-![image-20200424163130735](https://image.yanganlin.com/blog/20200424163132.png)
+![image-20200424163130735](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226180636.png)
 
 ## 盒子模型
 ### 边框

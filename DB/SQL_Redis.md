@@ -125,7 +125,7 @@ setex userid 100   1
 
 
 
-![在这里插入图片描述](https://image.yanganlin.com/20200814043612.png)
+![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226180522.png)
 
 ## Hash
 
@@ -964,7 +964,7 @@ aof_current_size
 aof_base_size
 ```
 
-![在这里插入图片描述](https://image.yanganlin.com/20200814043732.png)
+![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226180545.png)
 
 ![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170646.png)
 
@@ -972,7 +972,7 @@ aof_base_size
 
 ## AOF和RDB的区别
 
-![在这里插入图片描述](https://image.yanganlin.com/20200814043748.png)
+![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226180601.png)
 
 ##### RDB和AOF的选择之感
 

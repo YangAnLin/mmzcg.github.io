@@ -61,8 +61,6 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
 
 **服务端引导实现:**
 
-<img src="img/clipboard-1576726462854.png" alt="img" style="zoom:200%;" />
-
 ```java
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -128,8 +126,6 @@ public class EchoServer {
     }
 }
 ```
-
-<img src="img/clipboard-1576726477462.png" alt="img" style="zoom:200%;" />
 
 **客户端**
 
