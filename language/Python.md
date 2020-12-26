@@ -1124,7 +1124,7 @@ pytest -q -s  test_auth.py
 
 ## Pycharm识别pytest
 
-![image-20200902120934492](https://raw.githubusercontent.com/YangAnLin/images/master/20200902120935.png)
+![image-20200902120934492](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170224.png)
 
 ## 规范
 

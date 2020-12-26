@@ -62,7 +62,7 @@ https://coolcode.org/2018/03/16/how-to-make-your-powershell-beautiful/
 ```
 
 ## Docker和VMware的虚拟机冲突,把Windows自带的删除掉
-![Windows-2020-04-18-23-06-32](https://image.yanganlin.com/blog/Windows-2020-04-18-23-06-32.png)
+![Windows-2020-04-18-23-06-32](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164302.png)
 
 再用管理员的powershell执行
 `bcdedit /set hypervisorlaunchtype off`
@@ -79,17 +79,17 @@ https://coolcode.org/2018/03/16/how-to-make-your-powershell-beautiful/
 
 1.开启
 
-![image-20201208140142680](https://raw.githubusercontent.com/YangAnLin/images/master/20201208140143.png)
+![image-20201208140142680](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164244.png)
 
 2.下载安装镜像
 
-![安装一个 Linux 发行版](https://blog.walterlv.com/static/posts/2019-07-05-08-31-34.png)
+![安装一个 Linux 发行版](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164111.png)
 
-![安装 Linux](https://blog.walterlv.com/static/posts/2019-07-05-09-26-03.png)
+![安装 Linux](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164126.png)
 
 3.设置wsl2
 
-![设置 WSL2](https://blog.walterlv.com/static/posts/2019-07-05-10-12-35.png)
+![设置 WSL2](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164053.png)
 
 ```shell
 PS C:\Users\anthony> wsl -l -v

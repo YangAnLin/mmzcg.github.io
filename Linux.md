@@ -148,11 +148,11 @@ systemctl status cockpit.socket
 ## Vmware和Linux固定IP 
 配置完了,最好是重启下vmware和虚拟机,和禁用开启 win10上的vmare8网卡
 vmare配置
-![](https://raw.githubusercontent.com/YangAnLin/images/master/20201206171446.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164835.png)
 电脑配置
-![](https://raw.githubusercontent.com/YangAnLin/images/master/20201206171657.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164850.png)
 虚拟机配置
-![](https://raw.githubusercontent.com/YangAnLin/images/master/20201206171715.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164908.png)
 Linux配置
 
 ```shell

@@ -69,9 +69,9 @@ Spring的XML配置文件中的配置与`<bean>`元素是一一对应的。
 | **initialization method**    | bean被创建的时候,初始化的的方法                              |
 | destruction method           | 销毁指定的方法                                               |
 
-![image-20200830142731508](https://raw.githubusercontent.com/YangAnLin/images/master/20200830142732.png)
+![image-20200830142731508](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164738.png)
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20191118210559319.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2phdmFfbHl2ZWU=,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164726.png)
 
 
 

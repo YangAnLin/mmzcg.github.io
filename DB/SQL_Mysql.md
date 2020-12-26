@@ -410,7 +410,7 @@ alter table 表名 drop primary key
 
 mysql通过存储引擎取数据，基本上90%的人用的就是InnoDB了，按照实现方式分，InnoDB的索引类型目前只有两种：BTREE（B树）索引和HASH索引。B树索引是Mysql数据库中使用最频繁的索引类型，基本所有存储引擎都支持BTree索引。通常我们说的索引不出意外指的就是（B树）索引（实际是用B+树实现的，因为在查看表索引时，mysql一律打印BTREE，所以简称为B树索引）
 
-![img](https://imgconvert.csdnimg.cn/aHR0cHM6Ly91c2VyLWdvbGQtY2RuLnhpdHUuaW8vMjAxOC85LzI0LzE2NjBjMGYxNGRhY2Y2ZjU?x-oss-process=image/format,png)
+![img](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170311.webp)
 
 查询方式：
 
@@ -434,7 +434,7 @@ B+tree性质：
 
 类似于数据结构中简单实现的HASH表（散列表）一样，当我们在mysql中用哈希索引时，主要就是通过Hash算法（常见的Hash算法有直接定址法、平方取中法、折叠法、除数取余法、随机数法），将数据库字段数据转换成定长的Hash值，与这条数据的行指针一并存入Hash表的对应位置；如果发生Hash碰撞（两个不同关键字的Hash值相同），则在对应Hash键下以链表形式存储。当然这只是简略模拟图
 
-![img](https://imgconvert.csdnimg.cn/aHR0cHM6Ly91c2VyLWdvbGQtY2RuLnhpdHUuaW8vMjAxOC85LzI0LzE2NjBjMGYxNThhNzZmOTQ?x-oss-process=image/format,png)
+![img](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170322.webp)
 
 ## 索引的基本原理
 
@@ -1000,9 +1000,9 @@ for update 可以根据条件来完成行锁锁定，并且 id 是有索引键�
 5. 通过步骤一的连接，发送结果到客户端
 6. 关掉连接，释放资源
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200310170936478.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1RoaW5rV29u,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170337.png)
 
-![img](https://raw.githubusercontent.com/YangAnLin/images/master/20200824203057.webp)
+![img](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170348.webp)
 
 ## 查询流程
 
@@ -1247,7 +1247,7 @@ select id from t where num between 1 and 3
 
 **复制过程**
 
-![img](https://imgconvert.csdnimg.cn/aHR0cHM6Ly91c2VyLWdvbGQtY2RuLnhpdHUuaW8vMjAxOC85LzIxLzE2NWZiNjgzMjIyMDViMmU?x-oss-process=image/format,png)
+![img](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170404.jpeg)
 
 Binary log：主数据库的二进制日志
 
