@@ -4,7 +4,7 @@
 
 1.vmare配置
 
-![ ](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201213150357.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201213150357.png)
 
 2.电脑配置
 
@@ -106,7 +106,7 @@ hadoop namenode -format
 
 9.启动yarn
 
-![未命名图片](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201213150637.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201213150637.png)
 
 10.访问web界面
 

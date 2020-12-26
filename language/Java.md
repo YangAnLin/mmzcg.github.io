@@ -1225,13 +1225,13 @@ JVM在执行某个类的时候，必须经过加载、连接、初始化，而�
 
 ## 集合框架
 
-![image-20201226165812212](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165813.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165813.png)
 
 
 
 ### HashMap源码
 
-![img](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165910.webp)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165910.webp)
 
 #### put方法具体实现
 
@@ -1434,7 +1434,7 @@ Executor 框架是一个根据一组执行策略调用，调度，执行和控�
 
 ### ThreadPoolExecutor详解
 
-![图解线程池实现原理](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165927.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165927.png)
 
 #### Executors和ThreaPoolExecutor创建线程池的区别
 
@@ -1549,11 +1549,11 @@ CountDownLatch与CyclicBarrier都是用于控制并发的工具类，都可以�
 
 ### JVM 的主要组成部分及其作用
 
-![img](https://cdn.jsdelivr.net/gh/YangAnLin/images/20201226165945.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/20201226165945.png)
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165956.jpeg)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165956.jpeg)
 
-![image-20201226170022586](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170023.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170023.png)
 
 JVM包含两个子系统和两个组件
 
@@ -1620,7 +1620,7 @@ JVM包含两个子系统和两个组件
 2. 老生代(Old Generation)
 3. 永生代(Permanent Generation)
 
-![image-20201226170105636](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170106.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170106.png)
 
 **示的 Eden 区、两个 Survivor 区都属于新生代（为了区分，这两个 Survivor 区域按照顺序被命名为 from 和 to），中间一层属于老年代。**
 
@@ -1665,7 +1665,7 @@ GC 是垃圾收集的意思（Gabage Collection）,内存处理是编程人员�
 
 ## 对象的创建
 
-![image-20201226170136477](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170137.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170137.png)
 
 ### Step1:类加载检查
 
@@ -1681,7 +1681,7 @@ GC 是垃圾收集的意思（Gabage Collection）,内存处理是编程人员�
 
 选择以上两种方式中的哪一种，取决于 Java 堆内存是否规整。而 Java 堆内存是否规整，取决于 GC 收集器的算法是"标记-清除"，还是"标记-整理"（也称作"标记-压缩"），值得注意的是，复制算法内存也是规整的
 
-![image-20200824194144806](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170150.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170150.png)
 
 **内存分配并发问题**
 
@@ -1710,7 +1710,7 @@ GC 是垃圾收集的意思（Gabage Collection）,内存处理是编程人员�
 
 **直接指针：** 如果使用直接指针访问，那么 Java 堆对象的布局中就必须考虑如何放置访问类型数据的相关信息，而 reference 中存储的直接就是对象的地址。
 
-![image-20200824194559886](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170201.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170201.png)
 
 # CPU占用率高查看
 

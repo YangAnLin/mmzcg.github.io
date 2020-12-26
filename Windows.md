@@ -79,17 +79,17 @@ https://coolcode.org/2018/03/16/how-to-make-your-powershell-beautiful/
 
 1.开启
 
-![image-20201208140142680](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164244.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164244.png)
 
 2.下载安装镜像
 
-![安装一个 Linux 发行版](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164111.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164111.png)
 
-![安装 Linux](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164126.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164126.png)
 
 3.设置wsl2
 
-![设置 WSL2](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164053.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164053.png)
 
 ```shell
 PS C:\Users\anthony> wsl -l -v

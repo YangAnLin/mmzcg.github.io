@@ -24,7 +24,7 @@ redis自身是一个Map,其中所有的数据都是采用key:value的形式存�
 - 存储数据的格式：一个存储空间保存一个数据
 - 存储内容：通常使用字符串，如果字符串以整数的形式展示，可以作为数字操作使用,最后实际上还是字符串
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170430.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170430.png)
 
 
 
@@ -125,14 +125,14 @@ setex userid 100   1
 
 
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226180522.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226180522.png)
 
 ## Hash
 
 - 需要的内存结构：一个存储空间保存多少个键值对数据
 - hash类型：底层使用哈希表结构实现数据存
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170441.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170441.png)
 
 ```shell
 # 设值/修改值  hset key filed1 value
@@ -191,7 +191,7 @@ setex userid 100   1
 需要的存储数据：一个存储空间保存多个数据，且通过数据可以体现进入顺序
 list类型：保存多个数据，底层使用双向链表存储结构实现
 
-![image-20200806002003265](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170452.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170452.png)
 
 ```shell
 # 先插入huawei
@@ -268,7 +268,7 @@ list可以对数据进行分页操作,通常第一页的信息来自list,第二�
 - list 可以对数据进行分页操作，通过第一页的信息来自list，第2页及更多的信息通过数据库的形式加载
 - 因为list在存查大量数据的时候,存储慢,查询慢,所有有了set
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170509.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170509.png)
 
 ```shell
 # 添加
@@ -458,7 +458,7 @@ rename key newkey
 
 ```
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170522.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170522.png)
 
 ```shell
 # 为key改名
@@ -780,7 +780,7 @@ Redis的一种持久化方式叫快照（snapshotting，RDB）
 
 这两种方法各有千秋，下面我会详细这两种持久化方法是什么，怎么用，如何选择适合自己的持久化方法。
 
-![image-20200813080458881](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170540.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170540.png)
 
 ## RDB(快照)
 
@@ -807,7 +807,7 @@ save 会生成rdb文件
 
 手动启动后台保存操作，但不是立即执行
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170551.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170551.png)
 
 执行成功了不会在控制台输出,可以在日志中看到
 
@@ -838,7 +838,7 @@ save 60 10000    #在60秒(1分钟)之后，如果至少有10000个key发生变�
 
 ### RDB启动方式——save配置原理
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170602.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170602.png)
 
 **注意：**
 save配置要根据实际业务情况进行设置，频度过高或过低都会出现性能问题，结果可能是灾难性的
@@ -847,7 +847,7 @@ save配置启动后执行的是bgsave操作
 
 ### RDB启动方式——对比
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170613.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170613.png)
 
 ### RDB启动方式——其它启动方式
 
@@ -891,7 +891,7 @@ save配置启动后执行的是bgsave操作
 
 ##### AOF写数据过程
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170624.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170624.png)
 
 ##### AOF写数据的三种策略
 
@@ -950,7 +950,7 @@ auto-aof-rewrite-percentage 	percentage
 
 手动重写流程:
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170635.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170635.png)
 
 自动重写的触发条件:
 
@@ -964,15 +964,15 @@ aof_current_size
 aof_base_size
 ```
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226180545.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226180545.png)
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170646.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170646.png)
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170659.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170659.png)
 
 ## AOF和RDB的区别
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226180601.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226180601.png)
 
 ##### RDB和AOF的选择之感
 
@@ -1011,7 +1011,7 @@ discard
 
 ## 事务的工作流程
 
-![image-20200813091633178](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170713.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170713.png)
 
 ## 事务的注意事项
 
@@ -1076,7 +1076,7 @@ dek lock-key
 
 ## 时效性数据的存储结构
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170732.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170732.png)
 
 ### 定时删除
 
@@ -1101,21 +1101,21 @@ dek lock-key
 - Redis启动服务器初始化时，读取配置server.hz的值，默认为10
 - 每秒钟执行server.hz次serverCron()
 
-![img](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170747.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170747.png)
 
 - 周期性轮询redis库中时效性数据，采用随机抽取的策略，利用过期数据占比的方式删除频度
 - 特点1：CPU性能占用设置有峰值，检测频度可自定义设置
 - 特点2：内存压力不是很大，长期占用内存的冷数据会被持续清理
 - 总结：周期性抽查存储空间
 
-![1. 定时删除](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170759.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170759.png)
 
 ## 逐出算法
 
 - Redis使用内存存储数据，在执行每一个命令前，会调用freeMemorylfNeeded()检测内存是否充足。如果内存不满足新加入数据的最低存储要求，redis要临时删除一些数据为当前指令清理存储空间。清理数据的策略称为逐出算法。
 - 注意：逐出数据的过程不是100%能够清理出足够的可使用的内存空间，如果不成功则反复执行。当对所有数据尝试完毕后，如果不能达到内存清理的要求，将出现错误信息
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170811.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170811.png)
 
 
 
@@ -1144,7 +1144,7 @@ maxmemory-policy
 | allkeys-lfu     | 当内存不足以容纳新写入数据时，在键空间中，移除最不经常使用的key |
 | no-eviction     | 禁止驱逐数据，也就是说当内存不足以容纳新写入数据时，新写入操作会报错。这个应该没人使用吧！ |
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170823.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170823.png)
 
 数据逐出策略配置依据
 
@@ -1195,15 +1195,15 @@ Key -> CRC16(Key) 相当于HashCode值--->%16384
 
 
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170836.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170836.png)
 
 当有新的机器加入集群的时候,就会每台机器转移一些数据空间
 
-![image-20200814035108993](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170847.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170847.png)
 
 ## 集群内部通讯设计
 
-![image-20200814035235743](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170858.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170858.png)
 
 # 解决方案
 
@@ -1298,7 +1298,7 @@ Key -> CRC16(Key) 相当于HashCode值--->%16384
 总结
 缓存雪崩式瞬间过期数量太大，导致对数据库服务器造成压力。如果能有效避免过期时间集中，可以有效解决雪崩现象的出现（约40%）。配合其他策略一起使用，并监控服务器的运行数据，根据运行巨鹿做快速调整
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170910.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170910.png)
 
 ## 缓存击穿
 

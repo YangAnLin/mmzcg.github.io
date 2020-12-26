@@ -853,7 +853,7 @@ target属性有_self为默认值,当前页面
 
 算了算了,我搞不定这,哈哈哈,我算知道就差不多了
 
-![image-20200424163130735](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226180636.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226180636.png)
 
 ## 盒子模型
 ### 边框
@@ -1049,7 +1049,7 @@ margin的语法跟padding用法一样
 
 在`浮动`,固定,绝对定位的盒子就不会有塌陷问题
 
-![image-20200425122026566](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165634.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165634.png)
 
 ```html
  <head>
@@ -1323,7 +1323,7 @@ margin的语法跟padding用法一样
 
 如果不给高度,父级盒子就会变成一条线,子盒子会浮起来,然后父级盒子下面的标准元素,就会被浮起来的子元素挡住,如下图:
 
-![image-20200427164126306](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165648.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165648.png)
 
 ### 清除浮动的方法
 
@@ -1804,7 +1804,7 @@ background-position
 
 ## 1.
 
-![image-20200916094553973](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165706.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165706.png)
 
 ```html
 <!DOCTYPE html>

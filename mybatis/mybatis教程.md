@@ -10,9 +10,9 @@
 
 # 2.如果需要更新的是两个字段,如果两个字段分别是Integer 和 String 就不要写parametype 因为在mapper接口里已经写好了
 
-![img](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165037.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165037.png)
 
-![img](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165047.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165047.png)
 
 
 
@@ -28,9 +28,9 @@
 
 ​	4.Provider里返回的是String
 
-![img](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165256.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165256.png)
 
-![img](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165059.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165059.png)
 
 
 
@@ -92,9 +92,9 @@ SELECT * FROM test WHERE 1 = 1 AND start_date  &lt;= CURRENT_DATE AND end_date &
 
 # 7.注解 一对多查询(多个参数)
 
-![img](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165112.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165112.png)
 
-![img](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165121.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165121.png)
 
 ![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165132.png)
 
@@ -192,9 +192,9 @@ public class QueryFloors implements Serializable {
 
 # 9. **注解 一对多查询(一个参数)**
 
-![img](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165320.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165320.png)
 
-![img](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226180342.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226180342.png)
 
 
 
@@ -234,15 +234,15 @@ public class QueryFloors implements Serializable {
 
 ## 2.insert的插入，需要用到对象
 
-![img](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165420.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165420.png)
 
 ## 3.keyProperty的使用
 
-![img](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165504.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165504.png)
 
 `keyProperty="id"` 这样就会报错
 
-![1](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165453.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165453.png)
 
 `keyProperty="agentAreaId"`  这样才是对的
 
@@ -252,4 +252,4 @@ void saveAreas(对象 对象名);
 
 ## 4.in的问题,#号不起作用
 
-![img](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165525.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165525.png)
