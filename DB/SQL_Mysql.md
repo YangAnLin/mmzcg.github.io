@@ -542,7 +542,7 @@ hash索引底层就是hash表，进行查找时，调用一次hash函数就可�
 
 何时使用聚簇索引与非聚簇索引
 
-![img](https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy8xMDE1NDQ5OS1kNTNhNWNlOWNlY2YyMmYzLnBuZw?x-oss-process=image/format,png)
+![img](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226195700.png)
 
 ## 非聚簇索引一定会回表查询吗
 
@@ -916,7 +916,7 @@ for update 可以根据条件来完成行锁锁定，并且 id 是有索引键�
 
 # ExPlan
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200310171131582.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1RoaW5rV29u,size_16,color_FFFFFF,t_70)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226195622.png)
 
 ## ID
 

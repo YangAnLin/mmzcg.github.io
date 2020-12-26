@@ -207,7 +207,7 @@ start slave;
 show slave status;
 ```
 
-![image-20200515164906009](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164808.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164808.png)
 
 主要看Slave_io_running =yes
 

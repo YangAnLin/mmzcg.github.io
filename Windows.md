@@ -62,7 +62,7 @@ https://coolcode.org/2018/03/16/how-to-make-your-powershell-beautiful/
 ```
 
 ## Docker和VMware的虚拟机冲突,把Windows自带的删除掉
-![Windows-2020-04-18-23-06-32](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164302.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164302.png)
 
 再用管理员的powershell执行
 `bcdedit /set hypervisorlaunchtype off`

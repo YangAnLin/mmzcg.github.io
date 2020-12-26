@@ -11,7 +11,7 @@
 </body>
 ```
 
-![image-20201115195359237](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165557.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165557.png)
 
 ## 段落标签
 
@@ -1015,7 +1015,7 @@ margin的语法跟padding用法一样
 
 解决这种,尽量只给一个盒子添加外边距
 
-![image-20200425120828983](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165618.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165618.png)
 
 ```html
 <head>

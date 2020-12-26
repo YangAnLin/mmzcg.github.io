@@ -69,9 +69,9 @@ Spring的XML配置文件中的配置与`<bean>`元素是一一对应的。
 | **initialization method**    | bean被创建的时候,初始化的的方法                              |
 | destruction method           | 销毁指定的方法                                               |
 
-![image-20200830142731508](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164738.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164738.png)
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164726.png)
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164726.png)
 
 
 
@@ -862,7 +862,7 @@ private final Map<String, ObjectFactory<?>> singletonFactories = new Hash
 
 ### 两个缓存能解决不
 
-![在这里插入图片描述](https://raw.githubusercontent.com/YangAnLin/images/master/20200831105700.webp)
+![](https://raw.githubusercontent.com/YangAnLin/images/master/20200831105700.webp)
 
 A引用创建后，提前暴露到`半成品缓存中`
 
@@ -886,7 +886,7 @@ Bean在创建的最后阶段，会检查是否需要创建代理，如果创建�
 
 ### 完整的流程
 
-![img](https://raw.githubusercontent.com/YangAnLin/images/master/20200831110149.png)
+![](https://raw.githubusercontent.com/YangAnLin/images/master/20200831110149.png)
 
 关键点：
 
@@ -967,7 +967,7 @@ JoinPoint连接点，其实很好理解，上面又有通知、又有切点，�
 
 ### 流程
 
-![img](https://raw.githubusercontent.com/YangAnLin/images/master/20200831134706.jpeg)
+![](https://raw.githubusercontent.com/YangAnLin/images/master/20200831134706.jpeg)
 
 代理的创建（按步骤）：
 
@@ -1239,7 +1239,7 @@ https://juejin.im/post/6844903669998026759
 
 
 
-![SpringBoot 应用启动流程图](https://raw.githubusercontent.com/YangAnLin/images/master/20200831142934.webp)
+![](https://raw.githubusercontent.com/YangAnLin/images/master/20200831142934.webp)
 
 通过 `SpringFactoriesLoader` 加载 `META-INF/spring.factories` 文件，获取并创建 `SpringApplicationRunListener` 对象
 
