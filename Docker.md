@@ -334,6 +334,7 @@ https://blog.csdn.net/bj_chengrong/article/details/90300972
 ```shell
 docker run -itd \
 		   --name redis \
+		   --restart=always \
 		   -p 6379:6379 \
            redis
 ```
@@ -344,7 +345,7 @@ docker run -itd \
  docker run -itd --name mysql-test\
  			-p 3306:3306 \
 			-e MYSQL_ROOT_PASSWORD=123456 \
-			--restart=always
+			--restart=always \
 			mysql:5.7
 ```
 

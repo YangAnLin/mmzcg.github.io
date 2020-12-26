@@ -64,6 +64,12 @@ Host key verification failed.
 history -3
 ```
 
+### sudo免密
+`vim /etc/sudoers`
+```shell
+anthony ALL=(ALL) NOPASSWD: ALL
+```
+
 ### grep管道
 ```shell
 cat hive-default.xml | grep hive.cli.print
