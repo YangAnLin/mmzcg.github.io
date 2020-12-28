@@ -1,5 +1,34 @@
 [toc]
 
+## Vim
+
+### 行号
+```shell
+set nu
+```
+### 过滤注释
+```shell
+ cat redis.conf |grep -v '#' |grep -v '^$' >redis-6237.conf
+```
+
+### 多行注释
+
+```shell
+1 Ctrl+v进入v模式
+2 上下方向键选中要注释的行
+3 shift+i（即大写的I）行首插入
+4 输入注释符//
+5 按esc返回
+```
+
+### 反注释
+
+```shell
+1 Ctrl+v进入v模式
+2 上下方向键选中要注释的行，左右键选择要删除的字符//
+3 按d删除
+```
+
 ## SSH
 
 ### 安装ssh
@@ -33,6 +62,16 @@ Host key verification failed.
 
 解决方法:找到.ssh文件下的known_hosts,删除相关ip的行
 
+### 允许SSH root远程登录
+
+```shell
+vi /etc/ssh/sshd_config 
+修改AddressFamily any 前面的 # 删除
+修改PermitRootLogin yes 前面的 # 删除
+修改PasswordAuthentication yes 前面的 # 删除
+重启ssh服务, service ssh restart
+```
+
 ## 安装软件
 
 ### 安装vm tool
@@ -56,6 +95,19 @@ Host key verification failed.
 ```
 
 ## 系统命令
+
+### 修改用户名
+
+```shell
+#  //-l 新的登陆名称，-d 用户新的主目录， -m将家目录内容移至新位置 (仅于 -d 一起使用)
+usermod -l newname -d /home/newname -m oldname
+
+# 修改组
+groupmod -n oldname newname
+
+# 重启
+reboot
+```
 
 ### 历史命令
 
@@ -145,7 +197,7 @@ systemctl status cockpit.socket
 
 然后在另一台电脑上用浏览器登录 https://IP:9090
 
-## Vmware和Linux固定IP 
+## Linux固定IP 
 配置完了,最好是重启下vmware和虚拟机,和禁用开启 win10上的vmare8网卡
 vmare配置
 ![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164835.png)
@@ -153,7 +205,8 @@ vmare配置
 ![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164850.png)
 虚拟机配置
 ![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164908.png)
-Linux配置
+
+### Centos配置
 
 ```shell
 vim /etc/sysconfig/network-scripts/ifcfg-eth0
@@ -166,6 +219,40 @@ NETMASK=255.255.255.0 #子网掩码
 
 # 重启网卡,或者重启电脑
 service network restart
+```
+
+### Ubuntu配置
+
+`vim /etc/netplan`
+
+编辑完之后执行`netplan apply`
+
+```shell
+# Ubuntu桌面版本
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+    ens33:
+      dhcp4: no
+      optional: true
+      addresses: [192.168.0.5/24]
+      gateway4: 192.168.0.1
+      nameservers:
+        addresses: [192.168.0.1,8.8.8.8]
+
+# Ubuntu服务器版本  
+network:
+  ethernets:
+    ens33:
+      dhcp4: true
+      optional: true
+      addresses: [192.168.0.6/24]
+      gateway4: 192.168.0.1
+      nameservers:
+        addresses: [192.168.0.1,8.8.8.8]
+  version: 2        
+        
 ```
 
 ## 修改时区
@@ -369,11 +456,7 @@ each输出
 
 ```
 
-## Vim行号
 
-```shell
-set nu
-```
 
 ## Ubuntu-Nginx
 
@@ -411,11 +494,7 @@ sudo gedit /etc/NetworkManager/nm-system-settings.conf
 sudo service network-manager restart
 ```
 
-## 过滤注释
 
-```shell
- cat redis.conf |grep -v '#' |grep -v '^$' >redis-6237.conf
-```
 
 ## 教程
 
