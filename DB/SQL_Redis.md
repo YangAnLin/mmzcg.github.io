@@ -11,6 +11,270 @@
    5. sorted_set(有序集合类型)
 5. 持久化支持。可以进行数据灾难恢复
 
+# 安装redis
+
+## Docker安装单机
+```dockerfile
+docker run \
+       -p 6379:6379 \
+       --name myredis \
+       -v $PWD/redis.conf:/etc/redis/redis.conf \
+       -v $PWD/data:/data \
+       -d redis:3.2 redis-server /etc/redis/redis.conf \
+       --restart=always \
+       --appendonly yes
+```
+
+命令说明：
+* `--name myredis` : 指定容器名称，这个最好加上，不然在看docker进程的时候会很尴尬。
+* `-p 6699:6379` ： 端口映射，默认redis启动的是6379,外部端口(6699)。
+* `-v $PWD/redis.conf:/etc/redis/redis.conf` ： 将主机中当前目录下的redis.conf配置文件映射。
+* `-v $PWD/data:/data -d redis:latest`： 将主机中当前目录下的data挂载到容器的/data
+* `--redis-server --appendonly yes` :在容器执行redis-server启动命令，并打开redis持久化配置
+* `--restart=always`:自动启动
+* 注意事项：
+  * 如果不需要指定配置，`-v $PWD/redis.conf:/etc/redis/redis.conf` 可以不用 
+  * redis-server 后面的那段 `/etc/redis/redis.conf` 也可以不用。
+  * `$PWD` 在window系统下貌似不能用,可以用相对路径`/`
+
+客户端连接
+
+```shell
+# 先查询到myredis容器的ip地址。
+docker inspect myredis | grep IP 
+# 连接到redis容器。然后就进入redis命令行了。
+docker run -it redis:latest redis-cli -h 192.168.42.32
+```
+## 源码安装单机
+
+```shell
+# Cetnos安装需要的软件
+yum -y install gcc gcc-c++ kernel-devel make
+# Ubunt 安装需要的软件
+sudo apt install gcc make
+
+# 下载redis
+wget http://download.redis.io/releases/redis-5.0.5.tar.gz
+tar -zxvf redis-5.0.5.tar.gz
+cd redis-5.0.5
+
+# 安装redis
+sudo make && make instal
+```
+注意make的时候可能会报错,
+```shell
+yum install gcc
+make MALLOC=libc
+```
+
+### 开机启动
+
+修改redis.cnf
+
+```shell
+# 设置后台运行
+daemonize yes  
+# 设置log文件路径
+logfile /var/log/redis/redis-server.log
+# 设置持久化文件存放路径
+dir /var/lib/redis 
+```
+
+```shell
+# 创建日志存放目录
+mkdir /var/log/redis/
+# 创建持久化文件存放目录
+mkdir /var/log/redis/
+# 创建存放配置的文件夹
+mkdir /etc/redis
+# 拷贝配置文件并改名
+cp redis.conf /etc/redis/6379.conf
+# 拷贝自启动脚本文件
+cp /usr/local/redis-6.0.3/utils/redis_init_script /etc/init.d/redisd
+```
+* 将启动脚本复制到`/etc/init.d`目录下，本例将启动脚本命名为redisd（通常都以d结尾表示是后台自启动服务）
+
+```shell
+# Centos
+#设置为开机自启动服务器
+cd /etc/init.d/
+chkconfig redisd on
+
+# Ubuntu
+#设置服务脚本有执行权限
+sudo chmod +x /etc/init.d/redisd
+#注册服务
+cd /etc/init.d/
+sudo update-rc.d redisd defaults
+```
+* 此处直接配置开启自启动 `chkconfig redisd on` 将报错误： `service does not support chkconfig` 
+```shell
+#!/bin/sh
+# chkconfig:   2345 90 10
+# description:  Redis is a persistent key-value database
+```
+
+通用命令
+
+```shell
+#启动Redis服务
+sudo service redisd start  
+#关闭服务
+sudo service redisd stop  
+#重启服务：
+sudo service redisd restart 
+```
+
+## 源码安装集群Redis-cluster
+
+### 1.配置
+用一台虚拟机模拟6个节点，创建出3 master、3 salve 环境。
+
+### 2.下载,解压,编译安装
+
+
+### 3.创建节点,在worker1
+创建文件
+```shell
+cd /usr/local
+mkdir redis_cluster
+cd redis_cluster
+mkdir 7000
+mkdir 7001
+mkdir 7002
+cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7000/
+cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7001/
+cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7002/
+cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7003/
+cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7004/
+cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7005/
+```
+
+分别修改三个文件夹里的配置文件,修改如下内容
+```conf
+port  7000      //端口7000,7002,7003,7004,7005,7001       
+bind 0.0.0.0     //自己建议修改为0.0.0.0
+daemonize yes   //redis后台运行
+pidfile  /var/run/redis_7000.pid    //pidfile文件对应7000,7001,7002
+cluster-enabled  yes    //开启集群  把注释#去掉
+cluster-config-file  nodes_7000.conf   //集群的配置,配置文件首次启动自动生成7000,7001,7002
+cluster-node-timeout  15000  //请求超时  默认15秒，可自行设置
+appendonly  yes //aof日志开启 
+```
+
+启动节点的redis
+`/usr/local/bin/redis-server` 这是在`make & make install`生成的
+```shell
+/usr/local/bin/redis-server redis_cluster/7000/redis.conf
+/usr/local/bin/redis-server redis_cluster/7001/redis.conf
+/usr/local/bin/redis-server redis_cluster/7002/redis.conf
+/usr/local/bin/redis-server redis_cluster/7003/redis.conf
+/usr/local/bin/redis-server redis_cluster/7002/redis.conf
+/usr/local/bin/redis-server redis_cluster/7002/redis.conf
+```
+
+检查 redis 启动情况
+```shell
+ps -ef | grep redi
+root      61020      1  0 02:14 ?        00:00:01 redis-server 0.0.0.0:7000 [cluster]   
+root      61024      1  0 02:14 ?        00:00:01 redis-server 0.0.0.0:7001 [cluster]   
+root      61029      1  0 02:14 ?        00:00:01 redis-server 0.0.0.0:7002 [cluster]
+root      61029      1  0 02:14 ?        00:00:01 redis-server 0.0.0.0:7002 [cluster]
+root      61029      1  0 02:14 ?        00:00:01 redis-server 0.0.0.0:7002 [cluster]
+root      61029      1  0 02:14 ?        00:00:01 redis-server 0.0.0.0:7002 [cluster]
+```
+### 4.再在worker2 上做相同的操作
+
+### 5.启动集群
+装的redis是5.x的版本,这里没有应用到`redis-trib.rb`,所以就不需要装ruby
+```shell
+cd /usr/local/bin
+redis-cli --cluster create 192.168.0.100:7003 192.168.0.100:7004 192.168.0.100:7005 192.168.0.179:7000 192.168.0.179:7001 192.168.0.179:7002 --cluster-replicas 1
+```
+
+遇到
+```shell
+Can I set the above configuration? (type 'yes' to accept): yes
+```
+如数`yes`
+
+### 6.校验,等运行完成
+`redis-cli --cluster check 192.168.0.179:7000`
+```
+[root@worker1 src]# redis-cli --cluster check 192.168.0.179:7000
+192.168.0.179:7000 (27bce53b...) -> 0 keys | 5462 slots | 1 slaves.
+192.168.0.100:7004 (6b0173d9...) -> 0 keys | 5461 slots | 1 slaves.
+192.168.0.100:7003 (9f15a932...) -> 0 keys | 5461 slots | 1 slaves.
+[OK] 0 keys in 3 masters.
+0.00 keys per slot on average.
+>>> Performing Cluster Check (using node 192.168.0.179:7000)
+M: 27bce53bda92341ca4a5c82c2361ab99f24c0b27 192.168.0.179:7000
+   slots:[5461-10922] (5462 slots) master
+   1 additional replica(s)
+S: c7ebcd900fb7d9afb1980797acba45518cb7d877 192.168.0.100:7005
+   slots: (0 slots) slave
+   replicates 27bce53bda92341ca4a5c82c2361ab99f24c0b27
+S: ed5256f8db1bf556a8dadbe8f2b07699507e17d9 192.168.0.179:7001
+   slots: (0 slots) slave
+   replicates 6b0173d925f70807a9081b7bc09bcd37be857342
+S: 758609eaea88bac25b864f2badbab2171a68089b 192.168.0.179:7002
+   slots: (0 slots) slave
+   replicates 9f15a9329a9d0ec5c7fcb5abbba817730f0942f9
+M: 6b0173d925f70807a9081b7bc09bcd37be857342 192.168.0.100:7004
+   slots:[10923-16383] (5461 slots) master
+   1 additional replica(s)
+M: 9f15a9329a9d0ec5c7fcb5abbba817730f0942f9 192.168.0.100:7003
+   slots:[0-5460] (5461 slots) master
+   1 additional replica(s)
+[OK] All nodes agree about slots configuration.
+>>> Check for open slots...
+>>> Check slots coverage...
+[OK] All 16384 slots covered.
+```
+
+### 7.主机上下线
+
+### 8.Cluster配置
+
+```shell
+
+# 设置加入cluster，成为其中的节点
+cluster-enabled yes|no
+
+# cluster配置文件名，该文件属于自动生成，仅用于快速查找文件并查询文件内容
+cluster-config-file < filename>
+
+# 节点服务响应超时时间，用于判定该节点是否下线或切换为从节点
+cluster-node-timeout < milliseconds>
+
+# master连接的slave最小数量
+cluster-migration-barrier < count>
+```
+
+### 9.Cluster节点操作命令
+
+```shell
+
+# 查看集群节点信息
+cluster nodes
+
+# 进入一个从节点redis，切换其主节点
+cluster replication < master-id>
+
+# 发现一个新节点，新增主节点
+cluster meet ip:port
+
+# 忽略一个没有solt的节点
+cluster forget
+
+# 手动故障转移
+cluster failover
+```
+
+## 源码安装主从
+
+看着已经要过时了,不搞了
+
 # Redis的数据类型
 
 redis自身是一个Map,其中所有的数据都是采用key:value的形式存储
@@ -476,269 +740,6 @@ select index
 ## HyperLogLog
 
 ## GEO
-
-# 安装redis
-
-## Docker安装单机
-```shell
-docker run \
-       -p 6379:6379 \
-       --name myredis \
-       -v $PWD/redis.conf:/etc/redis/redis.conf \
-       -v $PWD/data:/data \
-       -d redis:3.2 redis-server /etc/redis/redis.conf \
-       --restart=always \
-       --appendonly yes
-```
-
-命令说明：
-* `--name myredis` : 指定容器名称，这个最好加上，不然在看docker进程的时候会很尴尬。
-* `-p 6699:6379` ： 端口映射，默认redis启动的是6379,外部端口(6699)。
-* `-v $PWD/redis.conf:/etc/redis/redis.conf` ： 将主机中当前目录下的redis.conf配置文件映射。
-* `-v $PWD/data:/data -d redis:latest`： 将主机中当前目录下的data挂载到容器的/data
-* `--redis-server --appendonly yes` :在容器执行redis-server启动命令，并打开redis持久化配置
-* `--restart=always`:自动启动
-* 注意事项：
-  * 如果不需要指定配置，`-v $PWD/redis.conf:/etc/redis/redis.conf` 可以不用 
-  * redis-server 后面的那段 `/etc/redis/redis.conf` 也可以不用。
-  * `$PWD` 在window系统下貌似不能用,可以用相对路径`/`
-
-客户端连接
-
-```shell
-# 先查询到myredis容器的ip地址。
-docker inspect myredis | grep IP 
-# 连接到redis容器。然后就进入redis命令行了。
-docker run -it redis:latest redis-cli -h 192.168.42.32
-```
-## 源码安装单机
-
-```shell
-# Cetnos安装需要的软件
-yum -y install gcc gcc-c++ kernel-devel make
-# Ubunt 安装需要的软件
-sudo apt install gcc make
-
-# 下载redis
-wget http://download.redis.io/releases/redis-5.0.5.tar.gz
-tar -zxvf redis-5.0.5.tar.gz
-cd redis-5.0.5
-
-# 安装redis
-sudo make && make instal
-```
-注意make的时候可能会报错,
-```shell
-yum install gcc
-make MALLOC=libc
-```
-
-### 开机启动
-
-根据启动脚本要求，将修改好的配置文件以端口为名复制一份到指定目录。需使用root用户。
-```shell
-# 创建文件夹
-mkdir /etc/redis
-# 拷贝配置文件
-cp redis.conf /etc/redis/6379.conf
-# 拷贝脚本文件
-cp /utils/redis_init_script /etc/init.d/redisd
-```
-将启动脚本复制到`/etc/init.d`目录下，本例将启动脚本命名为redisd（通常都以d结尾表示是后台自启动服务）
-
-设置为开机自启动
-此处直接配置开启自启动 `chkconfig redisd on` 将报错误： `service does not support chkconfig` 
-
-```shell
-#!/bin/sh
-# chkconfig:   2345 90 10
-# description:  Redis is a persistent key-value database
-```
-再设置即可成功。
-
-```shell
-#设置为开机自启动服务器
-chkconfig redisd on
-#打开服务
-service redisd start
-#关闭服务
-service redisd stop
-```
-### 添加到PATH
-由于redis-cli命令没有设置到PATH中,每次想使用时,都需要执行find命令去找这个命令在哪里
-```
-# find / -name redis-cli  
-```
-找到之后, 再执行命令, 这样实在太麻烦
-
-解决方案:  
-
-将`redis-cli`命令配置到`PATH`中,这样每次使用时,就像`ls`这种命令一样不加路径执行
-
-```
-# vi ~/.bash_profile  
-```
-将`redis-cli`命令路径配置到`PATH`中
-
-```
-PATH=$PATH:$HOME/bin:/usr/local/redis-3.2.8/src/  
-```
-保存之后, 使用source命令使之生效
-
-```
-# source ~/.bash_profile  
-```
-
-
-## 源码安装集群Redis-cluster
-
-### 1.配置
-用一台虚拟机模拟6个节点，创建出3 master、3 salve 环境。
-
-### 2.下载,解压,编译安装
-
-
-### 3.创建节点,在worker1
-创建文件
-```shell
-cd /usr/local
-mkdir redis_cluster
-cd redis_cluster
-mkdir 7000
-mkdir 7001
-mkdir 7002
-cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7000/
-cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7001/
-cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7002/
-cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7003/
-cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7004/
-cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7005/
-```
-
-分别修改三个文件夹里的配置文件,修改如下内容
-```conf
-port  7000      //端口7000,7002,7003,7004,7005,7001       
-bind 0.0.0.0     //自己建议修改为0.0.0.0
-daemonize yes   //redis后台运行
-pidfile  /var/run/redis_7000.pid    //pidfile文件对应7000,7001,7002
-cluster-enabled  yes    //开启集群  把注释#去掉
-cluster-config-file  nodes_7000.conf   //集群的配置,配置文件首次启动自动生成7000,7001,7002
-cluster-node-timeout  15000  //请求超时  默认15秒，可自行设置
-appendonly  yes //aof日志开启 
-```
-
-启动节点的redis
-`/usr/local/bin/redis-server` 这是在`make & make install`生成的
-```shell
-/usr/local/bin/redis-server redis_cluster/7000/redis.conf
-/usr/local/bin/redis-server redis_cluster/7001/redis.conf
-/usr/local/bin/redis-server redis_cluster/7002/redis.conf
-/usr/local/bin/redis-server redis_cluster/7003/redis.conf
-/usr/local/bin/redis-server redis_cluster/7002/redis.conf
-/usr/local/bin/redis-server redis_cluster/7002/redis.conf
-```
-
-检查 redis 启动情况
-```shell
-ps -ef | grep redi
-root      61020      1  0 02:14 ?        00:00:01 redis-server 0.0.0.0:7000 [cluster]   
-root      61024      1  0 02:14 ?        00:00:01 redis-server 0.0.0.0:7001 [cluster]   
-root      61029      1  0 02:14 ?        00:00:01 redis-server 0.0.0.0:7002 [cluster]
-root      61029      1  0 02:14 ?        00:00:01 redis-server 0.0.0.0:7002 [cluster]
-root      61029      1  0 02:14 ?        00:00:01 redis-server 0.0.0.0:7002 [cluster]
-root      61029      1  0 02:14 ?        00:00:01 redis-server 0.0.0.0:7002 [cluster]
-```
-### 4.再在worker2 上做相同的操作
-
-### 5.启动集群
-装的redis是5.x的版本,这里没有应用到`redis-trib.rb`,所以就不需要装ruby
-```shell
-cd /usr/local/bin
-redis-cli --cluster create 192.168.0.100:7003 192.168.0.100:7004 192.168.0.100:7005 192.168.0.179:7000 192.168.0.179:7001 192.168.0.179:7002 --cluster-replicas 1
-```
-
-遇到
-```shell
-Can I set the above configuration? (type 'yes' to accept): yes
-```
-如数`yes`
-
-### 6.校验,等运行完成
-`redis-cli --cluster check 192.168.0.179:7000`
-```
-[root@worker1 src]# redis-cli --cluster check 192.168.0.179:7000
-192.168.0.179:7000 (27bce53b...) -> 0 keys | 5462 slots | 1 slaves.
-192.168.0.100:7004 (6b0173d9...) -> 0 keys | 5461 slots | 1 slaves.
-192.168.0.100:7003 (9f15a932...) -> 0 keys | 5461 slots | 1 slaves.
-[OK] 0 keys in 3 masters.
-0.00 keys per slot on average.
->>> Performing Cluster Check (using node 192.168.0.179:7000)
-M: 27bce53bda92341ca4a5c82c2361ab99f24c0b27 192.168.0.179:7000
-   slots:[5461-10922] (5462 slots) master
-   1 additional replica(s)
-S: c7ebcd900fb7d9afb1980797acba45518cb7d877 192.168.0.100:7005
-   slots: (0 slots) slave
-   replicates 27bce53bda92341ca4a5c82c2361ab99f24c0b27
-S: ed5256f8db1bf556a8dadbe8f2b07699507e17d9 192.168.0.179:7001
-   slots: (0 slots) slave
-   replicates 6b0173d925f70807a9081b7bc09bcd37be857342
-S: 758609eaea88bac25b864f2badbab2171a68089b 192.168.0.179:7002
-   slots: (0 slots) slave
-   replicates 9f15a9329a9d0ec5c7fcb5abbba817730f0942f9
-M: 6b0173d925f70807a9081b7bc09bcd37be857342 192.168.0.100:7004
-   slots:[10923-16383] (5461 slots) master
-   1 additional replica(s)
-M: 9f15a9329a9d0ec5c7fcb5abbba817730f0942f9 192.168.0.100:7003
-   slots:[0-5460] (5461 slots) master
-   1 additional replica(s)
-[OK] All nodes agree about slots configuration.
->>> Check for open slots...
->>> Check slots coverage...
-[OK] All 16384 slots covered.
-```
-
-### 7.主机上下线
-
-### 8.Cluster配置
-
-```shell
-
-# 设置加入cluster，成为其中的节点
-cluster-enabled yes|no
-
-# cluster配置文件名，该文件属于自动生成，仅用于快速查找文件并查询文件内容
-cluster-config-file < filename>
-
-# 节点服务响应超时时间，用于判定该节点是否下线或切换为从节点
-cluster-node-timeout < milliseconds>
-
-# master连接的slave最小数量
-cluster-migration-barrier < count>
-```
-
-### 9.Cluster节点操作命令
-
-```shell
-
-# 查看集群节点信息
-cluster nodes
-
-# 进入一个从节点redis，切换其主节点
-cluster replication < master-id>
-
-# 发现一个新节点，新增主节点
-cluster meet ip:port
-
-# 忽略一个没有solt的节点
-cluster forget
-
-# 手动故障转移
-cluster failover
-```
-
-## 源码安装主从
-
-看着已经要过时了,不搞了
 
 
 
