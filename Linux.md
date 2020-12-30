@@ -109,6 +109,13 @@ groupmod -n oldname newname
 reboot
 ```
 
+### 修改用户组名
+
+```shell
+# sudan新名字,dan就名字
+groupmod -n susan dan
+```
+
 ### 历史命令
 
 ```shell
@@ -119,7 +126,21 @@ history -3
 ### sudo免密
 `vim /etc/sudoers`
 ```shell
-anthony ALL=(ALL) NOPASSWD: ALL
+# Host alias specification
+# User alias specification
+# Cmnd alias specification
+# User privilege specification
+root    ALL=(ALL:ALL) ALL
+# 加在这里会被覆盖掉
+anthony ALL=(ALL) NOPASSWD:ALL 
+# Members of the admin group may gain root privileges
+%admin ALL=(ALL) ALL
+# 最好是加在最后
+anthony ALL=(ALL) NOPASSWD:ALL
+
+# Allow members of group sudo to execute any command
+%sudo   ALL=(ALL:ALL) ALL
+anthony ALL=(ALL) NOPASSWD:ALL
 ```
 
 ### grep管道

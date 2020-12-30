@@ -104,33 +104,23 @@ redis自身是一个Map,其中所有的数据都是采用key:value的形式存�
 192.168.245.129:1>incrbyfloat num 1.5
 "5.5"
 
-# 指定生命周期的两种方法
-
-# 第一种方法
-
+# 指定过期时间
+# EX seconds-设置指定的到期时间,以秒为单位。
+# PX 毫秒-设置指定的到期时间（以毫秒为单位）。
+# NX 没有key的时候才能set成功
+# XX key存在的时候才能set成功
 SET key value [EX seconds|PX milliseconds|KEEPTTL] [NX|XX] [GET]
 
-# setex 秒
-# psetex 毫秒
-192.168.245.129:1>setex phone2 2 1392465115
-"OK"
-192.168.245.129:1>get phone2
-null
+# 指定过期时间
+# time,以秒为单位。
+SETEX key time value
+
+# 功能等价NX,  SET if Not eXists
+redis> SETNX mykey "Hello"
+(integer) 1
+redis> SETNX mykey "World"
+(integer) 0
 ```
-
-
-### 业务场景
-
-```shell
-setex key    time value
-setex userid 100   1
-```
-
-### 热点数据key命名惯例
-
-
-
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226180522.png)
 
 ## Hash
 
@@ -523,11 +513,11 @@ docker run -it redis:latest redis-cli -h 192.168.42.32
 ```
 ## 源码安装单机
 
-### centos下安装
-
 ```shell
-# 安装需要的软件
+# Cetnos安装需要的软件
 yum -y install gcc gcc-c++ kernel-devel make
+# Ubunt 安装需要的软件
+sudo apt install gcc make
 
 # 下载redis
 wget http://download.redis.io/releases/redis-5.0.5.tar.gz
@@ -535,7 +525,7 @@ tar -zxvf redis-5.0.5.tar.gz
 cd redis-5.0.5
 
 # 安装redis
-make && make instal
+sudo make && make instal
 ```
 注意make的时候可能会报错,
 ```shell
@@ -545,45 +535,24 @@ make MALLOC=libc
 
 ### 开机启动
 
-启动脚本 `redis_init_script` 位于位于`Redis`的 `/utils/` 目录下。
-
-大致浏览下该启动脚本，发现redis习惯性用监听的端口名作为配置文件等命名，我们后面也遵循这个约定。
-
-```shell
-
-# redis服务器监听的端口
-REDISPORT=6379
-
-# 服务端所处位置，在make install后默认存放与`/usr/local/bin/redis-server`，如果未make install则需要修改该路径，下同。
-EXEC=/usr/local/bin/redis-server
-
-# 客户端位置
-CLIEXEC=/usr/local/bin/redis-cli
-
-# Redis的PID文件位置
-PIDFILE=/var/run/redis_${REDISPORT}.pid
-
-#配置文件位置，需要修改
-CONF="/etc/redis/${REDISPORT}.conf"
-```
-
 根据启动脚本要求，将修改好的配置文件以端口为名复制一份到指定目录。需使用root用户。
 ```shell
+# 创建文件夹
 mkdir /etc/redis
+# 拷贝配置文件
 cp redis.conf /etc/redis/6379.conf
+# 拷贝脚本文件
+cp /utils/redis_init_script /etc/init.d/redisd
 ```
 将启动脚本复制到`/etc/init.d`目录下，本例将启动脚本命名为redisd（通常都以d结尾表示是后台自启动服务）
-```shell
-cp redis_init_script /etc/init.d/redisd
-```
+
 设置为开机自启动
-此处直接配置开启自启动 `chkconfig redisd on` 将报错误： `service redisd does not support chkconfig` 
+此处直接配置开启自启动 `chkconfig redisd on` 将报错误： `service does not support chkconfig` 
 
 ```shell
 #!/bin/sh
 # chkconfig:   2345 90 10
 # description:  Redis is a persistent key-value database
-#
 ```
 再设置即可成功。
 
