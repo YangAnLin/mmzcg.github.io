@@ -51,7 +51,7 @@ docker run -it redis:latest redis-cli -h 192.168.42.32
 # Cetnos安装需要的软件
 yum -y install gcc gcc-c++ kernel-devel make
 # Ubunt 安装需要的软件
-sudo apt install gcc make
+sudo apt install gcc g++ make linux-kernel-headers kernel-package
 
 # 下载redis
 wget http://download.redis.io/releases/redis-5.0.5.tar.gz
@@ -63,7 +63,6 @@ sudo make && make instal
 ```
 注意make的时候可能会报错,
 ```shell
-yum install gcc
 make MALLOC=libc
 ```
 
@@ -127,21 +126,20 @@ sudo service redisd restart
 
 ## 源码安装集群Redis-cluster
 
-### 1.配置
+### 配置
+
+下载,解压,编译安装
+
 用一台虚拟机模拟6个节点，创建出3 master、3 salve 环境。
 
-### 2.下载,解压,编译安装
 
-
-### 3.创建节点,在worker1
+### 创建节点
 创建文件
 ```shell
 cd /usr/local
 mkdir redis_cluster
 cd redis_cluster
-mkdir 7000
-mkdir 7001
-mkdir 7002
+mkdir 7000 7001 7002 7003 7004 7005
 cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7000/
 cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7001/
 cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7002/
@@ -151,19 +149,28 @@ cp /usr/local/redis-5.0.5/redis.conf /usr/local/redis_cluster/7005/
 ```
 
 分别修改三个文件夹里的配置文件,修改如下内容
-```conf
-port  7000      //端口7000,7002,7003,7004,7005,7001       
-bind 0.0.0.0     //自己建议修改为0.0.0.0
-daemonize yes   //redis后台运行
-pidfile  /var/run/redis_7000.pid    //pidfile文件对应7000,7001,7002
-cluster-enabled  yes    //开启集群  把注释#去掉
-cluster-config-file  nodes_7000.conf   //集群的配置,配置文件首次启动自动生成7000,7001,7002
-cluster-node-timeout  15000  //请求超时  默认15秒，可自行设置
-appendonly  yes //aof日志开启 
+```shell
+# 端口7000,7002,7003,7004,7005,7001
+port  7000
+# 自己建议修改为0.0.0.0
+bind 0.0.0.0
+# redis后台运行
+daemonize yes
+# pidfile文件对应7000,7001,7002
+pidfile  /var/run/redis_7000.pid
+# 开启集群  把注释#去掉
+cluster-enabled  yes
+# 集群的配置,配置文件首次启动自动生成7000,7001,7002
+cluster-config-file  nodes_7000.conf
+# 请求超时  默认15秒，可自行设置
+cluster-node-timeout  15000
+# AOF日志开启 
+appendonly  yes 
 ```
 
 启动节点的redis
-`/usr/local/bin/redis-server` 这是在`make & make install`生成的
+`/usr/local/bin/redis-server`
+
 ```shell
 /usr/local/bin/redis-server redis_cluster/7000/redis.conf
 /usr/local/bin/redis-server redis_cluster/7001/redis.conf
@@ -183,24 +190,20 @@ root      61029      1  0 02:14 ?        00:00:01 redis-server 0.0.0.0:7002 [clu
 root      61029      1  0 02:14 ?        00:00:01 redis-server 0.0.0.0:7002 [cluster]
 root      61029      1  0 02:14 ?        00:00:01 redis-server 0.0.0.0:7002 [cluster]
 ```
-### 4.再在worker2 上做相同的操作
-
-### 5.启动集群
+### 启动集群
 装的redis是5.x的版本,这里没有应用到`redis-trib.rb`,所以就不需要装ruby
 ```shell
 cd /usr/local/bin
 redis-cli --cluster create 192.168.0.100:7003 192.168.0.100:7004 192.168.0.100:7005 192.168.0.179:7000 192.168.0.179:7001 192.168.0.179:7002 --cluster-replicas 1
-```
 
-遇到
-```shell
 Can I set the above configuration? (type 'yes' to accept): yes
+yes
 ```
-如数`yes`
 
-### 6.校验,等运行完成
+### 校验,等运行完成
 `redis-cli --cluster check 192.168.0.179:7000`
-```
+
+```shell
 [root@worker1 src]# redis-cli --cluster check 192.168.0.179:7000
 192.168.0.179:7000 (27bce53b...) -> 0 keys | 5462 slots | 1 slaves.
 192.168.0.100:7004 (6b0173d9...) -> 0 keys | 5461 slots | 1 slaves.
@@ -232,12 +235,9 @@ M: 9f15a9329a9d0ec5c7fcb5abbba817730f0942f9 192.168.0.100:7003
 [OK] All 16384 slots covered.
 ```
 
-### 7.主机上下线
-
-### 8.Cluster配置
+### Cluster配置
 
 ```shell
-
 # 设置加入cluster，成为其中的节点
 cluster-enabled yes|no
 
@@ -251,15 +251,17 @@ cluster-node-timeout < milliseconds>
 cluster-migration-barrier < count>
 ```
 
-### 9.Cluster节点操作命令
+### Cluster节点操作命令
 
 ```shell
+# 连接到集群,加一个-c就行
+redis-cli -c
 
 # 查看集群节点信息
 cluster nodes
 
 # 进入一个从节点redis，切换其主节点
-cluster replication < master-id>
+cluster replication <master-id>
 
 # 发现一个新节点，新增主节点
 cluster meet ip:port
@@ -270,10 +272,6 @@ cluster forget
 # 手动故障转移
 cluster failover
 ```
-
-## 源码安装主从
-
-看着已经要过时了,不搞了
 
 # Redis的数据类型
 
@@ -1130,7 +1128,6 @@ maxmemory-policy
 # 配置文件
 
 ```shell
-
 # 设置服务器以守护进程的方式运行
 deamonize yes|no
 
@@ -1149,6 +1146,9 @@ loglevel debug|verbose|notice|warning
 
 # 日志记录文件名
 logfile 端口号.log
+
+# 持久化文件存放目录
+dir ./
 
 ----------------------------------日志配置--------------------------------------
 
@@ -1362,71 +1362,254 @@ Key -> CRC16(Key) 相当于HashCode值--->%16384
 
 # Redis-Java
 
-```java
-public class Demo {
-    private static JedisCluster jedisCluster=null;
-    private static Set<HostAndPort> hostAndPorts=null;
+## 单机Jedis
 
-    public static  Set<HostAndPort> getHostAndPort(String hostAndPort){
-        Set<HostAndPort> hap = new HashSet<HostAndPort>();
-        String[] hosts = hostAndPort.split(",");
-        String[] hs = null;
-        for(String host:hosts){
-            hs=host.split(":");
-            hap.add(new HostAndPort(hs[0], Integer.parseInt(hs[1])));
+```java
+/**
+ * 192.168.0.5 单机
+ */
+public class SingletonDemo {
+
+    private Jedis jedis;
+
+    @Before
+    public void before() {
+        //指定Redis服务Host和port
+        jedis = new Jedis("192.168.0.5", 6379);
+    }
+
+    @After
+    public void after() {
+        //使用完关闭连接
+        jedis.close();
+    }
+
+    /**
+     * 设值
+     */
+    @Test
+    public void set() {
+        //访问Redis服务
+        jedis.set("k1", "v1");
+        System.out.println(jedis.get("k1"));
+    }
+
+    /**
+     * 设值,并且设置超时时间
+     */
+    @Test
+    public void setTime() {
+        String key = "setTimeKey";
+        jedis.setex(key, 20000, "setTimeValue");
+        System.out.println(jedis.get(key));
+        System.out.println(jedis.ttl(key));
+    }
+
+    /**
+     * 分布式锁原理,
+     * key不存在的时候才插入
+     */
+    @Test
+    public void setNX() {
+        String key = "setNXKey";
+        // 1.先插入一个值
+        jedis.set(key, "setNXValue");
+
+        // 2.NX是不存在时才set， XX是存在时才set， EX是秒，PX是毫秒
+        String set = jedis.set(key, "setNXValue---NX", "NX", "EX", 20000L);
+        System.out.println(set);
+        System.out.println(jedis.get(key));
+        System.out.println(jedis.ttl(key));
+
+        System.out.println("======================================================");
+
+        // 3.设置个没有的key
+        String key2 = "setNXKey2";
+        String set2 = jedis.set(key2, "setNXValue2---NX", "NX", "EX", 20000L);
+        System.out.println(set2);
+        System.out.println(jedis.get(key2));
+        System.out.println(jedis.ttl(key2));
+    }
+
+    /**
+     * key存在时才插入
+     */
+    @Test
+    public void setXX() {
+        String key = "setXXKey";
+        // 1.先插入一个值
+        jedis.set(key, "setXXValue");
+
+        // 2.NN
+        String set = jedis.set(key, "setXXValue---XX", "XX", "EX", 20000L);
+        System.out.println(set);
+        System.out.println(jedis.get(key));
+        System.out.println(jedis.ttl(key));
+
+        System.out.println("======================================================");
+
+        // 3.设置个没有的key
+        String key2 = "setXXKey2";
+        String set2 = jedis.set(key2, "setXXValue2---NX", "XX", "EX", 20000L);
+        System.out.println(set2);
+        System.out.println(jedis.get(key2));
+        System.out.println(jedis.ttl(key2));
+    }
+
+    @Test
+    public void expire() {
+    }
+
+    /**
+     * redis监控信息
+     */
+    @Test
+    public void info() {
+        String info = jedis.info();
+        Stream.of(info.split("\r\n")).forEach(row -> {
+
+                    String[] split = row.split(":");
+                    if (split.length == 2) {
+
+                        System.out.printf("key:%s ====  value:%s \r\n",split[0],split[1]);
+                    }
+
+                }
+        );
+    }
+
+    /**
+     * jedispool
+     */
+    @Test
+    public void jedisPool() throws InterruptedException {
+
+
+        StopWatch watch = new StopWatch();
+        watch.start();
+
+        for (int i = 0; i < 100000; i++) {
+            jedis.set(i + "", i + "");
+            jedis.close();
         }
-        return hap;
+        watch.stop();
+        System.out.println("5-"+watch.getTime());
     }
 
-    public static JedisCluster getJedisCluster(){
-        GenericObjectPoolConfig gopc = new GenericObjectPoolConfig();
-        gopc.setMaxTotal(32);
-        gopc.setMaxIdle(4);
-        gopc.setMaxWaitMillis(6000);
-        hostAndPorts = getHostAndPort("192.168.0.100:7003,192.168.0.100:7004,192.168.0.100:7005,192.168.0.179:7000,192.168.0.179:7001,192.168.0.179:7002");
-        jedisCluster = new JedisCluster(hostAndPorts, 2000, 2000, 3,null,gopc);
-        return jedisCluster;
-    }
+    @Test
+    public void jedisPool2() {
 
-    public static void main(String[] args) {
-        jedisCluster = getJedisCluster();
-        jedisCluster.set("name", "anthony");
-        System.out.println(jedisCluster.get("name"));
-    }
-}
-```
+        // 替换成你的reids地址和端口
+        String redisIp = "192.168.0.5";
+        int reidsPort = 6379;
+        JedisPool jedisPool = new JedisPool(new JedisPoolConfig(), redisIp, reidsPort);
+        Jedis resource = jedisPool.getResource();
+        StopWatch watch = new StopWatch();
+        watch.start();
 
-```java
-public static void deleteRedisStoreInformationByToken(String token,RedisTemplate<String,String> redisTemplate) {
-        String userid = token.split("_")[0];
-        Set<String> keys = redisTemplate.opsForValue().getOperations().keys(RedisKeyConstant.STOREINFOMATION + userid+"*");
-        for (String string : keys) {
-            redisTemplate.opsForValue().getOperations().delete(string);// 删除缓存中的token
+        for (int i = 0; i < 100000; i++) {
+            resource.set(i + "", i + "");
+        }
+        watch.stop();
+        System.out.println("5-"+watch.getTime());
+
     }
 }
 ```
-```java
-//模糊模糊查询redis的keys
-Set<String> keys=redisTemplate.keys(RedisKeyPrefix.GAME_SERVICE_GAME_STATUS +tbGameSiteVo.getSiteId()+":"+"*");
-//获取redis的value值
-List<String>value=redisTemplate.opsForValue().multiGet(keys);
-//获取游戏的在线人数
-int number=0;
-//获取游戏的在线人数
-try {
-   Long onLineSum = value.stream()
-       .map(l -> JSON.parseObject(l, UserGameInputVo.class))
-       .filter(vo -> vo.getOnlineStatus() == 1)
-       .filter(vo -> vo.getGameStatus() ==Integer.valueOf(tbGameSiteVo.getGameId()))
-       .count();//统计各游戏的在线人数
-   if(onLineSum==null){
-      onLineSum=0L;
-   }
-   if(onLineSum!=null) {
-      number = onLineSum.intValue();
-   }
-}catch (Exception e){
 
-   log.error("在线人数为空"+e.getMessage());
+## 单机Jedis连接集群节点
+
+会报错
+
+```java
+redis.clients.jedis.exceptions.JedisMovedDataException: MOVED 12706 192.168.0.8:6379
+	at redis.clients.jedis.Protocol.processError(Protocol.java:115)
+	at redis.clients.jedis.Protocol.process(Protocol.java:161)
+	at redis.clients.jedis.Protocol.read(Protocol.java:215)
+	at redis.clients.jedis.Connection.readProtocolWithCheckingBroken(Connection.java:340)
+	at redis.clients.jedis.Connection.getStatusCodeReply(Connection.java:239)
+	at redis.clients.jedis.Jedis.set(Jedis.java:121)
+	at reids.ClusterDemo.set(ClusterDemo.java:68)
+```
+
+## 集群Jedis
+
+```java
+/**
+ * anthony@base:/var/log/redis$ redis-cli --cluster check 192.168.0.6:6379
+ * 192.168.0.6:6379 (99af86e5...) -> 0 keys | 5461 slots | 1 slaves.
+ * 192.168.0.8:6379 (982f74c7...) -> 3 keys | 5461 slots | 1 slaves.
+ * 192.168.0.7:6379 (1069a632...) -> 0 keys | 5462 slots | 1 slaves.
+ * [OK] 3 keys in 3 masters.
+ * 0.00 keys per slot on average.
+ * >>> Performing Cluster Check (using node 192.168.0.6:6379)
+ * M: 99af86e59c7f5a4ddf212b29e9e1b12fa5e7a866 192.168.0.6:6379
+ *    slots:[0-5460] (5461 slots) master
+ *    1 additional replica(s)
+ * S: 102517bddae6af2434519e8f348cf062b0152fa7 192.168.0.9:6379
+ *    slots: (0 slots) slave
+ *    replicates 982f74c79ed5c5811b7011507c56f81374c70a0b
+ * S: 392c5e4dcd5608c74a76902668ed58fb6ab50aaf 192.168.0.11:6379
+ *    slots: (0 slots) slave
+ *    replicates 1069a6320a0489f63e807c970c27f86f13f417cf
+ * S: 4d12dd0de1af9d90bfac7dd141c36c348071d59f 192.168.0.10:6379
+ *    slots: (0 slots) slave
+ *    replicates 99af86e59c7f5a4ddf212b29e9e1b12fa5e7a866
+ * M: 982f74c79ed5c5811b7011507c56f81374c70a0b 192.168.0.8:6379
+ *    slots:[10923-16383] (5461 slots) master
+ *    1 additional replica(s)
+ * M: 1069a6320a0489f63e807c970c27f86f13f417cf 192.168.0.7:6379
+ *    slots:[5461-10922] (5462 slots) master
+ *    1 additional replica(s)
+ * [OK] All nodes agree about slots configuration.
+ * >>> Check for open slots...
+ * >>> Check slots coverage...
+ * [OK] All 16384 slots covered.
+ */
+public class ClusterDemo {
+
+    private JedisCluster jedis;
+
+    @Before
+    public void before() {
+        Set<HostAndPort> nodes = new HashSet<>();
+        nodes.add(new HostAndPort("192.168.0.6", 6379));
+        nodes.add(new HostAndPort("192.168.0.7", 6379));
+        nodes.add(new HostAndPort("192.168.0.8", 6379));
+        nodes.add(new HostAndPort("192.168.0.9", 6379));
+        nodes.add(new HostAndPort("192.168.0.10", 6379));
+        nodes.add(new HostAndPort("192.168.0.11", 6379));
+
+        GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
+        jedis = new JedisCluster(nodes,poolConfig);
+    }
+
+    @After
+    public void after() throws IOException {
+        //使用完关闭连接
+        jedis.close();
+    }
+
+    /**
+     * 设值
+     */
+    @Test
+    public void set() {
+        //访问Redis服务
+        jedis.set("k1", "v1");
+        System.out.println(jedis.get("k1"));
+    }
+
+    /**
+     * redis集群的节点信息
+     * map.key = IP:PORT
+     */
+    @Test
+    public void info() {
+        Map<String, JedisPool> clusterNodes = jedis.getClusterNodes();
+        clusterNodes.keySet().forEach(key->{
+            System.out.printf("%s==%s\r\n",key,clusterNodes.get(key).getResource().info());
+        });
+    }
 }
 ```
