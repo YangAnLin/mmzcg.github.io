@@ -97,10 +97,10 @@ creative_commons:
 # ---------------------------------------------------------------
 
 # Schemes
-scheme: Muse
-#scheme: Mist
-#scheme: Pisces
-#scheme: Gemini
+# scheme: Muse
+# scheme: Mist
+# scheme: Pisces
+scheme: Gemini
 
 # Dark Mode
 darkmode: true
@@ -361,7 +361,7 @@ codeblock:
     # Show text copy result.
     show_result: true
     # Available values: default | flat | mac
-    style: mac
+    style: flat
 
 back2top:
   enable: true
@@ -611,7 +611,7 @@ changyan:
 # Valine
 # For more information: https://valine.js.org, https://github.com/xCss/Valine
 valine:
-  enable: true
+  enable: false
   appid: vjuDbu6NurR8quggYWOD14w6-gzGzoHsz
   appkey: uceYrDYYqitfkh2G5I5uuCLu
   notify: true # Mail notifier
