@@ -271,6 +271,15 @@ cluster forget
 
 # 手动故障转移
 cluster failover
+
+# 计算键 key 应该被放置在哪个槽上
+cluster keyslot <key>
+
+# 返回槽 slot 目前包含的键值对数量
+cluster countkeysinslot <slot>
+
+# 返回 count 个 slot 槽中的键 
+cluster getkeysinslot <slot> <count>
 ```
 
 # Redis的数据类型
