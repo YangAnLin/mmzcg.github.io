@@ -2,41 +2,35 @@
 
 # 手动安装单机ElasticSearch
 
-1. 下载tar包,(6.6.2)
 ```shell
+# 下载tar包,(6.6.2)
 wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.6.2.tar.gz
-```
-2. 解压缩之后修改配置文件
-```properties
-vi config/Elasticsearch.yml
-network.host: 0.0.0.0 #设置成外网也可以访问
-```
 
-```properties
+# 解压缩之后修改配置文件
+vi /elasticsearch-7.10.1/config/elasticsearch.yml
+network.host: 0.0.0.0 #设置成外网也可以访问
+
+# 追加内容,修改系统环境该变量,修改完需要重启才能生效
 vi /etc/sysctl.conf
-vm.max_map_count=262144 # 修改系统环境该变量,修改完需要重启才能生效
+vm.max_map_count=262144
 
 # 加载参数
-sysctl -p
-```
+anthony@base:/usr/local/elasticsearch-6.6.2$ sudo sysctl -p
+vm.max_map_count = 262144
 
-```properties
-vim /etc/security/limits.conf   # 允许打开的最大文件描述
-
-# 加入
+# 允许打开的最大文件描述,加入
+vim /etc/security/limits.conf
 * soft nofile 65536
 * hard nofile 65536
 * soft nproc 4096 或者(65536)
 * hard nproc 4096 或者(65536)
-```
 
-```properties
-vi config/jvm.options  # 修改JVM分配大小 这两个值要一致
--Xms1g
--Xmx1g
-```
-3. 启动
-```shell
+# 修改JVM分配大小 这两个值要一致
+vi config/jvm.options  
+-Xms4g
+-Xmx4g
+
+# 启动
 bin/elasticsearch
 bin/elasticsearch -d  #后台启动
 ```
@@ -56,6 +50,25 @@ GET /medcl/_analyze
     "analyzer": "pinyin_analyzer"
     }
 ```
+
+报错原因:
+
+```shell
+# chown -R 用户名:用户名  目录名
+Exception in thread "main" java.nio.file.AccessDeniedException: /root/home/searchengine/elasticsearch-6.2.4/config/jvm.options
+	at sun.nio.fs.UnixException.translateToIOException(UnixException.java:84)
+	at sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:102)
+	at sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:107)
+	at sun.nio.fs.UnixFileSystemProvider.newByteChannel(UnixFileSystemProvider.java:214)
+	at java.nio.file.Files.newByteChannel(Files.java:361)
+	at java.nio.file.Files.newByteChannel(Files.java:407)
+	at java.nio.file.spi.FileSystemProvider.newInputStream(FileSystemProvider.java:384)
+	at java.nio.file.Files.newInputStream(Files.java:152)
+	at org.elasticsearch.tools.launchers.JvmOptionsParser.main(JvmOptionsParser.java:58)
+
+```
+
+
 
 # 手动安装集群ElasticSearch
 
@@ -95,22 +108,19 @@ http://localhost:9200/_cat/health?v
 
 # 手动单机Kibana安装
 
-1. 下载解压
 ```shell
+# 下载解压
 https://artifacts.elastic.co/downloads/kibana/kibana-6.6.2-linux-x86_64.tar.gz
-```
-2. 修改配置文件
-```shell
+
+# 修改配置文件
 vi kibana-6.4.2-linux-x86_64/config/kibana.yml
 server.port: 5600
 server.host: "0.0.0.0"
 elasticsearch.url: "http://localhost:9200"
-```
-3. 启动
-```shell
-./bin/kibana
-```
 
+# 启动,后台启动
+./bin/kibana &
+```
 
 # 手动单机Logstash安装
 

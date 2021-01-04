@@ -406,3 +406,10 @@ docker run -itd \
 docker run -d -p 2181:2181 --name some-zookeeper --restart=always zookeeper
 ```
 
+## 安装Grafana
+
+```shell
+# admin / admin
+docker run -d -p 3000:3000 --name=grafana grafana/grafana
+```
+
