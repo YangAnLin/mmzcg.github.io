@@ -215,6 +215,7 @@ target属性有_self为默认值,当前页面
         }
     </style>
 </head>
+
 <body>
 <ul>
     <li class="red">1</li>
