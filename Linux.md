@@ -331,6 +331,13 @@ ONBOOT=yes
 
 ## 用户和用户组
 
+### 普通用户和非普通用户
+
+```shell
+$ 是普通用户
+# 不是普通用户
+```
+
 ### 修改用户名
 
 ```shell
@@ -344,29 +351,123 @@ groupmod -n oldname newname
 reboot
 ```
 
-### 修改用户组名
+### 用户组
 
 ```shell
-# sudan新名字,dan就名字
+# 新建用户组
+groupadd hr
+
+# 查看用户组
+[root@192 ~]# tail -1 /etc/group
+hr:x:1001:
+
+# 修改用户组名,sudan新名字,dan就名字
 groupmod -n susan dan
+
+# 删除用户组
+groupdel hr
+
 ```
 
-### 切换用户
+### 用户
 
 ```shell
+# 添加用户:useradd  hadoop,创建用户未指定任何选项,系统会创建一个同名的用户组
+# 添加用户
+adduser hadoop
+
+# 删除用户,
+# -r 同时也删除这个用户的主目录
+userdel -r hadoop
+
+# 修改hadoop用户密码
+passwd hadoop
+# 修改自己的用户名密码
+passwd
+
+# 把用户加入到用户组: 
+vi /etc/sudoers
+
+# 查看用户
+id user01
+# 或者
+whoami
+# 或者
+cat /etc/shadow
+
+# 切换用户
 su anthony
+
+# 查看用户组信息
+[root@192 ~]# tail -2 /etc/passwd
+anthony:x:1000:1000:anthony:/home/anthony:/bin/bash
+[root@192 ~]# tail  /etc/group
+anthony:x:1000:anthony
+
+# 修改用户基本组
+usermod username -g 组名
 ```
 
-### 添加用户
+![image-20210111210640226](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20210111210641.png)
+
+
+
+### 修改用户基本组和附加组的demo
 
 ```shell
-root下面添加用户 adduser hadoop
-删除用户 userdel hadoop
-修改hadoop密码 passwd hadoop
-把用户加入到用户组: vi  /etc/sudoers
+# 创建hadoop用户
+[root@192 ~]# useradd hadoop
+# 查看hadoop用户,基本组是1002
+[root@192 ~]# tail -1 /etc/passwd
+hadoop:x:1001:1002::/home/hadoop:/bin/bash
+# 查看hadoop基本组信息
+[root@192 ~]# tail -1 /etc/group
+hadoop:x:1002:
+
+# 创建两个用户组
+[root@192 ~]# groupadd hadoop_base
+[root@192 ~]# groupadd hadoop_more
+# 查看两个用户组
+[root@192 ~]# tail -3 /etc/group
+hadoop:x:1002:
+hadoop_base:x:1003:
+hadoop_more:x:1004:
+
+# 修改用户基本组
+[root@192 ~]# usermod hadoop -g hadoop_base
+[root@192 ~]# tail -3 /etc/group
+hadoop:x:1002:
+hadoop_base:x:1003:
+hadoop_more:x:1004:
+# 用户的基本组已经变成1003
+[root@192 ~]# tail -3 /etc/passwd
+hadoop:x:1001:1003::/home/hadoop:/bin/bash
+
+# 修改用户附加组
+[root@192 ~]# usermod hadoop -G hadoop_more
+# 用户的附加组已经变成1004
+[root@192 ~]# tail -1 /etc/group
+hadoop_more:x:1004:hadoop
+
+# 最后查看
+# uid 用户名
+# gid 基本组id
+# 组 包括基本组和附加组
+[root@192 ~]# id hadoop
+uid=1001(hadoop) gid=1003(hadoop_base) 组=1003(hadoop_base),1004(hadoop_more)
+
+# 从组中删除成员
+[root@192 ~]# gpasswd -d hadoop hadoop_base
+正在将用户“hadoop”从“hadoop_base”组中删除
+gpasswd：用户“hadoop”不是“hadoop_base”的成员
+[root@192 ~]# gpasswd -d hadoop hadoop_more
+正在将用户“hadoop”从“hadoop_more”组中删除
 ```
+
+
 
 ### 修改用户权限
+
 ```shell
 root修改用户权限: vim /etc/sudousers
 ```
@@ -381,6 +482,206 @@ root修改用户权限: vim /etc/sudousers
 vim /etc/hostname
 需要重启
 ```
+
+### 组信息文件
+
+```shell
+[root@192 ~]# cat /etc/group
+root:x:0:
+bin:x:1:
+daemon:x:2:
+sys:x:3:
+adm:x:4:
+```
+
+一共有4列
+
+1. 组名
+2. 组密码
+3. 组ID
+4. 备用的
+
+### 用户文件信息
+
+```shell
+[root@192 ~]# cat /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+```
+
+1. 用户名,登录名中不能有冒号
+2. 口令,把真正的加密后的用户口令字存放到/etc/shadow文件中
+3. 用户标识符,取值范围是0-65535。0是超级用户root的标识号，1-99由系统保留，作为管理账号，普通用户的标识号从100开始。在Linux系统中，这个界限是500,
+4. 组标识符,也是基本组
+5. 注释性描述,例如用户的真实姓名、电话、地址等，这个字段并没有什么实际的用途
+6. 主目录
+7. 登录shell,解释器
+
+## 权限
+
+```shell
+[anthony@192 ~]$ touch /tmp/demo.txt
+[anthony@192 ~]$ ll /tmp/demo.txt
+-rw-rw-r--. 1 anthony anthony 0 1月  11 21:57 /tmp/demo.txt
+```
+
+* 第一位
+  * -代表文件,d代表文件夹
+  * 接下来的三位(rw-),是用户权限
+  * 接下来的三位(rw-),是组权限
+  * 接下来的三位(r--),是其他人权限
+  * . 不知道是啥东西
+* 第二位,连接
+* 第三位,属主
+* 第四位,属组
+* 第五位,大小
+* 第六位,7位,时间
+* 第八位,名字
+
+## 提升权限
+
+```shell
+[root@192 tmp]# touch fil1.txt
+
+[root@192 tmp]# ll
+-rw-r--r--. 1 root root 0 1月  12 21:56 fil1.txt
+
+# 给所有人和用户都设置读写执行的权限
+[root@192 tmp]# chmod a=rwx fil1.txt
+
+[root@192 tmp]# ll
+-rwxrwxrwx. 1 root root 0 1月  12 21:56 fil1.txt
+
+# 给所有人和用户设置读写权限
+[root@192 tmp]# chmod a=rx fil1.txt
+
+[root@192 tmp]# ll
+-r-xr-xr-x. 1 root root 0 1月  12 21:56 fil1.txt
+
+# 给属主设置读权限
+[root@192 tmp]# chmod u=r fil1.txt
+[root@192 tmp]# ll
+-r--r-xr-x. 1 root root 0 1月  12 21:56 fil1.txt
+
+# 给组设置读写执行的权限
+[root@192 tmp]# chmod g=rwx fil1.txt
+[root@192 tmp]# ll
+-r--rwxr-x. 1 root root 0 1月  12 21:56 fil1.txt
+[root@192 tmp]#
+
+# 给其他人 没有读写执行的权限
+[root@192 tmp]# chmod o= fil1.txt
+[root@192 tmp]# ll
+-r--rwx---. 1 root root 0 1月  12 21:56 fil1.txt
+
+# 给属主单独设置一个写的权限
+[root@192 tmp]# chmod u+w fil1.txt
+[root@192 tmp]# ll
+总用量 0
+-rw-rwx---. 1 root root 0 1月  12 21:56 fil1.txt
+
+# 修改文件的属主和组权限
+[root@192 tmp]# chown hadoop.hr fil1.txt
+[root@192 tmp]# ll
+总用量 0
+-rw-rwx---. 1 hadoop hr 0 1月  12 21:56 fil1.txt
+
+# 查看acl权限
+[root@192 tmp]# getfacl acldemo.txt
+# file: acldemo.txt
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# 当对一个文件或者文件夹需要设置3个以上的权限用户,和权限用户组,上面的那种方法就不够用了
+# 需要引入 acl权限
+# setfacl -m 对象:对象名:权限 文件名
+# ll之后就会先是+号
+setfacl -m g:hr:rw /tmp/acldemo.txt
+[root@192 tmp]# ll
+-rw-rw-r--+ 1 root root 0 1月  12 22:19 acldemo.txt
+```
+
+## 进程
+
+### top
+
+```shell
+top - 21:08:58 up  6:15,  4 users,  load average: 0.01, 0.03, 0.05
+Tasks: 262 total,   1 running, 261 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  0.0 us,  1.4 sy,  0.0 ni, 98.6 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+KiB Mem :  3861300 total,  1922280 free,  1029068 used,   909952 buff/cache
+KiB Swap:  2097148 total,  2097148 free,        0 used.  2545024 avail Mem
+```
+
+* 第一行
+
+  * 程序名(top)
+
+  * 21:08:58(系统时间)
+
+  * up 6:15(运行时间)
+
+  * 4 users(登录用户数)
+
+  * load average(cpu 负载数,5分钟的平均负载,10分钟的平均负载,15分钟的平均负载)
+* 第二行
+
+  * task(总进程数)
+  * 1 running (运行数:1)
+  * 261 sleeping(睡眠树:1)
+  * stopped(停止数)
+  * zoimbie(僵尸数)
+* 第三行
+
+  * %cpu(cpu使用占比)
+  * us (用户)
+  * sy (系统)
+  * ni(优先级)
+  * id(空闲)
+  * wa(等待)
+  * hi(硬件)
+  * st(虚拟机)
+* 第四行
+
+  * kib Mem (物理内存 单位:K)
+  * free (空间,单位:k)
+  * userd(使用)
+  * cache(缓存硬盘内容大小)
+* 第五行
+
+  * 交换区
+* 第六行
+  * 进程ID
+  * 用户名
+  * 优先级(PR)
+  * 内存(VIRT RES SHR)
+  * 状态(S)
+  * cpu
+  * 内存
+  * 运行时间
+  * 命令
+
+## 重定向管道
+
+## 硬盘
+
+centos7 分  IDE并口   SATA串口
+
+
+
+SATA串口 分  /dev/sda
+
+sba:标识,s表示sata就是串口,d代表磁盘,a第一块
+
+
+
+SATA串口 分  /dev/sdb
+
+
 
 ## 环境变量
 
