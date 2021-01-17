@@ -45,6 +45,51 @@ docker inspect myredis | grep IP
 # 连接到redis容器。然后就进入redis命令行了。
 docker run -it redis:latest redis-cli -h 192.168.42.32
 ```
+## Dcoker安装集群
+
+```shell
+#!/bin/bash
+echo "start install redis-cluster..."
+if [ ! -d /opt/docker-redis/7001/ ];then
+	mkdir -p /opt/docker-redis/700{1,2,3,4,5,6}/data/
+fi
+cd /opt/docker-redis/7001/	
+wget http://download.redis.io/redis-stable/redis.conf -O /opt/docker-redis/7001/redis7001.conf
+#
+sed -i '/^#/d;/^$/d' redis7001.conf  #取出空行和注释行
+sed -i 's/bind/#bind/g;s/appendonly no/appendonly yes/g;s/protected-mode yes/protected-mode no/g' redis7001.conf  #开启持久化，注释监听ip
+#
+echo '#集群配置' >> /opt/docker-redis/7001/redis7001.conf
+echo 'cluster-enabled yes' >>/opt/docker-redis/7001/redis7001.conf
+echo 'cluster-config-file nodes-7001.conf' >>/opt/docker-redis/7001/redis7001.conf
+echo 'cluster-node-timeout 15000' >>/opt/docker-redis/7001/redis7001.conf
+#
+echo 'cluster-announce-ip 192.168.92.135' >>/opt/docker-redis/7001/redis7001.conf
+echo 'cluster-announce-port 7001' >>/opt/docker-redis/7001/redis7001.conf
+echo 'cluster-announce-bus-port 17001' >>/opt/docker-redis/7001/redis7001.conf
+#
+for port in `seq 7002 7006`;do
+	cp redis7001.conf ../${port}/redis${port}.conf
+	echo "cluster-config-file nodes-${port}.conf" >>/opt/docker-redis/${port}/redis${port}.conf
+	echo "cluster-announce-port ${port}" >>/opt/docker-redis/${port}/redis${port}.conf
+	echo "cluster-announce-bus-port 1${port}" >>/opt/docker-redis/${port}/redis${port}.conf
+done
+#
+for port in `seq 7001 7006`;do
+#	sed -i "s/logfile \"\"/logfile \"\/usr\/local\/docker\/redis-cluster\/log\/redis.log\"/g" redis${port}.conf
+	sed -i "s/port 6379/port ${port}/g" /opt/docker-redis/${port}/redis${port}.conf
+	docker run --restart always --name redis-cluster-${port} --net host --privileged=true -v /opt/docker-redis/${port}/redis${port}.conf:/usr/local/docker/redis-cluster/${port}/redis${port}.conf -v  \
+	/opt/docker-redis/${port}/data/:/usr/local/docker/redis-cluster/data/ \
+	-d redis redis-server /usr/local/docker/redis-cluster/${port}/redis${port}.conf
+done
+docker ps
+sleep 2s
+ss -tnulp|grep redis
+
+#创建集群
+#redis-cli  --cluster create 192.168.92.135:7001 192.168.92.135:7002 192.168.92.135:7003 192.168.92.135:7004 192.168.92.135:7005 192.168.92.135:7006  --cluster-replicas 1
+```
+
 ## 源码安装单机
 
 ```shell
