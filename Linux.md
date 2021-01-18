@@ -964,6 +964,176 @@ Mem:           3770         925        2201          26         642        2579
 Swap:          7166           0        7166
 ```
 
+## 创建LVM
+
+无限制的扩张容量
+
+```shell
+[root@192 ~]# lsblk
+NAME            MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda               8:0    0   20G  0 disk
+├─sda1            8:1    0    1G  0 part /boot
+└─sda2            8:2    0   19G  0 part
+  ├─centos-root 253:0    0   17G  0 lvm  /
+  └─centos-swap 253:1    0    2G  0 lvm  [SWAP]
+sdb               8:16   0    5G  0 disk
+├─sdb1            8:17   0    3G  0 part
+└─sdb2            8:18   0    2G  0 part
+sdc               8:32   0    5G  0 disk
+└─sdc1            8:33   0    5G  0 part
+# 一会要操作的是这个盘
+sdd               8:48   0    5G  0 disk
+sde               8:64   0    5G  0 disk
+# 一会要操作的是这个盘
+sdf               8:80   0    5G  0 disk
+sdg               8:96   0    5G  0 disk
+sdh               8:112  0    5G  0 disk
+sdi               8:128  0    5G  0 disk
+
+
+# 物理磁盘转成物理卷
+[root@192 ~]# pvcreate /dev/sdd
+  Physical volume "/dev/sdd" successfully created.
+
+# 创建数据卷组
+[root@192 ~]# vgcreate vg1 /dev/sdd
+  Volume group "vg1" successfully created
+
+# 创建逻辑卷
+# lvcreate
+# -L 4g,要用磁盘的4G
+# -n lv1 卷的名字,自定义
+# vg1 卷组名,要把4G,加入到哪个卷组
+[root@192 ~]# lvcreate -L 4G -n lv1 vg1
+  Logical volume "lv1" created.
+
+# 格式化
+# 这里要用/dev/卷组名/逻辑卷的名字
+[root@192 ~]# mkfs.ext4 /dev/vg1/lv1
+mke2fs 1.42.9 (28-Dec-2013)
+文件系统标签=
+OS type: Linux
+块大小=4096 (log=2)
+分块大小=4096 (log=2)
+Stride=0 blocks, Stripe width=0 blocks
+262144 inodes, 1048576 blocks
+52428 blocks (5.00%) reserved for the super user
+第一个数据块=0
+Maximum filesystem blocks=1073741824
+32 block groups
+32768 blocks per group, 32768 fragments per group
+8192 inodes per group
+Superblock backups stored on blocks:
+        32768, 98304, 163840, 229376, 294912, 819200, 884736
+
+Allocating group tables: 完成
+正在写入inode表: 完成
+Creating journal (32768 blocks): 完成
+Writing superblocks and filesystem accounting information: 完成
+
+# 挂载,这里要用/dev/卷组名/逻辑卷的名字
+[root@192 ~]# mkdir /mnt/lv1
+[root@192 ~]# mount /dev/vg1/lv1  /mnt/lv1
+
+[root@192 ~]# df -hT
+文件系统                类型      容量  已用  可用 已用% 挂载点
+devtmpfs                devtmpfs  1.9G     0  1.9G    0% /dev
+tmpfs                   tmpfs     1.9G     0  1.9G    0% /dev/shm
+tmpfs                   tmpfs     1.9G   13M  1.9G    1% /run
+tmpfs                   tmpfs     1.9G     0  1.9G    0% /sys/fs/cgroup
+/dev/mapper/centos-root xfs        17G  4.4G   13G   26% /
+/dev/sda1               xfs      1014M  239M  776M   24% /boot
+tmpfs                   tmpfs     378M   28K  378M    1% /run/user/1000
+/dev/sr0                iso9660   4.4G  4.4G     0  100% /run/media/anthony/CentOS 7 x86_64
+# 这里就有4个G的可用空间
+/dev/mapper/vg1-lv1     ext4      3.9G   16M  3.6G    1% /mnt/lv1
+
+# 把sdf物理磁盘转成物理卷
+[root@192 ~]# pvcreate /dev/sdf
+  Physical volume "/dev/sdf" successfully created.
+
+[root@192 ~]# vgextend vg1 /dev/sdf
+  Volume group "vg1" successfully extended
+
+# 扩容lv
+[root@192 ~]# lvextend -L +4G /dev/vg1/lv1
+  Size of logical volume vg1/lv1 changed from 4.00 GiB (1024 extents) to 8.00 GiB (2048 extents).
+  Logical volume vg1/lv1 successfully resized.
+
+# 刷新
+[root@192 ~]# resize2fs /dev/vg1/lv1
+resize2fs 1.42.9 (28-Dec-2013)
+Filesystem at /dev/vg1/lv1 is mounted on /mnt/lv1; on-line resizing required
+old_desc_blocks = 1, new_desc_blocks = 1
+The filesystem on /dev/vg1/lv1 is now 2097152 blocks long.
+
+# 再次查看
+[root@192 ~]# df -hT
+文件系统                类型      容量  已用  可用 已用% 挂载点
+devtmpfs                devtmpfs  1.9G     0  1.9G    0% /dev
+tmpfs                   tmpfs     1.9G     0  1.9G    0% /dev/shm
+tmpfs                   tmpfs     1.9G   13M  1.9G    1% /run
+tmpfs                   tmpfs     1.9G     0  1.9G    0% /sys/fs/cgroup
+/dev/mapper/centos-root xfs        17G  4.4G   13G   26% /
+/dev/sda1               xfs      1014M  239M  776M   24% /boot
+tmpfs                   tmpfs     378M   28K  378M    1% /run/user/1000
+# 这里就有8个G的可用空间
+/dev/mapper/vg1-lv1     ext4      7.8G   18M  7.4G    1% /mnt/lv1
+
+[root@192 ~]# pvs
+  PV         VG     Fmt  Attr PSize   PFree
+  /dev/sda2  centos lvm2 a--  <19.00g    0
+  /dev/sdd   vg1    lvm2 a--   <5.00g    0
+  /dev/sdf   vg1    lvm2 a--   <5.00g 1.99g
+
+[root@192 ~]# vgs
+  VG     #PV #LV #SN Attr   VSize   VFree
+  centos   1   2   0 wz--n- <19.00g    0
+  vg1      2   1   0 wz--n-   9.99g 1.99g
+```
+
+## yum
+
+yum的所有文件都在`/etc/yum.repos.d`下
+
+
+
+
+
+## yum挂载光盘源
+
+新建一个xxx.repo的文件
+
+```shell
+[root@192 yum.repos.d]# cat ./dvd.repo
+[dvd]
+name=this is descreption
+baseurl=file:///mnt/cdrom
+gpgcheck=0
+```
+
+挂载光盘
+
+```shell
+[root@192 yum.repos.d]# df -hT
+文件系统                类型      容量  已用  可用 已用% 挂载点
+devtmpfs                devtmpfs  1.9G     0  1.9G    0% /dev
+tmpfs                   tmpfs     1.9G     0  1.9G    0% /dev/shm
+tmpfs                   tmpfs     1.9G   13M  1.9G    1% /run
+tmpfs                   tmpfs     1.9G     0  1.9G    0% /sys/fs/cgroup
+/dev/mapper/centos-root xfs        17G  4.4G   13G   26% /
+/dev/sda1               xfs      1014M  239M  776M   24% /boot
+tmpfs                   tmpfs     378M   32K  378M    1% /run/user/1000
+/dev/mapper/vg1-lv1     ext4      7.8G   18M  7.4G    1% /mnt/lv1
+/dev/sr0                iso9660   4.4G  4.4G     0  100% 
+
+# 挂载
+mount /dev/sr0 /mnt/cdrom
+
+# 查看光盘你的包
+ls /mnt/cdrom/Packages/
+```
+
 ## 环境变量
 
 ### 配置Java环境变量
