@@ -669,23 +669,300 @@ KiB Swap:  2097148 total,  2097148 free,        0 used.  2545024 avail Mem
 
 ## 硬盘
 
-centos7 分  IDE并口   SATA串口
+* centos7
+  * IDE并口
+  * SATA串口
+    * /dev/sda,sba:标识,s表示sata就是串口,d代表磁盘,a第一块
+    * /dev/sdb
 
+划分磁盘需要三个字母判断
 
+划分分区需要4个文字判断,
 
-SATA串口 分  /dev/sda
+1.
 
-sba:标识,s表示sata就是串口,d代表磁盘,a第一块
+前面三个是一个磁盘
 
+看后的 sda 来判断
 
+再看后的数字,有1,2  这两个分区
 
-SATA串口 分  /dev/sdb
+2.sdb 以此类推,又是另外一些磁盘
 
-
+3.或者是用 lsblk 命令
 
 ## 管理磁盘的三个步骤
 
 先分区,再格式化,再挂载
+
+![image-20210114203326197](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20210114203327.png)
+
+MBR一共只能有4个分区,如果要需要很多个分区
+
+![image-20210114202654364](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20210114202655.png)
+
+![image-20210114202942146](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20210114202943.png)
+
+### 新建主分区和逻辑分区
+
+```shell
+[root@192 ~]# lsblk
+NAME            MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda               8:0    0   20G  0 disk
+├─sda1            8:1    0    1G  0 part /boot
+└─sda2            8:2    0   19G  0 part
+  ├─centos-root 253:0    0   17G  0 lvm  /
+  └─centos-swap 253:1    0    2G  0 lvm  [SWAP]
+sdb               8:16   0    5G  0 disk
+sdc               8:32   0    5G  0 disk
+sdd               8:48   0    5G  0 disk
+sde               8:64   0    5G  0 disk
+sdf               8:80   0    5G  0 disk
+sdg               8:96   0    5G  0 disk
+sdh               8:112  0    5G  0 disk
+sdi               8:128  0    5G  0 disk
+sr0              11:0    1  4.4G  0 rom
+
+# 启动分区工具
+[root@192 ~]# fdisk /dev/sdb
+欢迎使用 fdisk (util-linux 2.23.2)。
+
+更改将停留在内存中，直到您决定将更改写入磁盘。
+使用写入命令前请三思。
+
+Device does not contain a recognized partition table
+使用磁盘标识符 0xda85d71c 创建新的 DOS 磁盘标签。
+
+命令(输入 m 获取帮助)：n
+Partition type:
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended
+Select (default p): p
+分区号 (1-4，默认 1)：
+起始 扇区 (2048-10485759，默认为 2048)：+2G
+Last 扇区, +扇区 or +size{K,M,G} (4194304-10485759，默认为 10485759)：
+将使用默认值 10485759
+分区 1 已设置为 Linux 类型，大小设为 3 GiB
+
+命令(输入 m 获取帮助)：w
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+正在同步磁盘。
+
+# 刷新分区
+[root@192 ~]# partprobe /dev/sdb
+
+
+# 查看分区结果
+[root@192 ~]# fdisk -l /dev/sdb
+
+磁盘 /dev/sdb：5368 MB, 5368709120 字节，10485760 个扇区
+Units = 扇区 of 1 * 512 = 512 bytes
+扇区大小(逻辑/物理)：512 字节 / 512 字节
+I/O 大小(最小/最佳)：512 字节 / 512 字节
+磁盘标签类型：dos
+磁盘标识符：0xda85d71c
+
+   设备 Boot      Start         End      Blocks   Id  System
+/dev/sdb1         4194304    10485759     3145728   83  Linux
+
+# 格式化(创建文件系统)
+# ext4 扩展文件系统第四代,是文件系统的类型
+[root@192 ~]# mkfs.ext4 /dev/sdb1
+mke2fs 1.42.9 (28-Dec-2013)
+文件系统标签=
+OS type: Linux
+块大小=4096 (log=2)
+分块大小=4096 (log=2)
+Stride=0 blocks, Stripe width=0 blocks
+196608 inodes, 786432 blocks
+39321 blocks (5.00%) reserved for the super user
+第一个数据块=0
+Maximum filesystem blocks=805306368
+24 block groups
+32768 blocks per group, 32768 fragments per group
+8192 inodes per group
+Superblock backups stored on blocks:
+        32768, 98304, 163840, 229376, 294912
+
+Allocating group tables: 完成
+正在写入inode表: 完成
+Creating journal (16384 blocks): 完成
+Writing superblocks and filesystem accounting information: 完成
+
+# 手动挂载
+[root@192 ~]# mkdir /mnt/disk1
+[root@192 mnt]# mount -t ext4 /dev/sdb1 /mnt/disk1/
+
+# 查看
+[root@192 mnt]# df -hT
+文件系统                类型      容量  已用  可用 已用% 挂载点
+devtmpfs                devtmpfs  1.9G     0  1.9G    0% /dev
+tmpfs                   tmpfs     1.9G     0  1.9G    0% /dev/shm
+tmpfs                   tmpfs     1.9G   13M  1.9G    1% /run
+tmpfs                   tmpfs     1.9G     0  1.9G    0% /sys/fs/cgroup
+/dev/mapper/centos-root xfs        17G  4.4G   13G   26% /
+/dev/sda1               xfs      1014M  239M  776M   24% /boot
+tmpfs                   tmpfs     378M   12K  378M    1% /run/user/42
+tmpfs                   tmpfs     378M     0  378M    0% /run/user/0
+# 刚挂载的
+/dev/sdb1               ext4      2.9G  9.0M  2.8G    1% /mnt/disk1
+```
+
+### 新建SWAP
+
+```shell
+[root@localhost ~]# lsblk
+NAME            MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda               8:0    0   20G  0 disk
+├─sda1            8:1    0    1G  0 part /boot
+└─sda2            8:2    0   19G  0 part
+  ├─centos-root 253:0    0   17G  0 lvm  /
+  └─centos-swap 253:1    0    2G  0 lvm  [SWAP]
+sdb               8:16   0    5G  0 disk
+└─sdb1            8:17   0    3G  0 part /mnt/disk1
+sdc               8:32   0    5G  0 disk
+sdd               8:48   0    5G  0 disk
+sde               8:64   0    5G  0 disk
+sdf               8:80   0    5G  0 disk
+sdg               8:96   0    5G  0 disk
+sdh               8:112  0    5G  0 disk
+sdi               8:128  0    5G  0 disk
+sr0              11:0    1  4.4G  0 rom  /run/media/anthony/CentOS 7 x86_64
+[root@localhost ~]# fdisk /dev/sdb
+欢迎使用 fdisk (util-linux 2.23.2)。
+
+更改将停留在内存中，直到您决定将更改写入磁盘。
+使用写入命令前请三思。
+
+
+命令(输入 m 获取帮助)：n
+Partition type:
+   p   primary (2 primary, 0 extended, 2 free)
+   e   extended
+Select (default p): p
+分区号 (3,4，默认 3)：
+No free sectors available
+
+命令(输入 m 获取帮助)：q
+
+[root@localhost ~]# fdisk /dev/sdc
+欢迎使用 fdisk (util-linux 2.23.2)。
+
+更改将停留在内存中，直到您决定将更改写入磁盘。
+使用写入命令前请三思。
+
+Device does not contain a recognized partition table
+使用磁盘标识符 0x661ba46a 创建新的 DOS 磁盘标签。
+
+命令(输入 m 获取帮助)：n
+Partition type:
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended
+Select (default p): p
+分区号 (1-4，默认 1)：
+起始 扇区 (2048-10485759，默认为 2048)：
+将使用默认值 2048
+Last 扇区, +扇区 or +size{K,M,G} (2048-10485759，默认为 10485759)：
+将使用默认值 10485759
+分区 1 已设置为 Linux 类型，大小设为 5 GiB
+
+命令(输入 m 获取帮助)：p
+
+磁盘 /dev/sdc：5368 MB, 5368709120 字节，10485760 个扇区
+Units = 扇区 of 1 * 512 = 512 bytes
+扇区大小(逻辑/物理)：512 字节 / 512 字节
+I/O 大小(最小/最佳)：512 字节 / 512 字节
+磁盘标签类型：dos
+磁盘标识符：0x661ba46a
+
+   设备 Boot      Start         End      Blocks   Id  System
+/dev/sdc1            2048    10485759     5241856   83  Linux
+
+命令(输入 m 获取帮助)：w
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+正在同步磁盘。
+[root@localhost ~]# partprobe /dev/sdc
+[root@localhost ~]# fdisk -l /dev/sdb
+
+磁盘 /dev/sdb：5368 MB, 5368709120 字节，10485760 个扇区
+Units = 扇区 of 1 * 512 = 512 bytes
+扇区大小(逻辑/物理)：512 字节 / 512 字节
+I/O 大小(最小/最佳)：512 字节 / 512 字节
+磁盘标签类型：dos
+磁盘标识符：0xda85d71c
+
+   设备 Boot      Start         End      Blocks   Id  System
+/dev/sdb1         4194304    10485759     3145728   83  Linux
+/dev/sdb2            2048     4194303     2096128   83  Linux
+
+Partition table entries are not in disk order
+[root@localhost ~]# mkswap /dev/sdb2
+/dev/sdb2: 没有那个文件或目录
+[root@localhost ~]# mkswap /dev/sdc2
+/dev/sdc2: 没有那个文件或目录
+[root@localhost ~]# fdisk -l /dev/sdc
+
+磁盘 /dev/sdc：5368 MB, 5368709120 字节，10485760 个扇区
+Units = 扇区 of 1 * 512 = 512 bytes
+扇区大小(逻辑/物理)：512 字节 / 512 字节
+I/O 大小(最小/最佳)：512 字节 / 512 字节
+磁盘标签类型：dos
+磁盘标识符：0x661ba46a
+
+   设备 Boot      Start         End      Blocks   Id  System
+/dev/sdc1            2048    10485759     5241856   83  Linux
+[root@localhost ~]# mkswap /dev/sdc1
+anaconda-ks.cfg       .bashrc               .dbus/                .local/               模板/                 下载/
+.bash_history         .cache/               .esd_auth             .tcshrc               视频/                 音乐/
+.bash_logout          .config/              .ICEauthority         .viminfo              图片/                 桌面/
+.bash_profile         .cshrc                initial-setup-ks.cfg  公共/                 文档/
+[root@localhost ~]# mkswap /dev/sdc1
+正在设置交换空间版本 1，大小 = 5241852 KiB
+无标签，UUID=074198c5-dff9-4834-9fbb-06cee839372d
+[root@localhost ~]# df -hT
+文件系统                类型      容量  已用  可用 已用% 挂载点
+devtmpfs                devtmpfs  1.9G     0  1.9G    0% /dev
+tmpfs                   tmpfs     1.9G     0  1.9G    0% /dev/shm
+tmpfs                   tmpfs     1.9G   13M  1.9G    1% /run
+tmpfs                   tmpfs     1.9G     0  1.9G    0% /sys/fs/cgroup
+/dev/mapper/centos-root xfs        17G  4.4G   13G   26% /
+/dev/sda1               xfs      1014M  239M  776M   24% /boot
+/dev/sdb1               ext4      2.9G  9.0M  2.8G    1% /mnt/disk1
+tmpfs                   tmpfs     378M   32K  378M    1% /run/user/1000
+/dev/sr0                iso9660   4.4G  4.4G     0  100% /run/media/anthony/CentOS 7 x86_64
+tmpfs                   tmpfs     378M     0  378M    0% /run/user/0
+[root@localhost ~]# lsblk
+NAME            MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda               8:0    0   20G  0 disk
+├─sda1            8:1    0    1G  0 part /boot
+└─sda2            8:2    0   19G  0 part
+  ├─centos-root 253:0    0   17G  0 lvm  /
+  └─centos-swap 253:1    0    2G  0 lvm  [SWAP]
+sdb               8:16   0    5G  0 disk
+└─sdb1            8:17   0    3G  0 part /mnt/disk1
+sdc               8:32   0    5G  0 disk
+└─sdc1            8:33   0    5G  0 part
+sdd               8:48   0    5G  0 disk
+sde               8:64   0    5G  0 disk
+sdf               8:80   0    5G  0 disk
+sdg               8:96   0    5G  0 disk
+sdh               8:112  0    5G  0 disk
+sdi               8:128  0    5G  0 disk
+sr0              11:0    1  4.4G  0 rom  /run/media/anthony/CentOS 7 x86_64
+[root@localhost ~]# free -m
+              total        used        free      shared  buff/cache   available
+Mem:           3770         919        2208          26         642        2586
+Swap:          2047           0        2047
+[root@localhost ~]# swapon /dev/sdc1
+[root@localhost ~]# free -m
+              total        used        free      shared  buff/cache   available
+Mem:           3770         925        2201          26         642        2579
+Swap:          7166           0        7166
+```
 
 ## 环境变量
 
