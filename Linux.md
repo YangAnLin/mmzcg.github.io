@@ -1096,10 +1096,6 @@ tmpfs                   tmpfs     378M   28K  378M    1% /run/user/1000
 
 yum的所有文件都在`/etc/yum.repos.d`下
 
-
-
-
-
 ## yum挂载光盘源
 
 新建一个xxx.repo的文件
@@ -1132,6 +1128,12 @@ mount /dev/sr0 /mnt/cdrom
 
 # 查看光盘你的包
 ls /mnt/cdrom/Packages/
+
+# 安装软件
+yum -y instal httpd
+
+# 安装rpm包
+rpm -ivh  xxx.rpm
 ```
 
 ## 环境变量
