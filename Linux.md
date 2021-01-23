@@ -94,6 +94,54 @@ vi /etc/ssh/sshd_config
  yum -y install wget
 ```
 
+### 安装LNMP环境
+
+```shell
+# 更新源
+apt-get update && apt-get dist-upgrade -y
+
+# 安装nginx
+apt-get install nginx
+
+# 安装php-fpm和常用php扩展
+apt-get install php-fpm php-gd php-mbstring php-curl php-xml php-mcrypt php-mysql php-zip php-json php-redis php-memcached
+
+# 安装mysql
+apt-get install mysql-server
+
+# 建立测试站点
+# 1.我们在/var/www下面新建一个test目录，作为站点目录。 运行以下命令：
+mkdir /var/www/test
+
+# 2.新建php入口文件
+echo '<?php echo 1;'  > /var/www/test/index.php
+
+# 3.授权给fpm用户www-data，使fpm进程可以访问站点文件
+chown -R www-data:www-data /var/www/test && chmod -R 755 /var/www/test
+
+# 4.设置nginx站点配置,在/etc/nginx/conf.d新增一个test.conf文件，并写入以下内容
+# 这个配置表示站点监听80端口，网站根目录为/var/www/test,入口文件为index.php,通过php-fpm进程来执行php脚本。
+server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        root /var/www/test;
+        index index.php index.html index.htm;
+        server_name _;
+        location / {
+                try_files $uri $uri/ =404;
+        }
+        location ~ \.php$ {
+               include snippets/fastcgi-php.conf;
+               fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+        }
+}
+
+# 5.重新加载
+nginx -t && nginx -s reload
+
+# 6.访问试试看
+```
+
 ### Ubuntu卸载Apache
 
 ```shell
