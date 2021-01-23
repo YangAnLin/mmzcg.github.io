@@ -159,6 +159,17 @@ $ sudo apt-get install apache2
 $ sudo /etc/init.d/apache2 restart
 ```
 
+Ubuntu安装软件指定版本号
+
+```shell
+# 安装软件的时候,机器上安装的依赖版本可能高于软件本身需要的
+The following packages have unmet dependencies:
+ libpcre3-dev : Depends: libpcre3 (= 2:8.39-12build1) but 2:8.44-1+ubuntu18.04.1+deb.sury.org+1 is to be installed
+                Depends: libpcrecpp0v5 (= 2:8.39-12build1) but 2:8.44-1+ubuntu18.04.1+deb.sury.org+1 is to be installed
+        
+sudo apt install libpcrecpp0v5=2:8.39-12build1 libpcre3=2:8.39-12build1
+```
+
 ## 系统命令
 
 ### 修改时区
