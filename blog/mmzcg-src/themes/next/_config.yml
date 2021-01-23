@@ -676,7 +676,7 @@ google_analytics:
   only_pageview: false
 
 # Baidu Analytics
-baidu_analytics: f78a539021012b85bff6cabb7ad98ab4
+baidu_analytics: 9af24831c3db8bc2862a1454b13fee08
 
 # Growingio Analytics
 growingio_analytics: # <project_id>
