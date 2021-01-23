@@ -94,6 +94,23 @@ vi /etc/ssh/sshd_config
  yum -y install wget
 ```
 
+### Ubuntu卸载Apache
+
+```shell
+# 删除apache
+$ sudo apt-get --purge remove apache2
+$ sudo apt-get --purge remove apache2.2-common
+$ sudo apt-get autoremove
+
+# 找到没有删除掉的配置文件，一并删除
+$ sudo find  /etc -name "*apache*" -exec  rm -rf {} \;
+$ sudo rm -rf /var/www
+
+# 重装apache2
+$ sudo apt-get install apache2
+$ sudo /etc/init.d/apache2 restart
+```
+
 ## 系统命令
 
 ### 修改时区

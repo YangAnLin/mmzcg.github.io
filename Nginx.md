@@ -1,12 +1,18 @@
-## Ubuntu-Nginx
+# Ubuntu安装Nginx
 
 ```shell
 ubuntu安装nginx时提示error: the HTTP rewrite module requires the PCRE library 
-sudo apt-get install libpcre3 libpcre3-dev
-sudo apt-get install openssl libssl-dev
+
 ```
 
 ```shell
+# Ubuntu安装依赖
+sudo apt-get install libpcre3 libpcre3-dev
+sudo apt-get install openssl libssl-dev
+
+# Centos安装依赖
+yum install -y gcc-c++ pcre pcre-devel  zlib zlib-devel  openssl openssl-devel
+
 #安装到这里
 ./configure --prefix=/url/local/nginx
 #或者
@@ -18,14 +24,9 @@ make && make install
 #启动
 cd ../nginx/sbin
 ./nginx
-
 ```
 
-## Nginx
-
-查看进行有两个进行,一个是master,主进程(用来管理子进行的),一个工作进行,
-
-## docker启动nginx
+# Docker安装Nginx
 ```shell
 
 docker run -d \
@@ -38,7 +39,32 @@ docker run -d \
            nginx
 ```
 
-### nginx 配置模板
+# Nginx 常用命令
+
+```shell
+# 启动nginx
+start nginx
+
+# 修改配置后重新加载生效
+nginx -s reload
+
+# 重新打开日志文件
+nginx -s reopen
+
+# 测试nginx配置文件是否正确
+nginx -t -c /path/to/nginx.conf 
+
+# 快速停止nginx
+nginx -s stop
+
+# 完整有序的停止nginx
+nginx -s quit
+
+# 指定配置文件启动
+nginx -c /home/anthony/nginx.conf
+```
+
+# Nginx 配置模板
 ```shell
  
 #user  nobody;
@@ -180,78 +206,11 @@ http {
 
 ```
 
-### 安装nginx
-> 参考:https://www.cnblogs.com/liujuncm5/p/6713784.html
-
-```shell
-安装依赖
-yum install gcc-c++
-yum install -y pcre pcre-devel
-yum install -y zlib zlib-devel
-yum install -y openssl openssl-devel
-
-
-编译
-# 如果不修改的话,就是使用默认配置
-./configure  
-
-make
-make install
-
-运行完之后,cd /usr/local/nginx
-
-```
-
-### nginx转发websocket
-```shell
-server{                                                    
-     listen 8081;                                           
-     server_name 10.10.100.125;
-     
-     location / {
-        # 转发的时候,还是使用http协议
-        proxy_pass http://10.10.100.120:8081;
-        
-        proxy_http_version 1.1; 
-        # 转发长连接,就下面两行代码有效果         
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade"; 
-    }                                              
-}            
-```
-
-
-### 信号量
-
-重启和关闭,使用信号量
-
-```shell
-#强制停止
-kill -int pid(master线程)
-```
-
-
-
-有这些信号量
-
-|       |                     |                 |
-| ----- | ------------------- | --------------- |
-| int   | 强制关闭            |                 |
-| quit  | 所有请求完毕,再关闭 |                 |
-| hup   | 修改配置文件使用的  | nginx -s reload |
-| user1 | 分割日志用          |                 |
-| user2 | 升级重启            |                 |
-| winch | 配合user2使用       |                 |
-
-
-
-### 虚拟主机的管理
+# Nginx虚拟主机的管理
 
 work_processes 1;一般设置成cpu*核数
 
 worker_connection是 1024; 一个核 最大允许多少个链接
-
-
 
 ```shell
     server {
@@ -268,9 +227,7 @@ worker_connection是 1024; 一个核 最大允许多少个链接
     }
 ```
 
-
-
-### 日志管理
+# Nginx日志管理
 
 ```shell
 #access_log  logs/access.log  main;
@@ -278,7 +235,6 @@ worker_connection是 1024; 一个核 最大允许多少个链接
 #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
 #                  '$status $body_bytes_sent "$http_referer" '
 #                  '"$http_user_agent" "$http_x_forwarded_for"';
-
 
     server {
     	#监听段鸥
@@ -298,12 +254,72 @@ worker_connection是 1024; 一个核 最大允许多少个链接
 
 该server的访问日志的文件是logs/access.log,使用的是main格式
 
+# Nginx转发websocket
+```shell
+server{                                                    
+     listen 8081;                                           
+     server_name 10.10.100.125;
+     
+     location / {
+        # 转发的时候,还是使用http协议
+        proxy_pass http://10.10.100.120:8081;
+        
+        proxy_http_version 1.1; 
+        # 转发长连接,就下面两行代码有效果         
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade"; 
+    }                                              
+}            
+```
 
 
-### location匹配
+# 信号量
+
+重启和关闭,使用信号量
+
+```shell
+#强制停止
+kill -int pid(master线程)
+```
+
+有这些信号量
+
+|       |                     |                 |
+| ----- | ------------------- | --------------- |
+| int   | 强制关闭            |                 |
+| quit  | 所有请求完毕,再关闭 |                 |
+| hup   | 修改配置文件使用的  | nginx -s reload |
+| user1 | 分割日志用          |                 |
+| user2 | 升级重启            |                 |
+| winch | 配合user2使用       |                 |
+
+# location匹配
 
 =          精准匹配
 
 不写    一般匹配
 
 ~          正则匹配
+
+# Nginx报错
+
+1.服务器重启之后，执行 nginx -t 是OK的，然而在执行 nginx -s reload 的时候报错
+
+`nginx: [error] invalid PID number "" in "/run/nginx.pid"`
+
+解决办法:
+
+```shell
+nginx -c /etc/nginx/nginx.conf
+nginx.conf文件的路径可以从nginx -t的返回中找到。
+nginx -s reload
+```
+
+2.`a duplicate default server for 0.0.0.0:80`
+
+1.nginx: [emerg] a duplicate default server for 0.0.0.0:80 in /etc/nginx/sites-enabled/gitlab:10
+
+删除/etc/nginx/sites-available/default文件，重新启动服务即可
+
+nginx -t :检查配置文件是否出错
+
