@@ -862,8 +862,6 @@ private final Map<String, ObjectFactory<?>> singletonFactories = new Hash
 
 ### 两个缓存能解决不
 
-![](https://raw.githubusercontent.com/YangAnLin/images/master/20200831105700.webp)
-
 A引用创建后，提前暴露到`半成品缓存中`
 
 依赖B，创建B ，B填充属性时发现依赖A， `先从成品缓存查找，没有,再从半成品缓存查找` 取到A的`早期引用`。
@@ -885,8 +883,6 @@ Bean在创建的最后阶段，会检查是否需要创建代理，如果创建�
 也就是说：假设A最终会创建代理，提前暴露A的引用， B填充属性时填充的是A的原始对象引用。A最终放入成品库里是代理的引用。那么B中依然是A的早期引用。这种结果最终会与我们的期望的大相径庭了。
 
 ### 完整的流程
-
-![](https://raw.githubusercontent.com/YangAnLin/images/master/20200831110149.png)
 
 关键点：
 

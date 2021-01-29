@@ -102,3 +102,6 @@ PS C:\Users\anthony> wsl -l -v
 ## EverythingToolbar
 
 `https://github.com/stnkl/EverythingToolbar`
+
+# Navicat破解
+
