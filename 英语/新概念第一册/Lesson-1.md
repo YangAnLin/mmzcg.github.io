@@ -1,502 +1,519 @@
-# Lesson 1
+![](https://cdn.jsdelivr.net/gh/YangAnLin/images/20210205205736.jpeg)
 
-## Key words and expressions
+# 1
 
-|   单词    | 词性 |     翻译      |
-| :-------: | :--: | :-----------: |
-| excuse me |      |     劳驾      |
-|  pardon   |  n   | 原谅,再说一次 |
-|  handbag  |  n   |  女用手提包   |
-| thank you |      |  感谢你(们)   |
-| very much |      |    非常的     |
-|   coat    |      |     大衣      |
+## ------------1----------
 
-##  Language points
+Is this your handbag?
+Yes,it's
+No,it isn't
 
-Excuse me!
+This is my handbag
 
-Yes?
+## ------------3----------
 
-is this your handbag ?
+cloakroom 衣帽存放处
 
-Pardon? 
+想让人出世什么东西,或者让人吧东西递给我,可以用
+* My coat and my umbrella please
+* tickets,please
 
-* I beg your pardon
-
-is this your handbag ?
-
-* 两个爆破音连在一起的时候,前一个失去爆破(hanbag)
-
-Yes it is
-
-* 以辅音结尾,原因开头,要连着一块读
-
-Thank you very much
-
-* 其它感谢的方式
-
-* Thank you
-
-* Thanks
-
-* Thanks a lot (非常的感谢,强调)
-
-
-##  Sentence patterns
-
-```
-# 疑问句
-Is this your ...?
-
-Yes,It is
-
-# 肯定句
-This is my
-```
-
-# Lesson 2
-
-## Practise
-
-```
-Is this your pen?
-Yes,it is
-
-Is your pencil
-Yes,it is
-
-Is this your book?
-Yes,it is
-
-Is this your watch?
-Yes,it is
-
-# 这是你的大衣吗
-Is this your coat? 
-Yes,it is
-
-# 连衣裙 套裙
-Is this your dress?
-Yes,it is
-
-# 短裙
-Is this your skirt?
-Yes,it is
-
-Is this your shirt?
-Yes,it is
-
-Is this your car?
-Yes,it is
-
-Is this your house?
-Yes,it is
-```
-
-# Lesson 3
-
-## Key words and expression
-
-|   单词    | 词性 |    翻译    |
-| :-------: | :--: | :--------: |
-| umbrella  |  n   |     伞     |
-|  number   |  n   |    号码    |
-|  please   | int  |     请     |
-|   sorry   | adj  |  对不起的  |
-|  ticket   |  n   |     票     |
-| cloakroom |  n   | 衣帽存放处 |
-
-## Language points
-
-`My coat and my umbrella please`
-
-* Ticket,please
-* A cup of coffee,please
-* 想让别人出示什么东西,或者让别人把东西递给我
-
-`Here is my ticket`
-
+把东西递给比人,可以用
+* Here is my ticket
+* Here's my ticket 缩写形式
 * Here's your umbrella and your coat
 
-	*  把东西给别人的时候
+中英文顺序的区别
+Number five
+Class Two
+Room 103
 
-`Thank you sir`
+not加在is的后面标识否定
+This is not my umbrella
+This isn't my umbrella
 
-`Number five`
-
-* Class Two 二班
-* Room 103 103号房
-
-`Here's your umbrella and your coat`
-
-`This is not my umbrella`
-
-* This is not my watch
-* This isn't my watch
-* is + not 标识否定
-
-`Is this your umbrella?`
-
-`No, it isn't`
-
-* it是代词,代表的umbrella
-
-`Is this it?`
-
-`Yes,it is`
-
-`Thank you very much`
-
-## Sentence patterns
-
-`This isn't my .... `
-
-* This isn't my coat
-
-`Is this your ?`
-
-* Is this your coat?
-
-`No,it isn't`
-
-# Lesson 4
-
-## Practise
-
-```
-Is this your pan?
-No,it isn't
-
-Is this your pencil?
-No,it isn't
-
-Is this your book?
-No,it isn't
-
-Is this your watch?
-No,it isn't
+## ------------4----------
 
 Is this your coat?
 No,it isn't
 
-Is this your dress
+Is this your dress?
 No,it isn't my dress,It's your dress
 
-Is this your skirt
-No,it isn't my skirt,It's your skirt
-
-Is this your shirt?
-No,it isn't my shirt,It's your shirt
-
-Is this your car?
-No,it isn't
-
-Is this your house?
-No,it isn't
-
-# 男士西装
-Is this your suit?
-No,it isn't
-
-Is this your school?
-No,it isn't
-
-Is this your teacher?
+问老师
+It this your teacher?
 No,he isn't
 
-Is this your son?
-No,he isn't
-
-Is this your daughter?
+It this your daughter?
 No,she isn't
-```
 
-# Lesson 5
+## ------------5----------
+把某个人介绍给大家
+This is Miss Steven
+This is Hans
 
-## key words and expression
-|  单词   | 词性 |  翻译  |
-| :-----: | :--: | :----: |
-|  good   |      | 早上好 |
-|  nice   | adj  | 没好的 |
-|  meet   |  v   |  遇见  |
-| student |  n   |  学生  |
-| French | adj& n    | 法国人 |
-| German | adj& n    | 德国人 |
-| Japanese | adj& n    | 日本人 |
-| Korean | adj& n    | 韩国人 |
-| Chinese | adj& n    | 中国人 |
+某人是什么,或者某件东西是什么
+Hans is a new student
+Amy is a teacher
+Toyota is a Japanese cat
 
-## Language points
+形容前不能加a
+She is French
+He is German
 
-``Good morning`
+## ------------6----------
 
-* Good afternoon
-* Good evening
-* Good night
+Is it a French car?
+No,it isn't===> it is not
 
-`Good morning,Mr blake`
-
-`This is Miss Sophie Dupont`
-
-*  miss 指未婚的小结
-* Sophie 是名字
-* Dupont 姓
-* 名在前,姓在后
-
-`Sophie is a new student`
-
-* Chang-woo is a teacher
-* Toyota is a Japanese car
-* 某人是 什么
-* 某件东西是什么
-
-`She is French`
-
-* She's Chinese
-* 说到国籍的时候,French是形容词,前面不能加 a
-
-* 介绍给别人
-
-`He is German`
-
-`Nice to meet you`
-
-* Please to meet you
-* 问好
-
-`And this is Naoko`
-
-`She is Japanese`
-
-`Nice to meet you`
-
-`And this is Chang-woo`
-
-`He's Korean`
-
-`Nice to meet you`
-
-`And this is Luming`
-
-`He's Chinese`
-
-`Nice to meet you`
-
-`And this is Xiaohui`
-
-`She's Chinese,too`
-
-`Nice to meet you`
-
-## Sentence patterns
-
-This is 这一位是
-
-He/She/It is a
-
-He's/She's/It's
-
-This is LiMing
-
-He is a new teacher
-
-He's Chinese
-
-# Lesson 6
-
-Is this a French car?
-
-No,it isn't
-
+Is it a Swedish car?
 Yes,it is
 
+Is it Japanese or German?
+It isn't Japanese,It's German
 
+a和an的区别,元音字母开头的,要是用an
+Is it a Korean or an English car?
+It's not an English car. It's Korean cat   => it is not
 
-# Lesson 7
+Is it an America cat?
+Yes,It's
+What make is it?  什么牌子
+It's a fold
 
-## Key words and expression
-|    单词     | 词性 |   翻译   |
-| :---------: | :--: | :------: |
-|    name     |  n   |   名字   |
-| nationality |  n   |   国籍   |
-|     job     |  n   |   工作   |
-|  keyboard   |  n   | 电脑键盘 |
-|  operator   |  n   | 操作人员 |
-|  engineer   |  n   |  工程师  |
+## ------------7----------
 
-## Language points
-
-`ROBERT: I am a new student.My name's Robert.`
-
-* What's your name?
-* 问别人的名字
-
-`SOPHIE: Nice to meet you.My name's Sophie.`
-`ROBERT: Are you French?`
-
-* 问别人什么国籍
-
-`SOPHIE: Yes, I am.`
-`SOPHIE: Are you French too?`
-`ROBERT: No, I am not.`
-`SOPHIE: What nationality are you?`
-
-* What's your nationality?
-* What's nationality is he?`他是哪个国家的`
-* Where are you from?
-* 问别人什么国籍
-
-`ROBERT: I'm Italian.`
-`ROBERT: Are you a teacher?`
-`SOPHIE: No, I'm not.`
-`ROBERT: What's your job?`
-
-* 如果要询问他是做什么工作的
-* What's his job?
-
-`SOPHIE: I'm a keyboard operator.`
-`SOPHIE: What's your job?`
-`ROBERT: I'm an engineer`
-
-## Sentence patterns
-
-### What's your name?
-
+问名字
+What's your name?
 My name's Anthony
 
-Are you Anthony?
+问国籍
+Are you French?
+Yes,I am
+No,I am not
 
-### What nationality are you?
+What nationality are you?
+I'm Italian
 
-I'm Chinese
+What nationality is he?
 
-Are you Chinese?
+问工作
+Are you a teacher?
+No,I'm not
 
-### What's your job?
-
-I'm an Engineer
-
-Are you en Engineer?
-
-
-
-# Lesson 8
-
-What's your job?
-
-I'm a policeman
-
-I'm a policewoman
-
-I'm a taxi driver
-
-I'm an air hostess
-
-
+What's your job
+I'm operator
 
 What's his job?
+He's an engineer
 
+
+
+## ------------8----------
+
+What's your job?
+I'm a policeman
+I'm an air hostess(空中小姐)
+
+what's his job?
 He's a postman
 
-He's a mechanic`机械师`
+What's her job?
+She's a nurse(护士)
 
-He's a hairdresser `理发师`
+What's his job?
+He's a mechanic(机械师)
 
-He's a milkman`送牛奶的人`
-
-
+What's his job?
+He's a hairdresser(理发师)
 
 What's her job?
+She's a housewife(家庭主妇)
 
-She's a nurse
+What's his job?
+He's a milkman
 
-She's a housewife
+## ------------9----------
 
-# Lesson 9
-
-## key words and expression
-|  单词  | 词性 |  翻译  |
-| :----: | :--: | :----: |
-| today  | adv  |  今天  |
-|  well  | adj  | 身体好 |
-|  fine  | adj  | 美好的 |
-| thanks | int  |  谢谢  |
-|  see   |  v   |   见   |
-
-## Language points
-
-`STEVEN: Hello, Helen.`
-`HELEN: Hi, Steven.`
-`STEVEN: How are you today?`
-
-* 你今天怎么样
-
-`HELEN: I'm very well, thank you.And you?`
-
-* 询问别人好不好
-* How are you doing?
-* What's new?
-
-`STEVEN: I'm fine, thanks.`
-`STEVEN: How is Tony?`
-`HELEN: He's fine, thanks.How's Emma?`
-`STEVEN: She's very well, too, Helen.`
-`STEVEN: Goodbye, Helen.Nice to see you.`
-`HELEN: Nice to see you, too, Steven.Goodbye.`
-
-* nice to meet you 
-* nice seeing you
-
-## Sentence patterns
-
+关心你
 How are you today?
+How are you doing?
 
-I'm fine,thanks
-
-
-
+关心其他人
 How is Tony?
+He's fine
 
-He's very well
+How's Emma?
+She's very well
 
-# Lesson 10
 
+##  ------------10----------
+Look at that man!
+Is he thin?
+No,He isn't
+Is he fat?
+Yes,He is
+
+Look at that women!
+Is she fat?
+No,She isn't
 Is she thin?
+Yes,She is
 
+Look at that policeman!
 Is he short?
+No,He is't
+Is he tall?
+Yes,He is
 
-# Lesson 11
+Look at that women!
+Is she tall?
+No,She isn't
+Is she short?
+Yes,She is
+
+Is that mechanic clean or dirty?
+He's not clean,He's dirty
+
+Look at steven!
+Is steven cold or hot?
+He's not cold,He's hot
+
+look at Emma
+Is Emma hot or cold
+She's not hot,She'cold
+
+That milkman is old
+He's very old
+
+Look at that air hostess!
+That air hostess is young
+She's very young
+
+That hairdresser is busy
+He's very busy
+
+## ------------11----------
+
+whose 谁的
+
+那是谁的衬衫
+Whose shirt is that?
+Whose is that shirt?
+
+是我的衬衫
+It's my shirt
+
+是谁谁的什么吗
+Is this shirt Tim's?
+Is this book Stella's?
+Is that pen your father's?
+
+这是你的吗
+Is this your shirt?
+
+Tim's shirt's white
+
+Whose is this ...?        是谁的什么?
+It's...                   是谁的!
+This is my/your/his/her   这是我的,你的,他的,她的
+
+Whose is this dress?
+It's Emma's
+This is her dress
+
+
+## ------------12----------
+
+Whose is this handbag?
+It's Anthony's
+
+Whose is that cat?
+It's poll's
+
+Whose is this coat?
+It's anthony's
+
+Whose is that umbrella?
+It's anthony's
+
+Whose is this pen?
+Its' my son's
+This is his pen
+
+Whose is that dress?
+It's my daughter
+That is her dress
+
+Is this suit your brother's or your's father's?
+It's not my brother's,It's my father's
+
+Is that shirt your sister's or your mother's?
+It's not my mother's,It's my sister's
+
+Is this blouse your mother's?
+No,it isn't
+Whose is it?
+It's my sister's
+
+Is this tie your father's?
+No,It isn't
+It's my brother's
+
+
+## ------------13----------
+
+What color's your dress?
+It's green
+
+What color is it?
+
+
+## ------------14----------
+
+What color's your umbrella?
+What color's your car?
+What color's your shirt?
+What color's your case?
+What color's your carpet(地毯)?
+It's black
+It's brown(棕色)
+
+What color is Anthony's blouse(衬衫)?
+It's red!
+
+
+What color is this hat?
+It's grey
+
+what color is that dog?
+It's brown
+
+
+## ------------15----------
+
+customers 海关
+officer 官员
+Danish 丹麦人
+Norwegian 挪威人
+
+可数名词复数形式
+book->books
+
+你们是?
+1.Are you?
+Are you French?
+No,we aren't ,We're German
+
+Are you tourists?
+Yes,we are
+
+2.Are these your ....?
+3.Waht color are your ...?
+
+Are these your cases?
+Yes,they are
+What color are your cases?
+
+
+## ------------16----------
+Are you English?
+No,we are not,We are Russian(俄罗斯人)
+
+Are you Amercian?
+No,we aren't.We're English
+
+Are you Dutch(荷兰)?
+No,we are not ,We're Amercian
+
+What nationality are they?
+Thry're Dutch
+
+are these your tickets?
+Yes,they are
+
+What color are your tickets?
+They are yellow
+
+Are these your passports?
+Yes,They are
+
+What color are your passports?
+They are green
+
+## ------------17----------
+
+hard-working 勤奋的
+sales rep 推销员
+
+women 是woman的复数形式,不规则变化
+
+those 是that的复数形式,那些
+
+their 他们的
+
+可数名词复数形式的特殊规则
+dress dresses
+box    boxes
+whatch watches
+dish dishes
+
+man  men
+woman  women
+housewife housewifes
+knife knifes
+
+what are their jobs?
+Ther're teachers
+
+
+## ------------18----------
+
+What are their jobs?
+they're engineers
+
+代词
+
+
+## ------------19----------
+
+matter 事情
+thirsty 累,疲乏
+
+What's the matter  =  What's wrong
+
+Are you all right now?= Are you ok now?
+
+复数代词+形容词
+We're hungry
+We're happy
+
+
+There's an ice cream man
+
+These windows are open
+Those boxs are heavy
 
 
 
+## ------------20----------
+
+Those 那些,These 这些
+
+Are that boy's shoes dirty?
+No,They aren't
+Are they clean?
+Yes,they are
+
+Are those hairdressers thin or fat?
+they're not thin,They're fat
+
+Are these hairdressers fat or thine
+They're not fat,They're thin
+
+those shops are open
+these shops are shut
+
+Those cases are light(轻)
+These caese are heavy
+
+Father and mother are very old
+
+Those hats are very old
+These hats are very new
+
+Those trousers(裤子) are short
+These trousers are long
 
 
+## ------------21----------
+祈使句
+Give me an umbrella please   =please Give me an umbrella 
+Give him a  pencil please
+
+宾语 
+me ,him
+
+句型
+Give me/him/her/us/them a ...
+Which on?
+The 形容词 one
+
+Give her a spoon(勺子) please
+which on?
+The small(小) one
+
+## ------------22----------
+
+This 近的,近的
+That 那些,远的
+
+Give me a cup(茶杯) please
+Which one? This dirty one?
+No,not this dirty one ,that clean one
+
+Give me a glass(玻璃杯) please
+Which one?That full one?
+no,not that full(满) one,this empty(空) one
+
+Give me a bottle(瓶子)
+Which one?this large one?
+No,not this large one.That small one
+
+Give hime a tin(罐子) please
+Which one?This new one ?
+No,not this new one.That old one
+
+Give her a knife(刀子) please
+Which one?That blunt(钝的) one?
+No,not that blunt one.This sharp(锋利) one
 
 
+## ------------23----------
+介词
 
 
+短语
+one the shelf 在架子上
+under the table 在桌子下面
+in the box  在箱子里面
+
+Give us some cups please
+Give them some cases please
 
 
+Give me /him / her /us / them /some ...
+which ones?
+The ones ...
 
+Give him some books please
+whick ones?
+The ones in the bag
 
+## ------------24----------
 
+介词短语
 
+Give me some pens please?
+Which ones?The ones on the desk(书桌)
 
+Give him some ties please
+Whick ones? The ones on the chair
 
+Give her some spoons please
+whick ones?The ones one the table(一般的桌子)
 
+Give us some plates(碟子) please
+Whick ones? The ones on the cupboard(橱柜)
 
+Give them some cigarettes please
+Whick ones?The ones one the television(电视机)
 
+Give her some bottles please
+Which ones?The ones on the dressing table(梳妆台)
 
+Give Tim some bokks please
+Which ones?The ones on the shelf
 
-
-
-
-
-
-
-
-
-
-
-
-
+Give me children some newspapers please
+Which ones?The ones one the stereo(立体声音响)
