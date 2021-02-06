@@ -498,13 +498,13 @@ Give me some pens please?
 Which ones?The ones on the desk(书桌)
 
 Give him some ties please
-Whick ones? The ones on the chair
+Which ones? The ones on the chair
 
 Give her some spoons please
-whick ones?The ones one the table(一般的桌子)
+Which ones?The ones one the table(一般的桌子)
 
 Give us some plates(碟子) please
-Whick ones? The ones on the cupboard(橱柜)
+Which ones? The ones on the cupboard(橱柜)
 
 Give them some cigarettes please
 Whick ones?The ones one the television(电视机)
