@@ -517,3 +517,102 @@ Which ones?The ones on the shelf
 
 Give me children some newspapers please
 Which ones?The ones one the stereo(立体声音响)
+
+## ------------25----------
+
+知识点:在什么地方有什么东西
+
+There is ... on/in ...
+
+
+
+Kitchen 厨房
+
+refrigerator=fridge 电冰箱
+
+electric cooker 电炉
+
+one the left/right 在左边,右边
+
+in the middle of 在中间
+
+small 小的
+
+
+
+There is a table in the middle of the room
+
+房间里有个桌子
+
+There is a bottle in the refrigerator,不定冠词(a)
+
+冰箱里有个瓶子
+
+The bottle is empty,定冠词(the)
+
+
+
+There isn't a bottle in the refrigerator
+
+冰箱里没有瓶子
+
+Is there a bottle in the refrigerator?
+
+冰箱里有瓶子吗?
+
+## ------------26----------
+
+There is a cup on the table
+
+The cup is clean
+
+
+
+There is a box on the floor
+
+The box is large
+
+
+
+There is a glass in the cupboard
+
+The glass is empty
+
+
+
+There is a knife on the plate
+
+The knife is sharp
+
+
+
+There is a fork one the tin
+
+The fork is dirty
+
+
+
+Is there a fork one the plate?
+
+No,there isn't
+
+Where's the fork
+
+It's one the tin,It's dirty
+
+
+
+Is there a bottle in the cupboard?
+
+No,isn't
+
+Where's the bottle?
+
+It's in the fridge,It's full
+
+## ------------27----------
+
+
+
+
+

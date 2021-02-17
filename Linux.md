@@ -170,6 +170,25 @@ The following packages have unmet dependencies:
 sudo apt install libpcrecpp0v5=2:8.39-12build1 libpcre3=2:8.39-12build1
 ```
 
+### Zsh安装
+
+```shell
+$ sudo apt-get install zsh
+# 验证是否安装成功
+$ zsh --version
+
+# 将 Zsh 设为默认 Shell
+$ sudo chsh -s $(which zsh)
+
+# 安装oh my zsh
+https://ohmyz.sh/
+
+# 注销当前用户重新登录
+
+# 若输出为 /bin/zsh 或者 /usr/bin/zsh 则表示当前默认 Shell 是 Zsh
+$ echo $SHELL
+```
+
 ## 系统命令
 
 ### 修改时区
