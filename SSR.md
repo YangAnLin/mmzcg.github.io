@@ -139,7 +139,7 @@ npm run build
 | 站点     | https://airports.ink        |                                          |
 | 后台站点 | https://admin.airports.ink  |                                          |
 | 邮箱     | https://mail.protonmail.com | 账号密码:airports.ink  / Lee072224820522 |
-|          |                             |                                          |
+| aws      |                             |                                          |
 
 # 转载
 

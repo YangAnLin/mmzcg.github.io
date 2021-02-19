@@ -22,3 +22,9 @@ console.log('Server running at http://127.0.0.1:8888/');
 node server.js
 ```
 
+Npm升级
+
+```shell
+npm i -g npm to update
+```
+
