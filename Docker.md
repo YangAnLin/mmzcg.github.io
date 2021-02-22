@@ -413,3 +413,6 @@ docker run -d -p 2181:2181 --name some-zookeeper --restart=always zookeeper
 docker run -d -p 3000:3000 --name=grafana grafana/grafana
 ```
 
+## 安装WordPress
+
+[docker-compose安装WordPress](https://blog.csdn.net/shangyexin/article/details/106311376)
