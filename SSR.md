@@ -139,7 +139,7 @@ npm run build
 | 站点      | https://airports.ink        |                                          |
 | 后台站点  | https://admin.airports.ink  |                                          |
 | 邮箱      | https://mail.protonmail.com | 账号密码:airports.ink  / Lee072224820522 |
-| wordpress | 54.226.188.231:8000         | 账号密码:admin  /  Lee07224820522        |
+| wordpress | blog.airports.ink           | 账号密码:admin  /  Lee07224820522        |
 
 # 转载
 
@@ -147,3 +147,11 @@ npm run build
 
 [ss-bash](https://github.com/hellofwy/ss-bash/wiki)
 
+
+
+## SS源码
+
+```解密
+# 源码在这里
+https://github.com/golang/crypto
+```
