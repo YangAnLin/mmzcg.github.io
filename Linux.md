@@ -191,6 +191,24 @@ $ echo $SHELL
 
 ## 系统命令
 
+### Update索引失效
+
+```shell
+正在读取软件包列表... 完成
+E: 无法下载 http://mirror.rise.ph/ubuntu/dists/focal-updates/main/dep11/Components-amd64.yml.xz  文件尺寸不符(264288 != 264484)。您使用的镜像正在同步中？ [IP: 43.226.6.79 80]
+   Hashes of expected file:
+    - Filesize:264484 [weak]
+    - SHA256:ea09acc6bddd6a503a3812ba1d3a025e5515c5469dcad172c86e2bda6f203752
+    - SHA1:60863a9cc3181eb87007edcfc2de1ba6a0b81a5f [weak]
+    - MD5Sum:80baa34a1b24d245341757fa51ebd29e [weak]
+   Release file created at: Sat, 27 Feb 2021 08:09:39 +0000
+E: 部分索引文件下载失败。如果忽略它们，那将转而使用旧的索引文件。
+
+# 解决办法
+sudo  rm -rf  /var/lib/apt/lists/partial/
+sudo apt update
+```
+
 ### 修改时区
 
 ```shell
