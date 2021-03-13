@@ -1356,3 +1356,16 @@ sudo gedit /etc/NetworkManager/nm-system-settings.conf
 sudo service network-manager restart
 ```
 
+## aws秘钥改成密码访问
+
+```shell
+sudo passwd root
+su root
+
+vim /etc/ssh/sshd_config
+PasswordAuthentication no =》 将no 修改为 yes
+PermitRootLogin =》改成 PermitRootLogin yes
+
+sudo service sshd restart
+```
+

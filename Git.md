@@ -74,7 +74,7 @@ git push
 git checkout -- file
 
 # 已经commit了,但是还没有push
-git reset HEAD reademe.txt
+git reset --soft HEAD^
 
 # 现在就已经把暂存区恢复到工作了
 ```

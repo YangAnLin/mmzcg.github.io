@@ -125,6 +125,7 @@ http {
     # 这个参数表示http连接超时时间，默认是65s。要是上传文件比较大，在规定时间内没有上传完成，就会自动断开连接！所以适当调大这个时间。
     keepalive_timeout  0;
     keepalive_timeout  5000;
+    
     # 开启gzip模块
     gzip  on;
     gzip_min_length 1100;
@@ -309,7 +310,7 @@ kill -int pid(master线程)
 
 # Nginx报错
 
-1.服务器重启之后，执行 nginx -t 是OK的，然而在执行 nginx -s reload 的时候报错
+### 1.服务器重启之后，执行 nginx -t 是OK的，然而在执行 nginx -s reload 的时候报错
 
 `nginx: [error] invalid PID number "" in "/run/nginx.pid"`
 
@@ -321,11 +322,21 @@ nginx.conf文件的路径可以从nginx -t的返回中找到。
 nginx -s reload
 ```
 
-2.`a duplicate default server for 0.0.0.0:80`
+### 2.`a duplicate default server for 0.0.0.0:80`
 
 1.nginx: [emerg] a duplicate default server for 0.0.0.0:80 in /etc/nginx/sites-enabled/gitlab:10
 
 删除/etc/nginx/sites-available/default文件，重新启动服务即可
 
 nginx -t :检查配置文件是否出错
+
+### 3.403
+
+```shell
+打开nginx.conf
+
+例子：vim /etc/nginx/nginx.conf
+
+把 user 用户名 改为 user root 或 其它有高权限的用户名称即可
+```
 
