@@ -84,3 +84,28 @@ server {
 | 主机名:     | localhost     |
 | 数据库帐户: | yanganli_blog |
 | 密码:       | lee22259669   |
+
+# Vultr上安装
+
+
+
+[上传备份](https://import.wp-migration.com/)
+
+安装SSL
+
+```shell
+# 安装证书
+certbot --nginx --redirect -d blog.airports.ink -m y950727@gmail.com --agree-tos --no-eff-email 
+
+# 配置证书
+vim /etc/nginx/conf.d/wordpress_http.conf
+vim /etc/nginx/conf.d/wordpress_https.conf
+
+server{
+	ssl_certificate /etc/nginx/ssl/server.crt;                                                                              
+	ssl_certificate_key /etc/nginx/ssl/server.key; 
+}   
+```
+
+
+

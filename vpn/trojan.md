@@ -4,34 +4,69 @@ openssl x509 -in fullchain.pem -out fullchain.crt
 
 # 完整编译trojan-go
 go build -tags "full"
-
-# 生成证书
-# 下载acme
-curl  https://get.acme.sh | sh
-# 设置别名
-alias acme.sh=~/.acme.sh/acme.sh
-# 有两种方法
-# 1.HTTP
-# 1.安装软件,socat启动一个80端口的临时服务器
-apt install socat
-acme.sh --issue -d airports.ink --standalone
-cd /root/.acme/airports.ink/
-# 2.DNS
 ```
 
 ```shell
+# 下载安装
+# 下载解压工具
+apt install unzip
+# 下载安装包
+wget https://github.com/p4gefau1t/trojan-go/releases/download/v0.8.2/trojan-go-linux-amd64.zip
+# 解压安装包
+unzip trojan-go-linux-amd64.zip -d /etc/trojan-go
+# 移动启动配置文件
+mv /etc/trojan-go/example/server.json /etc/trojan-go
+# 移动开机自启动配置文件
+mv /etc/trojan-go/example/trojan-go.service /etc/systemd/system
 
-    5  apt install unzip
-    2  wget https://github.com/p4gefau1t/trojan-go/releases/download/v0.8.2/trojan-go-linux-amd64.zip
-    4  unzip trojan-go-linux-amd64.zip -d /etc/trojan-go
-    7  cd /etc/trojan-go/
-    17  cp /etc/trojan-go/example/server.json /etc/trojan-go
-   18  cp /etc/trojan-go/example/trojan-go.service /etc/systemd/system
-   22  ./trojan-go -config ./server.json 
-   20  vim ./server.json 
-   47  acme.sh  --issue -d airports.ink   --standalone
-       53  cp airports.ink.cer /etc/trojan-go/airports.ink.cer
-   54  cp airports.ink.key /etc/trojan-go/airports.ink.key
-   60  ./trojan-go -api-addr 127.0.0.1:10000 -api list
+# 在DNS添加一条记录:IP指向域名
+# cloudfare需要用DNS解析
+
+# 安装证书
+# 安装acme.sh
+curl https://get.acme.sh | sh
+# 生效acme.sh
+source ~/.bashrc
+# 假装80端口的网站,Http认证
+apt install socat
+acme.sh --issue -d airportstech.xyz --standalone
+# 迁移证书位置
+cp /root/.acme.sh/域名/域名.cer /etc/trojan-go/airports.ink.cer
+cp /root/.acme.sh/域名/域名.key /etc/trojan-go/airports.ink.key
+
+# 编辑trojan-go配置文件
+vim /etc/trojan-go/server.json
+{
+    "run_type": "server",
+    "local_addr": "0.0.0.0",
+    "local_port": 443,
+    "remote_addr": "blog.airports.ink",
+    "remote_port": 443,
+    "password": [
+        "123456"
+    ],
+    "ssl": {
+        "cert": "airportstech.xyz.cer",
+        "key": "airportstech.xyz.key",
+        "sni": "airportstech.xyz"
+    },
+    "router": {
+        "enabled": true,
+        "block": [
+            "geoip:private"
+        ],
+        "geoip": "/etc/trojan-go/geoip.dat",
+        "geosite": "/etc/trojan-go/geosite.dat"
+    },
+    "api": {
+        "enabled": true,
+        "api_addr": "127.0.0.1",
+        "api_port": 10000
+        }
+
+}
+
+# 启动
+/etc/trojan-go/trojan-go -config /etc/trojan-go/server.json
 ```
 

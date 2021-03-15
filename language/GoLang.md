@@ -67,15 +67,51 @@ hello world
 
 # 注释
 
-`//` 行注释
+```go
+// 行注释
 
-`**` 块注释
+/*
+多行注释
+*/
+```
 
 `gofmt -w demo.go` 格式化工具
 
-# 变量
+# 声明变量
 
-第一种赋值
+基本类型,声明变量,不赋值,就有默认值
+
+```go
+func main() {
+	// 不赋值,存在默认值
+	var age, age2, age3 int
+	println("不赋值,就打印默认值:", age, age2, age3)
+}
+```
+
+一次性声明不同类型的变量
+
+```go
+func method5() {
+	var age, name = 10, "anthony"
+	println("可以声明不同类型,只能自动推导,不能定义类型:", age, name)
+
+	// 报错,多变量赋值值,不能声明类型
+	var age2 int,name2 string = 10, "anthony"
+	println(age2,name2)
+}
+
+func method6() {
+	var (
+		age  int    = 23
+		name string = "anthony"
+		sex  bool
+	)
+	println("使用集合的方式声明变量,可以声明不同类型,并且可以赋值", age, name, sex)
+}
+```
+
+先声明,后赋值
 
 ```go
 func main() {
@@ -87,6 +123,382 @@ func main() {
 	fmt.Print("i=", i)
 }
 ```
+
+类型推导
+
+```go
+func method2() {
+	var name = "anthony"
+	print("类型推导:", name)
+}
+```
+
+# 字符串
+
+```go
+func main() {
+	name := "Hello World"
+	for index := range  name {
+		fmt.Printf("遍历字符串:%v,%v\n",index,name[index])
+	}
+}
+```
+
+# 常量
+
+常量是一个简单值的标识符，在程序运行时，不会被修改的量
+
+出于习惯,常量用大写,不过小写也没有问题
+
+```go
+// 常量的格式定义
+const identifier [type] = value
+// 显式类型定义
+const A string = "abc"
+// 隐式类型定义
+const B = "abc"
+// 多个相同类型的声明可以简写为
+const C,D = 1,2
+// 多个不同类型的声明可以简写为
+const E, F, G = 1, false, "str"
+```
+
+# 常量用作枚举
+常量可以作为枚举，常量组
+```go
+func main() {
+
+	const (
+		RED   = 1
+		BLACK = 2
+		WHITE = 3
+	)
+
+	const (
+		x int = 16
+		y
+		s = "abc"
+		z
+	)
+
+	fmt.Println(RED, BLACK, WHITE)
+	fmt.Println("常量组中如不指定类型和初始化值，则与上一行非空常量右值相同:", x, y, s, z)
+}
+```
+
+# 特殊常量:iota
+iota，特殊常量，可以认为是一个可以被编译器修改的常量
+1. 如果中断iota自增，则必须显式恢复。且后续自增值按行序递增
+2. 自增默认是int类型，可以自行进行显示指定类型
+3. 数字常量不会分配存储空间，无须像变量那样通过内存寻址来取值，因此无法获取地址
+```go
+func demo() {
+	// 报错
+	//a = iota
+
+	const (
+		a = iota //0
+		b        //1
+		c        //2
+		d = "ha" //独立值，iota += 1
+		e        //"ha"   iota += 1
+		f = 100  //iota +=1
+		g        //100  iota +=1
+		h = iota //7,恢复计数
+		i        //8
+	)
+	fmt.Println(a, b, c, d, e, f, g, h, i)
+}
+```
+
+# type
+
+```go
+func main() {
+
+	// 类型转换
+	var one int = 17
+	mean := float32(one)
+	fmt.Println(mean)
+
+	// 字符串不能强转整型
+
+}
+```
+
+# 命令行输入
+
+```go
+func method_if() {
+	reader := bufio.NewReader(os.Stdin)
+	str, _ := reader.ReadString('\n')
+	fmt.Printf("输入的值是:%s\n", str)
+}
+```
+
+# 流程控制
+
+```go
+// if
+func method_if() {
+
+	reader := bufio.NewReader(os.Stdin)
+	str, _ := reader.ReadString('\n')
+
+	if str == "" {
+		fmt.Println("空的")
+	}
+
+	fmt.Printf("输入的值是:%s\n", str)
+
+}
+
+
+// if-else
+func method_if2() {
+
+	if num := 10; num%2 == 0 { //checks if number is even
+		fmt.Println(num, "is even")
+	} else {
+		fmt.Println(num, "is odd")
+	}
+
+}
+
+// switch
+func method_switch() {
+
+	num := 1
+	result := -1
+
+	switch num {
+	case 1:
+		result = 1
+	case 2, 3, 4:
+		result = 2
+	default:
+		result = -2
+
+	}
+
+	fmt.Println(result)
+
+}
+
+// for  开始012345678910结束
+func demo() {
+	fmt.Print("开始")
+	for i := 0; i <= 10; i++ {
+		fmt.Print(i)
+	}
+	fmt.Print("结束")
+}
+
+// break 开始01234结束
+func demo_break() {
+
+	fmt.Print("开始")
+	for i := 0; i <= 10; i++ {
+		if i == 5 {
+			break
+		}
+		fmt.Print(i)
+	}
+
+	fmt.Print("结束")
+}
+
+// coutinue   1 3 5 7 9 
+func demo_continue() {
+
+	for i := 1; i <= 10; i++ {
+		if i%2 == 0 {
+			continue
+		}
+		fmt.Printf("%d ", i)
+	}
+}
+
+// go
+// 会打印两次 ===
+func demo_goto() {
+
+	/* 定义局部变量 */
+	var a = 0
+
+	/* 循环 */
+LOOP:
+	fmt.Println("===")
+	for a < 10 {
+		if a == 5 {
+			/* 跳过迭代 */
+			a = a + 1
+			goto LOOP
+		}
+		fmt.Printf("a的值为 : %d\n", a)
+		a++
+	}
+}
+```
+
+# 函数
+
+```go
+// 函数的定义
+func 函数名字(参数名字 参数类型,参数名字 参数类型.... )返回值类型 {
+   函数体
+}
+
+// 函数的使用
+// 函数返回两个数的最大值
+func max(num1, num2 int) int {
+   /* 声明局部变量 */
+   var result int
+
+   if (num1 > num2) {
+      result = num1
+   } else {
+      result = num2
+   }
+   return result
+}
+
+// 函数调用
+func main() {
+   /* 定义局部变量 */
+   var a int = 100
+   var b int = 200
+   var ret int
+
+   /* 调用函数并返回最大值 */
+   ret = max(a, b)
+
+   fmt.Printf( "最大值是 : %d\n", ret )
+}
+```
+
+# 函数返回多个值
+
+```go
+// 入参多个值,x和y 都是字符串
+// 返回值是多个,都是字符串
+func swap(x, y string) (string, string) {
+   return y, x
+}
+
+func main() {
+   a, b := swap("Google", "Runoob")
+   fmt.Println(a, b)
+}
+```
+
+# 函数作为实参
+
+```go
+type fb func(x int) int
+
+func main() {
+
+   myfunc := func(x int) int{
+      return x
+   }
+
+    // 知识点1
+	fmt.Println(myfunc(3))
+    
+    // 知识点2
+	demo(2, myfunc)
+}
+
+// 函数作为参数传递，实现回调
+func demo(x int,myfb fb)  {
+	myfb(x)
+}
+```
+
+# 值传递
+
+程序中使用的是值传递, 所以两个值并没有实现交互
+
+```go
+func main() {
+   /* 定义局部变量 */
+   var a int = 100
+   var b int = 200
+
+   fmt.Printf("交换前 a 的值为 : %d\n", a )
+   fmt.Printf("交换前 b 的值为 : %d\n", b )
+
+   /* 通过调用函数来交换值 */
+   swap(a, b)
+
+   fmt.Printf("交换后 a 的值 : %d\n", a )
+   fmt.Printf("交换后 b 的值 : %d\n", b )
+}
+
+/* 定义相互交换值的函数 */
+func swap(x, y int) int {
+   var temp int
+
+   temp = x /* 保存 x 的值 */
+   x = y    /* 将 y 值赋给 x */
+   y = temp /* 将 temp 值赋给 y*/
+
+   return temp;
+}
+
+
+//交换前 a 的值为 : 100
+//交换前 b 的值为 : 200
+//交换后 a 的值 : 100
+//交换后 b 的值 : 200
+```
+
+# 引用传递
+
+```go
+func main() {
+   /* 定义局部变量 */
+   var a int = 100
+   var b int= 200
+
+   fmt.Printf("交换前，a 的值 : %d\n", a )
+   fmt.Printf("交换前，b 的值 : %d\n", b )
+
+   /* 调用 swap() 函数
+   * &a 指向 a 指针，a 变量的地址
+   * &b 指向 b 指针，b 变量的地址
+   */
+   swap(&a, &b)
+
+   fmt.Printf("交换后，a 的值 : %d\n", a )
+   fmt.Printf("交换后，b 的值 : %d\n", b )
+}
+
+func swap(x *int, y *int) {
+   var temp int
+   temp = *x    /* 保存 x 地址上的值 */
+   *x = *y      /* 将 y 值赋给 x */
+   *y = temp    /* 将 temp 值赋给 y */
+}
+
+//交换前，a 的值 : 100
+//交换前，b 的值 : 200
+//交换后，a 的值 : 200
+//交换后，b 的值 : 100
+```
+
+# 方法(OOP)
+
+```go
+
+```
+
+
+
+
+
+
 
 # modules
 
