@@ -130,7 +130,7 @@ http {
     gzip  on;
     gzip_min_length 1100;
     gzip_buffers 4 8k;
-    gzip_types text/plain application/x-javascript text/css application/xml;
+    gzip_types text/plain application/x-javascript text/css application/xml text/javascript application/x-httpd-php application/javascript application/json;
     output_buffers 1 32k; 
     postpone_output 1460;
     server_names_hash_bucket_size 128; 

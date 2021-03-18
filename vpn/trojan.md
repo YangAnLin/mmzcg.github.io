@@ -70,3 +70,9 @@ vim /etc/trojan-go/server.json
 /etc/trojan-go/trojan-go -config /etc/trojan-go/server.json
 ```
 
+win10 客户端
+
+```shell
+https://github.com/kidonng/sushi/releases/download/binaries/Trojan-Qt5-Windows-1.4.0.7z
+```
+

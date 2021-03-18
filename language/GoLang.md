@@ -488,17 +488,444 @@ func swap(x *int, y *int) {
 //交换后，b 的值 : 100
 ```
 
-# 方法(OOP)
+# 变量作用域
 
 ```go
+// 全局变量
+var global int = 32
+
+func main() {
+
+	// 局部变量
+	var a,b int =1, 2
+
+	fmt.Printf("打印全局变变量:%v\n", global)
+	global = a+ b
+	fmt.Printf("打印全局变变量:%v\n", global)
+
+	var global int = 3
+	fmt.Printf("打印全局变变量:%v\n", global)
+
+}
+```
+
+# 数组
+
+```go
+func get() {
+
+	list := [5]int{1,2,3,4,5}
+
+	for i:=0;i< len(list);i++ {
+		fmt.Println(i, "==", list[i])
+	}
+}
+
+func create(){
+
+	var numbers []int
+	fmt.Println("新建个空数组:",numbers)
+
+	var defaultcount [4]int
+	fmt.Println("新建个指定长度的数组:",defaultcount)
+
+	var balance =  []int{1,2,3,4,5}
+	fmt.Println("新建个不指定长度的数组:",balance)
+
+	// 根据元素的个数，设置数组的大小
+	d := [...] int{1,2,3,4,5}
+	fmt.Println("新建个指定位置的数组:",d)
+
+	// 指定位置
+	e := [5] int{4: 100} // [0 0 0 0 100]
+	fmt.Println("新建个指定位置的数组:",e)
+
+	// 指定位置
+	f := [...] int{0: 1, 4: 1, 9: 1} // [1 0 0 0 1 0 0 0 0 1]
+	fmt.Println("新建个指定位置的数组:",f)
+
+}
+```
+
+# 切片
+
+```go
+func define() {
+
+	var identifier []int
+	fmt.Println("空数组",identifier)
+
+	var slice1 []int = make([]int, 10)
+	fmt.Println("切片",slice1)
+
+	i0 := slice1[0]
+	i1 := slice1[1]
+	i2 := slice1[2]
+	i3 := slice1[3]
+	fmt.Println("通过索引,获取值",i0,i1,i2,i3)
+
+	// 修改切片
+	for i := 0 ;i< len(slice1);i++ {
+		slice1[i] = i
+	}
+	fmt.Println("修改完切片::",slice1)
+
+	fmt.Println("获取切片区间1:",slice1[0:2])
+	fmt.Println("获取切片区间2:",slice1[5:])
+	fmt.Println("获取切片区间3:",slice1[:5])
+
+	slice1 = append(slice1, 10,11,12)
+	fmt.Println("追加完切片::",slice1)
+
+	slice2 := make([]int,len(slice1),cap(slice1)*2)
+	fmt.Println("创建个容量是原来容量两位的数组:",slice2)
+
+	number := copy(slice2,slice1)
+	fmt.Printf("slice:%v\n,slice2:%v\n,number:%v\n:",slice1,slice2,number)
+
+}
+```
+
+# Map
+
+```go
+func main() {
+
+	keyvale := make(map[string]string)
+	keyvale["k1"] = "v1"
+	keyvale["k2"] = "v2"
+	keyvale["k3"] = "v3"
+	keyvale["k4"] = "v4"
+
+	// 循环遍历
+	for key:=range keyvale {
+		fmt.Println("循环遍历:",key,keyvale[key])
+	}
+
+	// 删除元素
+	delete(keyvale,"k1")
+	for key:=range keyvale {
+		fmt.Println("删除值之后,循环遍历:",key,keyvale[key])
+	}
+
+	// 查看元素是否存在
+	_,ok := keyvale["United States"]
+	if ok {
+		fmt.Printf("存在\n")
+	}else {
+		fmt.Printf("不存在\n")
+	}
+
+	// 但是当key如果不存在的时候，我们会得到该value值类型的默认值，比如string类型得到空字符串，int类型得到0。但是程序不会报错
+	m := make(map[string]int)
+	m["a"] = 1
+	x, ok := m["b"]
+	fmt.Println("key不存在时,会有默认值",x, ok)
+
+	// map长度
+	fmt.Println("map长度",len(m))
+
+	// map是引用类型
+	mymap := map[string]int{
+		"steven":12000,
+		"anthony":15000,
+	}
+	mymap["mike"] = 9000
+	fmt.Printf("原来的数据:%v\n",mymap)
+
+	newmymap := mymap
+	newmymap["anthony"] = 50000
+	fmt.Printf("改变后,原来的数据:%v\n",mymap)
+	fmt.Printf("改变后,新的的数据:%v\n",newmymap)
+}
+```
+
+# 指针
+
+```go
+func main() {
+   var a int= 20   /* 声明实际变量 */
+   var ip *int        /* 声明指针变量 */
+
+   ip = &a  /* 指针变量的存储地址 */
+
+   fmt.Printf("a 变量的地址是: %x\n", &a  )
+
+   /* 指针变量的存储地址 */
+   fmt.Printf("ip 变量储存的指针地址: %x\n", ip )
+
+   /* 使用指针访问值 */
+   fmt.Printf("*ip 变量的值: %d\n", *ip )
+}
+
+
+// 函数使用指针
+func main() {
+    /* 定义局部变量 */
+   var a int = 100
+   var b int= 200
+   swap(&a, &b);
+
+   fmt.Printf("交换后 a 的值 : %d\n", a )
+   fmt.Printf("交换后 b 的值 : %d\n", b )
+}
+
+/* 交换函数这样写更加简洁，也是 go 语言的特性，可以用下，c++ 和 c# 是不能这么干的 */
+ 
+func swap(x *int, y *int){
+    *x, *y = *y, *x
+}
+```
+
+# 结构体
+
+```go
+type Books struct {
+	title string
+	author string
+	subject string
+	book_id int
+}
+
+type Library struct {
+	// 匿名字段，那么默认Student就包含了Human的所有字段
+	Books
+
+	address string
+}
+
+func main() {
+	var book Books
+	book.title = "Go 语言"
+	book.author = "www.runoob.com"
+	book.subject = "Go 语言教程"
+	book.book_id = 6495407
+
+	fmt.Println( "======================调用方法打印===================")
+	printBook2(book)
+
+	fmt.Println( "=======================调用方法指针打印==================")
+	printBook(&book)
+
+	fmt.Println( "=======================手动打印==================")
+	fmt.Printf( "Book 1 title : %s\n", book.title)
+	fmt.Printf( "Book 1 author : %s\n", book.author)
+	fmt.Printf( "Book 1 subject : %s\n", book.subject)
+	fmt.Printf( "Book 1 book_id : %d\n", book.book_id)
+
+	// 初始化一个图书馆
+	mark := Library{Books{"Go 语言","www.runoob.com","Go 语言教程",6495407},"广东"}
+	// 我们访问相应的字段
+	fmt.Println("His name is ", mark.title)
+	fmt.Println("His age is ", mark.author)
+	fmt.Println("His weight is ", mark.subject)
+	fmt.Println("His speciality is ", mark.address)
+	// 修改对应的备注信息
+	mark.title = "AI"
+	fmt.Println("Mark changed his speciality")
+	fmt.Println("His speciality is ", mark.title)
+}
+
+func printBook2(book Books) {
+	fmt.Printf( "Book title : %s\n", book.title);
+	fmt.Printf( "Book author : %s\n", book.author);
+	fmt.Printf( "Book subject : %s\n", book.subject);
+	fmt.Printf( "Book book_id : %d\n", book.book_id);
+	book.title= "函数修改后"
+}
+
+func printBook(book *Books) {
+	fmt.Printf( "Book title : %s\n", book.title);
+	fmt.Printf( "Book author : %s\n", book.author);
+	fmt.Printf( "Book subject : %s\n", book.subject);
+	fmt.Printf( "Book book_id : %d\n", book.book_id);
+	book.title= "指针修改后"
+}
 
 ```
 
+# 面向对象
+
+```go
+// 定义接口
+type PersonMethod interface {
+	show()
+}
+
+// 定义结构体
+type Person struct {
+	name string
+	age  int
+}
+
+// 对象成员方法
+func (person *Person) setAge(age int) {
+	person.age = age
+}
+
+// 对象成员方法实现接口
+func (person Person) show() {
+	fmt.Printf("Person类打印SHOW:%v\n", person)
+}
+
+// 多态
+func show2(person PersonMethod) {
+	person.show()
+}
+
+// 学生类,继承Person类
+type Student struct {
+	// 匿名,相当于继承
+	Person
+	level string
+}
+
+func (student *Student) show() {
+	fmt.Printf("Student类打印SHOW:%v\n", student)
+}
+
+// 老师类,继承Person类
+type Teacher struct {
+	Person
+	price int
+}
+
+func (teacher Teacher) show() {
+	fmt.Printf("Teacher类打印SHOW:%v\n", teacher)
+}
+
+func main() {
+	anthony := Person{"anthony", 25}
+	fmt.Printf("anthony信息:%v\n", anthony)
+
+	// 调用成员方法
+	anthony.setAge(12)
+	fmt.Printf("anthony信息:%v\n", anthony)
+
+	anthony2 := Person{}
+	fmt.Printf("anthony2信息:%v\n", anthony2)
+
+	anthony2.age = 26
+	anthony2.name = "anthony2"
+	fmt.Printf("anthony2信息:%v\n", anthony2)
+
+	// 学生,继承
+	student := Student{}
+	student.level = "小学生"
+	student.name = "anthony"
+	student.age = 23
+	fmt.Printf("学生继承类:%v\n", student)
+
+	// 老师,继承
+	teacher := Teacher{price: 12, Person: Person{name: "li teacher", age: 56}}
+	fmt.Printf("老师继承类:%v\n", teacher)
+
+	show2(&student)
+	show2(teacher)
+	show2(anthony)
+
+}
+```
+
+# 接口
+
+```go
+type Phone interface {
+    call()
+}
+
+type NokiaPhone struct {
+}
+
+func (nokiaPhone NokiaPhone) call() {
+    fmt.Println("I am Nokia, I can call you!")
+}
+
+type IPhone struct {
+}
+
+func (iPhone IPhone) call() {
+    fmt.Println("I am iPhone, I can call you!")
+}
+
+func main() {
+    var phone Phone
+
+    phone = new(NokiaPhone)
+    phone.call()
+
+    phone = new(IPhone)
+    phone.call()
+
+}
+```
+
+# 错误处理
+
+```go
+// 自定义错误信息结构
+type DivErr struct {
+	etype int  // 错误类型
+	v1 int     // 记录下出错时的除数、被除数
+	v2 int
+}
+
+// 实现接口方法 error.Error()
+func (divErr DivErr) Error() string {
+	if 0== divErr.etype {
+		return "除零错误"
+	}else{
+		return "其他未知错误"
+	}
+}
+
+// 除法
+func div(a int, b int) (int,*DivErr) {
+	if b == 0 {
+		// 返回错误信息
+		return 0,&DivErr{0,a,b}
+	} else {
+		// 返回正确的商
+		return a / b, nil
+	}
+}
+
+func main() {
+
+	// 正确调用
+	v,r :=div(100,2)
+	if nil!=r{
+		fmt.Println("(1)fail:",r)
+	}else{
+		fmt.Println("(1)succeed:",v)
+	}
+	// 错误调用
+	v,r =div(100,0)
+	if nil!=r{
+		fmt.Println("(2)fail:",r)
+	}else{
+		fmt.Println("(2)succeed:",v)
+	}
+
+}
+```
+
+# GoRoutine
+
+```go
+func main() {
+	go say("world")
+	say("hello")
+}
 
 
-
-
-
+func say(s string) {
+	for i := 0; i < 5; i++ {
+		time.Sleep(100 * time.Millisecond)
+		fmt.Println(s)
+	}
+}
+```
 
 # modules
 
@@ -758,7 +1185,11 @@ func main() {
 > `一个小坑`：开始在golang1.11 下使用go mod 遇到过 `go build github.com/valyala/fasttemplate: module requires go 1.12` [这种错误](https://github.com/golang/go/issues/27565)，遇到类似这种需要升级到1.12 的问题，直接升级golang1.12 就好了。幸亏是在1.12 发布后才尝试的`go mod` 🤷‍♂️
 
 
-# GO标准包
+# GO库
+
+## flag
+
+
 
 ## io
 
