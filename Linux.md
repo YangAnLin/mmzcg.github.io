@@ -35,8 +35,10 @@ set nu
 ```shell
 1.判断Ubuntu是否安装了ssh服务,检查有没有可以看到“sshd”
 ps -e | grep ssh
-2.安装ssh服务，输入命令：#sudo apt-get install openssh-server 
-3.启动服务:#/etc/init.d/ssh start 
+2.安装ssh服务，输入命令：
+sudo apt-get install openssh-server 
+3.启动服务:
+/etc/init.d/ssh start 
 ```
 
 ### SSH连接,key失效
