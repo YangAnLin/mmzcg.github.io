@@ -76,3 +76,24 @@ win10 客户端
 https://github.com/kidonng/sushi/releases/download/binaries/Trojan-Qt5-Windows-1.4.0.7z
 ```
 
+# 订阅
+
+明文-->base64--->谷歌文档--->https://onedrive.gimhoy.com/ 再生成链接
+
+# 安装
+
+1.解压文件
+
+![image-20210320143328250](C:\Users\Owner\AppData\Roaming\Typora\typora-user-images\image-20210320143328250.png)
+
+2.双击运行红箭头的软件,安装软件,一直点下一步直到完成
+
+![image-20210320143440133](C:\Users\Owner\AppData\Roaming\Typora\typora-user-images\image-20210320143440133.png)
+
+3.在桌面上打开Qvray软件
+
+4.点击首选项
+
+![image-20210320143548883](C:\Users\Owner\AppData\Roaming\Typora\typora-user-images\image-20210320143548883.png)
+
+5.

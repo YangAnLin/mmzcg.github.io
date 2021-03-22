@@ -1189,6 +1189,85 @@ func main() {
 
 ## flag
 
+```go
+import (
+	"errors"
+	"flag"
+	"fmt"
+	"strings"
+	"time"
+)
+
+/**
+
+// 编译
+go build demo.go
+
+// 帮助信息
+demo.exe -h
+
+// 正常使用
+demo.exe -name yang
+*/
+func main() {
+
+	//demo1()
+
+	demo2()
+
+}
+
+// 第一种用法
+func demo1() {
+	var nFlag = flag.String("name", "anthony", "help message for flag n")
+	flag.Parse()
+	fmt.Println(*nFlag)
+}
+
+// 第二种用法
+func demo2() {
+	var name string
+	flag.StringVar(&name, "name", "anthonyyang", "help message for flag n")
+	flag.Parse()
+	fmt.Println(name)
+}
+
+// 第三种用法
+func demo3() {
+	var intervalFlag mystring
+	flag.Var(&intervalFlag, "anthonyyang", "name")
+	fmt.Println(intervalFlag)
+}
+
+type mystring []time.Duration
+
+func (i *mystring) String() string {
+	return fmt.Sprint()
+}
+
+func (i *mystring) Set(value string) error {
+	if len(*i) > 0 {
+		return errors.New("interval flag already set")
+	}
+	for _, dt := range strings.Split(value, ",") {
+		duration, err := time.ParseDuration(dt)
+		if err != nil {
+			return err
+		}
+		*i = append(*i, duration)
+	}
+	return nil
+}
+```
+
+[参考](https://darjun.github.io/2020/01/10/godailylib/flag/)
+
+## log
+
+```go
+
+```
+
 
 
 ## io
