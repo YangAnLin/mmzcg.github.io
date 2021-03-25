@@ -1,6 +1,6 @@
 [toc]
 
-# Mysql安装
+# Mysql Linux安装
 
 ```shell
 # 卸载旧版本
@@ -90,6 +90,34 @@ init_connect='SET NAMES utf8'
 
 # 添加远程登录用户
 mysql> GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' IDENTIFIED BY 'secret' WITH GRANT OPTION;
+```
+
+# Mysql Win10安装
+
+1.点击 [MySQL Community Server](https://dev.mysql.com/downloads/mysql/) 按钮
+
+2.环境变量,创建`MYSQL_HOME`-`c:\mysql-8.23`,不要`bin`
+
+3.添加到Path`**%MYSQL_HOME%\bin**`
+
+4.打开shell
+
+```shell
+# 会输出密码
+mysqld --initialize --console
+
+# 安装
+mysqld --install
+返回:Service successfully installed.
+
+# 启动服务
+net start mysql
+
+# 登录,使用第一步生成的密码
+mysql -u root -p
+
+# 修改root密码未123456
+alter user 'root'@'localhost' identified by 123456'
 ```
 
 # Mysql基本命令

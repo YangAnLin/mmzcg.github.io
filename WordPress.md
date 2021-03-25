@@ -87,8 +87,6 @@ server {
 
 # Vultr上安装
 
-
-
 [上传备份](https://import.wp-migration.com/)
 
 安装SSL
@@ -107,5 +105,8 @@ server{
 }   
 ```
 
+# 优化
 
+![image-20210325133623515](https://i.loli.net/2021/03/25/6UQL1slSYRcuxzm.png)
 
+![image-20210325134421052](https://i.loli.net/2021/03/25/PsJFI7YLX4VbDWu.png)
