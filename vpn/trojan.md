@@ -29,7 +29,7 @@ curl https://get.acme.sh | sh
 source ~/.bashrc
 # 假装80端口的网站,Http认证
 apt install socat
-acme.sh --issue -d airportstech.xyz --standalone
+acme.sh --issue -d lasttime.xyz --standalone
 # 迁移证书位置
 cp /root/.acme.sh/域名/域名.cer /etc/trojan-go/airports.ink.cer
 cp /root/.acme.sh/域名/域名.key /etc/trojan-go/airports.ink.key
@@ -97,3 +97,25 @@ https://github.com/kidonng/sushi/releases/download/binaries/Trojan-Qt5-Windows-1
 ![image-20210320143548883](C:\Users\Owner\AppData\Roaming\Typora\typora-user-images\image-20210320143548883.png)
 
 5.
+
+
+
+
+
+
+
+# 证书DNS
+
+```shell
+vim ~/.source
+export CF_Token="cfa068f2a1e282a2731ba29a0a24b052"
+export CF_Account_ID="f8535857938fde1ffb8ca548fe63cd11"
+source ~/.source
+
+# 第一步
+acme.sh --issue -d airports.com --dns --yes-I-know-dns-manual-mode-enough-go-ahead-please
+
+# 第二步
+acme.sh  --issue  --renew  -d admin.airports.ink -d *.admin.airports.ink  --yes-I-know-dns-manual-mode-enough-go-ahead-please
+```
+

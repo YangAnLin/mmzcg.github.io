@@ -334,9 +334,7 @@ nginx -t :检查配置文件是否出错
 
 ```shell
 打开nginx.conf
-
 例子：vim /etc/nginx/nginx.conf
-
 把 user 用户名 改为 user root 或 其它有高权限的用户名称即可
 ```
 
