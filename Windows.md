@@ -105,3 +105,20 @@ PS C:\Users\anthony> wsl -l -v
 
 # Navicat破解
 
+# PicGO图片配置
+
+生成token:`在github->setting->developer settings 选择generate new token`
+
+![img](https://cdn.jsdelivr.net/gh/YangAnLin/images/20190620171238.png)
+
+`记得保存好密码,只会创建成功后显示,以后就看不到了`
+
+PicGo设置
+
+```shell
+仓库名:YangAnLin/images
+分支名:master
+设定token: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
+设定自定义域名:https://cdn.jsdelivr.net/gh/YangAnLin/images
+```
+

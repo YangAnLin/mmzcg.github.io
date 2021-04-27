@@ -221,6 +221,11 @@ date -R
 选择 4,9,1,1
 
 sudo cp /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime
+
+# java设置时区
+在/etc/profile或~/.bashrc文件中设置环境变量TZ
+export TZ='Asia/Shanghai'
+source /etc/profile
 ```
 
 ### 历史命令
@@ -1267,9 +1272,11 @@ export M2_HOME=/usr/local/software/apache-maven-3.6.1
 export PATH=${M2_HOME}/bin:$PATH
 ```
 
-### 卸载openjdk
+### 安装和卸载openjdk
 
 ```shell
+# 安装
+apt-get install -y openjdk-8-jdk
 # 卸载openJDK
 sudo apt-get remove openjdk*
 ```
