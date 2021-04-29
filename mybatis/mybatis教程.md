@@ -192,7 +192,7 @@ public class QueryFloors implements Serializable {
 
 # 9. **注解 一对多查询(一个参数)**
 
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165320.png)
+![](https://github.com/YangAnLin/images/tree/master/copy_20201226165320.png)
 
 ![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226180342.png)
 
