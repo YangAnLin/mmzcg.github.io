@@ -333,11 +333,11 @@ systemctl status cockpit.socket
 ## Linux固定IP 
 配置完了,最好是重启下vmware和虚拟机,和禁用开启 win10上的vmare8网卡
 vmare配置
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164835.png)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20201226164835.png)
 电脑配置
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164850.png)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20201226164850.png)
 虚拟机配置
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226164908.png)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20201226164908.png)
 
 ### Centos配置
 
@@ -528,7 +528,7 @@ anthony:x:1000:anthony
 usermod username -g 组名
 ```
 
-![image-20210111210640226](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20210111210641.png)
+![image-20210111210640226](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20210111210641.png)
 
 
 
@@ -815,13 +815,13 @@ KiB Swap:  2097148 total,  2097148 free,        0 used.  2545024 avail Mem
 
 先分区,再格式化,再挂载
 
-![image-20210114203326197](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20210114203327.png)
+![image-20210114203326197](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20210114203327.png)
 
 MBR一共只能有4个分区,如果要需要很多个分区
 
-![image-20210114202654364](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20210114202655.png)
+![image-20210114202654364](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20210114202655.png)
 
-![image-20210114202942146](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20210114202943.png)
+![image-20210114202942146](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20210114202943.png)
 
 ### 新建主分区和逻辑分区
 

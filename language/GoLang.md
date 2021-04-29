@@ -22,7 +22,7 @@ func main() {
 }
 ```
 
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201222103430.png)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20201222103430.png)
 
 `package main` 一定要在main的包下才能运行
 
