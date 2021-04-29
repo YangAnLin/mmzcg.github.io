@@ -124,6 +124,10 @@ PicGo设置
 
 # PicGO+Aws+S3
 
+> [S3教程](https://atsud0.me/2021/02/24/%E4%BD%BF%E7%94%A8Amazon-S3%E5%AE%9E%E7%8E%B0%E5%9B%BE%E5%BA%8A/)
+>
+> [PicGoS3教程](https://github.com/wayjam/picgo-plugin-s3)
+
 ### 创建存储桶
 
 红框里不要勾选
