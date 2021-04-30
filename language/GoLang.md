@@ -211,7 +211,7 @@ func demo() {
 }
 ```
 
-# type
+# type关键字
 
 ```go
 func main() {
