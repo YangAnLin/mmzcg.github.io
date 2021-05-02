@@ -84,25 +84,17 @@ https://github.com/kidonng/sushi/releases/download/binaries/Trojan-Qt5-Windows-1
 
 1.解压文件
 
-![image-20210320143328250](C:\Users\Owner\AppData\Roaming\Typora\typora-user-images\image-20210320143328250.png)
+![image-20210320143328250](https://blog-anthony.s3.ap-northeast-1.amazonaws.com/blog/2021/57800694313f73580173da0802e05821.png)
 
 2.双击运行红箭头的软件,安装软件,一直点下一步直到完成
 
-![image-20210320143440133](C:\Users\Owner\AppData\Roaming\Typora\typora-user-images\image-20210320143440133.png)
+![image-20210320143440133](https://blog-anthony.s3.ap-northeast-1.amazonaws.com/blog/2021/c0f8f3fc58115dfbd03c3c5f64f4db43.png)
 
 3.在桌面上打开Qvray软件
 
 4.点击首选项
 
-![image-20210320143548883](C:\Users\Owner\AppData\Roaming\Typora\typora-user-images\image-20210320143548883.png)
-
-5.
-
-
-
-
-
-
+![image-20210320143548883](https://blog-anthony.s3.ap-northeast-1.amazonaws.com/blog/2021/72b0457e9912714aed071a2ecebe0b4d.png)
 
 # 证书DNS
 

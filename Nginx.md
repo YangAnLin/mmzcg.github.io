@@ -1,8 +1,6 @@
 # Ubuntu安装Nginx
 
-```shell
 ubuntu安装nginx时提示error: the HTTP rewrite module requires the PCRE library 
-```
 
 ```shell
 # Ubuntu安装依赖
@@ -337,4 +335,63 @@ nginx -t :检查配置文件是否出错
 例子：vim /etc/nginx/nginx.conf
 把 user 用户名 改为 user root 或 其它有高权限的用户名称即可
 ```
+
+# Nginx应用
+
+## 建立软连接
+
+```shell
+sudo ln -s /etc/nginx/sites-available/domain-one.com /etc/nginx/sites-enabled/
+```
+
+## 快速部署静态应用
+
+```nginx
+# 首尾配置暂时忽略
+server {  
+        listen       8080;        
+        server_name  localhost;
+
+        location / {
+        	# 设置为个人项目的根目录路径
+            root /usr/local/var/www/my-project; 
+            index  index.html index.htm;
+        }
+}
+# 首尾配置暂时忽略
+```
+
+## 跨域
+
+```nginx
+# 首尾配置暂时忽略
+server {
+        listen       8080;        
+        server_name  localhost;
+
+        location / {
+            # 跨域代理设置
+            proxy_pass http://www.proxy.com; # 要实现跨域的域名
+            add_header Access-Control-Allow-Origin *;
+            add_header Access-Control-Allow-Methods 'GET, POST, OPTIONS';
+            add_header Access-Control-Allow-Headers 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization';
+        }
+}
+# 首尾配置暂时忽略
+
+```
+
+## Gzip压缩
+
+```nginx
+http {
+    # 配置gzip压缩
+    gzip  on;
+    gzip_min_length 1000; # 设定压缩的临界点
+    gzip_comp_level 3; # 压缩级别
+    gzip_types      text/plain application/xml; # 要压缩的文件类别
+}
+```
+
+
 

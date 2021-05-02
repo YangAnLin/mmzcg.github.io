@@ -4,15 +4,15 @@
 
 1.vmare配置
 
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201213150357.png)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20201213150357.png)
 
 2.电脑配置
 
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201213150441.png)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20201213150441.png)
 
 3.虚拟机配置
 
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201213150509.png)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20201213150509.png)
 
 # Hadoop伪集群
 
@@ -98,15 +98,15 @@ export PATH=$PATH:$HADOOP_HOME/bin
 hadoop namenode -format
 ```
 
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201213150541.png)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20201213150541.png)
 
 8.启动hdfs
 
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201213150622.png)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20201213150622.png)
 
 9.启动yarn
 
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201213150637.png)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20201213150637.png)
 
 10.访问web界面
 
@@ -125,7 +125,7 @@ http://192.168.2.200:8088/cluster
 hadoop fs -put jdk-8u152-linux-x64.tar.gz hdfs://weekend110:9000/
 ```
 
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201213150653.png)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20201213150653.png)
 
 12.测试下载文件
 

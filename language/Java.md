@@ -1,4 +1,10 @@
-# hutool
+
+
+
+
+
+
+# Hutool
 
 ```java
      final JSONArray array = new JSONArray();
@@ -26,7 +32,136 @@
         System.out.println(array);
 ```
 
+# 执行Shell命令
 
+```xml
+<!-- https://mvnrepository.com/artifact/com.jcraft/jsch -->
+<dependency>
+    <groupId>com.jcraft</groupId>
+    <artifactId>jsch</artifactId>
+    <version>0.1.55</version>
+</dependency>
+```
+
+```java
+import com.jcraft.jsch.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+ 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Properties;
+ 
+/**
+ * 执行Shell工具类
+ *
+ * @author JustryDeng
+ * @date 2019/4/29 16:29
+ */
+public class ExecuteShellUtil {
+ 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExecuteShellUtil.class);
+ 
+    /** 未调用初始化方法 错误提示信息 */
+    private static final String DONOT_INIT_ERROR_MSG = "please invoke init(...) first!";
+ 
+    private Session session;
+ 
+    private Channel channel;
+ 
+    private ChannelExec channelExec;
+ 
+    private ExecuteShellUtil() {
+    }
+ 
+    /**
+     * 获取ExecuteShellUtil类实例对象
+     *
+     * @return 实例
+     * @date 2019/4/29 16:58
+     */
+    public static ExecuteShellUtil getInstance() {
+        return new ExecuteShellUtil();
+    }
+ 
+    /**
+     * 初始化
+     *
+     * @param ip
+     *         远程Linux地址
+     * @param port
+     *         端口
+     * @param username
+     *         用户名
+     * @param password
+     *         密码
+     * @throws JSchException
+     *         JSch异常
+     * @date 2019/3/15 12:41
+     */
+    public void init(String ip, Integer port, String username, String password) throws JSchException {
+        JSch jsch = new JSch();
+        jsch.getSession(username, ip, port);
+        session = jsch.getSession(username, ip, port);
+        session.setPassword(password);
+        Properties sshConfig = new Properties();
+        sshConfig.put("StrictHostKeyChecking", "no");
+        session.setConfig(sshConfig);
+        session.connect(60 * 1000);
+        LOGGER.info("Session connected!");
+        // 打开执行shell指令的通道
+        channel = session.openChannel("exec");
+        channelExec = (ChannelExec) channel;
+    }
+ 
+    /**
+     * 执行一条命令
+     */
+    public String execCmd(String command) throws Exception {
+        if (session == null || channel == null || channelExec == null) {
+            throw new Exception(DONOT_INIT_ERROR_MSG);
+        }
+        LOGGER.info("execCmd command - > {}", command);
+        channelExec.setCommand(command);
+        channel.setInputStream(null);
+        channelExec.setErrStream(System.err);
+        channel.connect();
+        StringBuilder sb = new StringBuilder(16);
+        try (InputStream in = channelExec.getInputStream();
+             InputStreamReader isr = new InputStreamReader(in, StandardCharsets.UTF_8);
+             BufferedReader reader = new BufferedReader(isr)) {
+            String buffer;
+            while ((buffer = reader.readLine()) != null) {
+                sb.append("\n").append(buffer);
+            }
+            // 释放资源
+            close();
+            LOGGER.info("execCmd result - > {}", sb);
+            return sb.toString();
+        }
+    }
+ 
+    /**
+     * 释放资源
+     *
+     * @date 2019/3/15 12:47
+     */
+    private void close() {
+        if (channelExec != null && channelExec.isConnected()) {
+            channelExec.disconnect();
+        }
+        if (channel != null && channel.isConnected()) {
+            channel.disconnect();
+        }
+        if (session != null && session.isConnected()) {
+            session.disconnect();
+        }
+    }
+ 
+}
+```
 
 # 0.Maven
 
@@ -1225,13 +1360,13 @@ JVM在执行某个类的时候，必须经过加载、连接、初始化，而�
 
 ## 集合框架
 
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165813.png)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20201226165813.png)
 
 
 
 ### HashMap源码
 
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165910.webp)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20201226165910.webp)
 
 #### put方法具体实现
 
@@ -1434,7 +1569,7 @@ Executor 框架是一个根据一组执行策略调用，调度，执行和控�
 
 ### ThreadPoolExecutor详解
 
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165927.png)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20201226165927.png)
 
 #### Executors和ThreaPoolExecutor创建线程池的区别
 
@@ -1549,11 +1684,11 @@ CountDownLatch与CyclicBarrier都是用于控制并发的工具类，都可以�
 
 ### JVM 的主要组成部分及其作用
 
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/20201226165945.png)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/20201226165945.png)
 
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226165956.jpeg)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20201226165956.jpeg)
 
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170023.png)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20201226170023.png)
 
 JVM包含两个子系统和两个组件
 
@@ -1620,7 +1755,7 @@ JVM包含两个子系统和两个组件
 2. 老生代(Old Generation)
 3. 永生代(Permanent Generation)
 
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170106.png)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20201226170106.png)
 
 **示的 Eden 区、两个 Survivor 区都属于新生代（为了区分，这两个 Survivor 区域按照顺序被命名为 from 和 to），中间一层属于老年代。**
 
@@ -1665,7 +1800,7 @@ GC 是垃圾收集的意思（Gabage Collection）,内存处理是编程人员�
 
 ## 对象的创建
 
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170137.png)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20201226170137.png)
 
 ### Step1:类加载检查
 
@@ -1681,7 +1816,7 @@ GC 是垃圾收集的意思（Gabage Collection）,内存处理是编程人员�
 
 选择以上两种方式中的哪一种，取决于 Java 堆内存是否规整。而 Java 堆内存是否规整，取决于 GC 收集器的算法是"标记-清除"，还是"标记-整理"（也称作"标记-压缩"），值得注意的是，复制算法内存也是规整的
 
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170150.png)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20201226170150.png)
 
 **内存分配并发问题**
 
@@ -1710,7 +1845,7 @@ GC 是垃圾收集的意思（Gabage Collection）,内存处理是编程人员�
 
 **直接指针：** 如果使用直接指针访问，那么 Java 堆对象的布局中就必须考虑如何放置访问类型数据的相关信息，而 reference 中存储的直接就是对象的地址。
 
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201226170201.png)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20201226170201.png)
 
 # CPU占用率高查看
 

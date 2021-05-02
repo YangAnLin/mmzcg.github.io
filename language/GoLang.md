@@ -22,7 +22,7 @@ func main() {
 }
 ```
 
-![](https://cdn.jsdelivr.net/gh/YangAnLin/images/copy_20201222103430.png)
+![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/copy_20201222103430.png)
 
 `package main` 一定要在main的包下才能运行
 
@@ -211,7 +211,7 @@ func demo() {
 }
 ```
 
-# type
+# type关键字
 
 ```go
 func main() {
@@ -1187,6 +1187,124 @@ func main() {
 ```
 
 > `一个小坑`：开始在golang1.11 下使用go mod 遇到过 `go build github.com/valyala/fasttemplate: module requires go 1.12` [这种错误](https://github.com/golang/go/issues/27565)，遇到类似这种需要升级到1.12 的问题，直接升级golang1.12 就好了。幸亏是在1.12 发布后才尝试的`go mod` 🤷‍♂️
+
+# 网络编程
+
+## 最简单的网络编程
+
+```go
+package main
+
+import (
+	"io"
+	"log"
+	"net/http"
+)
+
+func HelloServer(w http.ResponseWriter, req *http.Request) {
+	io.WriteString(w, "hello, world!\n")
+}
+func main() {
+	http.HandleFunc("/hello", HelloServer)
+	err := http.ListenAndServeTLS(":8080", "cert.pem", "key.pem", nil)
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
+}
+```
+
+## TLS服务端和客户端
+
+serve.go
+
+```go
+package main
+
+import (
+	"bufio"
+	"crypto/tls"
+	"log"
+	"net"
+)
+func main() {
+	log.SetFlags(log.Lshortfile)
+	key, err := tls.LoadX509KeyPair("cert.pem", "key.pem")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	config := &tls.Config{Certificates: []tls.Certificate{key}}
+	ln, err := tls.Listen("tcp", ":8000", config)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer ln.Close()
+	for {
+		conn, err := ln.Accept()
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		go handleConnection(conn)
+	}
+}
+func handleConnection(conn net.Conn) {
+	defer conn.Close()
+	r := bufio.NewReader(conn)
+	for {
+		msg, err := r.ReadString('\n')
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		println(msg)
+		n, err := conn.Write([]byte("world\n"))
+		if err != nil {
+			log.Println(n, err)
+			return
+		}
+	}
+}
+
+```
+
+clinet.go
+
+```go
+package main
+
+import (
+	"crypto/tls"
+	"log"
+)
+func main() {
+	log.SetFlags(log.Lshortfile)
+	conf := &tls.Config{
+		InsecureSkipVerify: true,
+	}
+	conn, err := tls.Dial("tcp", "127.0.0.1:8000", conf)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer conn.Close()
+	n, err := conn.Write([]byte("hello\n"))
+	if err != nil {
+		log.Println(n, err)
+		return
+	}
+	buf := make([]byte, 100)
+	n, err = conn.Read(buf)
+	if err != nil {
+		log.Println(n, err)
+		return
+	}
+	println(string(buf[:n]))
+}
+
+```
+
 
 
 # GO库
