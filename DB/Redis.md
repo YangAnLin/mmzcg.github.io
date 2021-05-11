@@ -105,12 +105,10 @@ cd redis-5.0.5
 
 # 安装redis
 sudo make && make instal
-```
-注意make的时候可能会报错,
-```shell
+
+# 注意make的时候可能会报错,
 make MALLOC=libc
 ```
-
 ### 开机启动
 
 修改redis.cnf
