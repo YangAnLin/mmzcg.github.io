@@ -1,7 +1,5 @@
 ![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/20210205205736.jpeg)
 
-# 1
-
 ## ------------1----------
 
 Is this your handbag?
