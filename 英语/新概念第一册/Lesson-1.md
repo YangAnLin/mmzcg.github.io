@@ -1,8 +1,6 @@
 ![](https://blog-anthony.s3-ap-northeast-1.amazonaws.com/blog/20210205205736.jpeg)
 
-# 1
-
-## ------------1----------
+## 1
 
 Is this your handbag?
 Yes,it's
@@ -10,7 +8,7 @@ No,it isn't
 
 This is my handbag
 
-## ------------3----------
+## 3
 
 cloakroom 衣帽存放处
 
@@ -32,7 +30,7 @@ not加在is的后面标识否定
 This is not my umbrella
 This isn't my umbrella
 
-## ------------4----------
+## 4
 
 Is this your coat?
 No,it isn't
@@ -47,7 +45,7 @@ No,he isn't
 It this your daughter?
 No,she isn't
 
-## ------------5----------
+## 5
 把某个人介绍给大家
 This is Miss Steven
 This is Hans
@@ -61,7 +59,7 @@ Toyota is a Japanese cat
 She is French
 He is German
 
-## ------------6----------
+## 6
 
 Is it a French car?
 No,it isn't===> it is not
@@ -81,7 +79,7 @@ Yes,It's
 What make is it?  什么牌子
 It's a fold
 
-## ------------7----------
+## 7
 
 问名字
 What's your name?
@@ -109,7 +107,7 @@ He's an engineer
 
 
 
-## ------------8----------
+## 8
 
 What's your job?
 I'm a policeman
@@ -133,7 +131,7 @@ She's a housewife(家庭主妇)
 What's his job?
 He's a milkman
 
-## ------------9----------
+## 9
 
 关心你
 How are you today?
@@ -147,7 +145,7 @@ How's Emma?
 She's very well
 
 
-##  ------------10----------
+##  10
 Look at that man!
 Is he thin?
 No,He isn't
@@ -193,7 +191,7 @@ She's very young
 That hairdresser is busy
 He's very busy
 
-## ------------11----------
+## 11
 
 whose 谁的
 
@@ -223,7 +221,7 @@ It's Emma's
 This is her dress
 
 
-## ------------12----------
+## 12
 
 Whose is this handbag?
 It's Anthony's
@@ -261,7 +259,7 @@ No,It isn't
 It's my brother's
 
 
-## ------------13----------
+## 13
 
 What color's your dress?
 It's green
@@ -269,7 +267,7 @@ It's green
 What color is it?
 
 
-## ------------14----------
+## 14
 
 What color's your umbrella?
 What color's your car?
@@ -290,7 +288,7 @@ what color is that dog?
 It's brown
 
 
-## ------------15----------
+## 15
 
 customers 海关
 officer 官员
@@ -316,7 +314,7 @@ Yes,they are
 What color are your cases?
 
 
-## ------------16----------
+## 16
 Are you English?
 No,we are not,We are Russian(俄罗斯人)
 
@@ -341,7 +339,7 @@ Yes,They are
 What color are your passports?
 They are green
 
-## ------------17----------
+## 17
 
 hard-working 勤奋的
 sales rep 推销员
@@ -367,7 +365,7 @@ what are their jobs?
 Ther're teachers
 
 
-## ------------18----------
+## 18
 
 What are their jobs?
 they're engineers
@@ -375,7 +373,7 @@ they're engineers
 代词
 
 
-## ------------19----------
+## 19
 
 matter 事情
 thirsty 累,疲乏
@@ -396,7 +394,7 @@ Those boxs are heavy
 
 
 
-## ------------20----------
+## 20
 
 Those 那些,These 这些
 
@@ -426,7 +424,7 @@ Those trousers(裤子) are short
 These trousers are long
 
 
-## ------------21----------
+## 21
 祈使句
 Give me an umbrella please   =please Give me an umbrella 
 Give him a  pencil please
@@ -443,7 +441,7 @@ Give her a spoon(勺子) please
 which on?
 The small(小) one
 
-## ------------22----------
+## 22
 
 This 近的,近的
 That 那些,远的
@@ -469,7 +467,7 @@ Which one?That blunt(钝的) one?
 No,not that blunt one.This sharp(锋利) one
 
 
-## ------------23----------
+## 23
 介词
 
 
@@ -490,7 +488,7 @@ Give him some books please
 whick ones?
 The ones in the bag
 
-## ------------24----------
+## 24
 
 介词短语
 
@@ -518,7 +516,7 @@ Which ones?The ones on the shelf
 Give me children some newspapers please
 Which ones?The ones one the stereo(立体声音响)
 
-## ------------25----------
+## 25
 
 知识点:在什么地方有什么东西
 
@@ -560,7 +558,7 @@ Is there a bottle in the refrigerator?
 
 冰箱里有瓶子吗?
 
-## ------------26----------
+## 26
 
 There is a cup on the table
 
@@ -610,7 +608,7 @@ Where's the bottle?
 
 It's in the fridge,It's full
 
-## ------------27----------
+## 27
 
 
 

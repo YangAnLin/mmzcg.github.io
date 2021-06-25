@@ -1303,6 +1303,154 @@ python manage.py migrate
 
 
 
+# flask
+
+## 入门
+
+```python
+from flask import Flask
+
+app = Flask(__name__)
+
+
+@app.route('/login')
+def hello_world():
+    return 'Hello World!'
+
+
+if __name__ == '__main__':
+    app.run()
+```
+
+## 跳转页面
+
+```python
+from flask import Flask, render_template
+
+app = Flask(__name__)
+
+
+@app.route('/login')
+def hello_world():
+    # 需要有个templates文件夹
+    return render_template("login.html")
+
+
+if __name__ == '__main__':
+    app.run()
+```
+
+## 指定请求方式
+
+```python
+from flask import Flask, render_template
+
+app = Flask(__name__)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def hello_world():
+    return render_template("login.html")
+
+
+if __name__ == '__main__':
+    app.run()
+```
+
+## 获取请求参数Form
+
+```python
+from flask import Flask, render_template, request
+
+app = Flask(__name__)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def hello_world():
+    print("请求来了")
+
+    # 获取post传过来的值
+    user = request.form.get("user")
+    pwd = request.form.get("pwd")
+
+    if user == "anthony" and pwd == "123456":
+        return render_template("login.html", **{"msg": "登录成功"})
+    else:
+        return render_template("login.html", **{"msg": "用户名或者密码错误"})
+
+
+if __name__ == '__main__':
+    app.run()
+
+```
+
+## 转发请求
+
+```python
+from flask import Flask, render_template, request,redirect
+
+app = Flask(__name__)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def hello_world():
+    print("请求来了")
+
+    # 获取post传过来的值
+    user = request.form.get("user")
+    pwd = request.form.get("pwd")
+
+    if user == "anthony" and pwd == "123456":
+        # return render_template("login.html", **{"msg": "登录成功"})
+        return redirect("/index")
+    else:
+        return render_template("login.html", **{"msg": "用户名或者密码错误"})
+
+
+@app.route("/index")
+def index():
+    return "欢迎登录"
+
+if __name__ == '__main__':
+    app.run()
+
+```
+
+## Session
+
+```python
+from flask import Flask, render_template, request,redirect,session
+
+app = Flask(__name__)
+# 使用session的时候,需要指定秘钥
+app.secret_key="yan"
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def hello_world():
+    print("请求来了")
+
+    # 获取post传过来的值
+    user = request.form.get("user")
+    pwd = request.form.get("pwd")
+
+    if user == "anthony" and pwd == "123456":
+        # 用户信息放入session
+        # 放入session 需要secret_key
+        session['user_info'] = user
+        return redirect("/index")
+    else:
+        return render_template("login.html", **{"msg": "用户名或者密码错误"})
+
+
+@app.route("/index")
+def index():
+    return "欢迎登录"
+
+if __name__ == '__main__':
+    app.run()
+```
+
 # 这个环境呀,我要吐了
 
 ## pymssql
