@@ -179,7 +179,7 @@ PicGO软件许要下再S3插件,然后再配置文件里粘贴这个
     "accessKeyID": "AKIA2S37TMJ5N6PCZPM6",
     "secretAccessKey": "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",
     "bucketName": "blog-anthony",
-    "uploadPath": "blog/{year}/{md5}.{extName}",
+    "uploadPath": "blog/{year}/{fullName}",
     "acl": "public-read"
 }
 ```
